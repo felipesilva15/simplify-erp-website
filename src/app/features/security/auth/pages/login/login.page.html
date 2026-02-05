@@ -1,0 +1,31 @@
+<div class="h-screen">
+    <div class="xl:col-4 md:col-6 col-12 flex flex-column gap-8 align-items-center sm:px-8 px-6 py-6">
+        <app-logo></app-logo>
+        <div class="flex flex-column gap-8 mt-6">
+            <div>
+                <h1 class="my-2">Log In</h1>
+                <p class="m-0">Entre com seu usuário e senha para acessar o sistema</p>
+            </div>
+            <form (ngSubmit)="onSubmit()" [formGroup]="form">
+                <div class="grid">
+                    <div class="col-12">
+                        <p-floatlabel variant="on">
+                            <input pInputText id="username" formControlName="username" autocomplete="off" fluid />
+                            <label for="username">Usuário</label>
+                        </p-floatlabel>
+                    </div>
+                    <div class="col-12">
+                        <p-floatlabel variant="on">
+                            <p-password id="password" [feedback]="false" formControlName="password" [toggleMask]="true" autocomplete="off" fluid />
+                            <label for="password">Senha</label>
+                        </p-floatlabel>
+                    </div>
+                    <div class="col-12">
+                        <p-button type="submit" label="Log in" fluid [disabled]="isSubmitting()" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="xl:col-8 col-6 sm:hidden"></div>
+</div>
