@@ -1,0 +1,13 @@
+.logo-mini {
+    aspect-ratio: 1 / 1;
+}
+
+.logo-extended {
+    aspect-ratio: 5 / 1;
+}
+
+.logo-mini, .logo-extended {
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-size: cover; 
+}
