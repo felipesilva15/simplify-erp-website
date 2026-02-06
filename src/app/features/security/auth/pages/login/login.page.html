@@ -7,23 +7,26 @@
                 <p class="m-0">Entre com seu usuário e senha para acessar o sistema</p>
             </div>
             <form (ngSubmit)="onSubmit()" [formGroup]="form">
-                <div class="grid">
+                <div class="grid mb-3">
                     <div class="col-12">
                         <p-floatlabel variant="on">
-                            <input pInputText id="username" formControlName="username" autocomplete="off" fluid />
+                            <input pInputText id="username" formControlName="username" autocomplete="off" fluid [ngClass]="{'ng-invalid ng-dirty' : form.get('username')?.invalid && form.get('username')?.touched}" />
                             <label for="username">Usuário</label>
                         </p-floatlabel>
                     </div>
                     <div class="col-12">
                         <p-floatlabel variant="on">
-                            <p-password id="password" [feedback]="false" formControlName="password" [toggleMask]="true" autocomplete="off" fluid />
+                            <p-password id="password" [feedback]="false" formControlName="password" [toggleMask]="true" autocomplete="off" fluid [ngClass]="{'ng-invalid ng-dirty' : form.get('password')?.invalid && form.get('password')?.touched}" />
                             <label for="password">Senha</label>
                         </p-floatlabel>
                     </div>
                     <div class="col-12">
-                        <p-button type="submit" label="Log in" fluid [disabled]="isSubmitting()" />
+                        <p-button type="submit" label="Log in" [loading]="isSubmitting()" fluid [disabled]="isSubmitting()" />
                     </div>
                 </div>
+                @if (hasError()) {
+                    <p-message severity="error">{{ errorMessage() }}</p-message>
+                }
             </form>
         </div>
     </div>

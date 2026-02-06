@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
@@ -6,6 +6,7 @@ import Aura from '@primeuix/themes/aura';
 
 import { routes } from './app.routes';
 import { definePreset } from '@primeuix/themes';
+import { AuthService } from './core/auth/services/auth-service';
 
 const Noir = definePreset(Aura, {
   semantic: {
@@ -72,5 +73,9 @@ export const appConfig: ApplicationConfig = {
         }
       }
     }),
+    provideAppInitializer(() => {
+      const auth = inject(AuthService);
+      return auth.loadUser();
+    })
   ]
 };
