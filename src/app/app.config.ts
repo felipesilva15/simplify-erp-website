@@ -1,5 +1,5 @@
 import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
@@ -7,6 +7,7 @@ import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
 import { definePreset } from '@primeuix/themes';
 import { AuthService } from './core/auth/services/auth-service';
+import { errorResponseInterceptor } from './core/interceptors/error-response-interceptor';
 
 const Noir = definePreset(Aura, {
   semantic: {
@@ -60,7 +61,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([errorResponseInterceptor])),
     providePrimeNG({
       ripple: true,
       inputStyle: 'outlined',
