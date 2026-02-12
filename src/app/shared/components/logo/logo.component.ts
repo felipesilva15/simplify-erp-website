@@ -11,6 +11,7 @@ import { LogoType } from '../../enums/logo-type';
 export class LogoComponent {
   @Input() type: LogoType = LogoType.Extended;
   @Input({required: false}) height: string = '42px';
+  @Input() link: string = '';
   fileBasePath: string = 'images';
 
   source: Signal<string> = computed(() => {

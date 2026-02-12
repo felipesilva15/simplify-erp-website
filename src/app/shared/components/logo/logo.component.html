@@ -1,1 +1,7 @@
-<img [src]="source()" [style.height]="height" [class]="styleClass()">
+@if (link) {
+    <a [href]="link">
+        <img [src]="source()" [style.height]="height" [class]="styleClass()">
+    </a>
+} @else {
+    <img [src]="source()" [style.height]="height" [class]="styleClass()">
+}
