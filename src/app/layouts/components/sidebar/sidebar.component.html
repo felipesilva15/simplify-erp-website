@@ -1,3 +1,42 @@
-<aside class="sidebar bg-white flex column h-full w-18rem">
+<aside class="sidebar bg-white h-full w-18rem p-3 pt-4">
+    <div class="mb-7">
+        <app-logo [height]="'34px'" [link]="'/'" class="mr-4"></app-logo>
+        <!-- <button pButton [text]="true">
+            <span class="material-symbols-outlined font-light">
+                dock_to_right
+            </span>
+        </button> -->
+    </div>
+    <div>
+        <p-divider />
+        <p-panelMenu [model]="menu">
+<!-- 
+            <ng-template #item let-item let-expanded>
+                <a pRipple class="flex items-center px-4 py-2 cursor-pointer group">
+                    <i [class]="item.icon + ' text-primary group-hover:text-inherit'"></i>
+                    <span class="ms-2">{{ item.label }}</span>
+                    @if (item.items) {
+                        <i class="pi pi-chevron-right text-xs transition-transform transition-duration-200" [ngClass]="{ 'rotate-90': expanded }"></i>
+                    }
+                </a>
+            </ng-template> -->
 
+            <!-- <ng-template #item let-item let-expanded>
+                <div class="flex align-items-center justify-content-between px-3 py-2 border-round cursor-pointer hover:bg-gray-100">
+                <div class="flex align-items-center gap-3">
+                    <i [class]="item.icon" class="text-color text-lg"></i>
+                    <span class="text-900 text-sm">{{ item.label }}</span>
+                </div>
+                @if (item.items) {
+                    <i
+                        class="pi pi-chevron-right text-xs transition-transform transition-duration-200"
+                        [ngClass]="{ 'rotate-90': expanded }"
+                    ></i>
+                }
+                </div>
+
+            </ng-template> -->
+
+        </p-panelMenu>
+    </div>
 </aside>
