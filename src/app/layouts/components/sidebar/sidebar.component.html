@@ -21,8 +21,8 @@
                 </a>
             </ng-template> -->
 
-            <!-- <ng-template #item let-item let-expanded>
-                <div class="flex align-items-center justify-content-between px-3 py-2 border-round cursor-pointer hover:bg-gray-100">
+            <ng-template #item let-item>
+                <div class="flex align-items-center justify-content-between px-3 py-2 border-round cursor-pointer hover:bg-blue-100">
                 <div class="flex align-items-center gap-3">
                     <i [class]="item.icon" class="text-color text-lg"></i>
                     <span class="text-900 text-sm">{{ item.label }}</span>
@@ -30,12 +30,12 @@
                 @if (item.items) {
                     <i
                         class="pi pi-chevron-right text-xs transition-transform transition-duration-200"
-                        [ngClass]="{ 'rotate-90': expanded }"
+                        [ngClass]="{ 'rotate-90': item.expanded }"
                     ></i>
                 }
                 </div>
 
-            </ng-template> -->
+            </ng-template>
 
         </p-panelMenu>
     </div>

@@ -11,3 +11,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+.p-panelmenu-content > ul {
+  padding: 0 !important;
+}

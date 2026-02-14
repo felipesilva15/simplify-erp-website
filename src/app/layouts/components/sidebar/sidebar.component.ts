@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuService } from '../../../core/services/menu-service';
 import { MenuItem } from 'primeng/api';
-import { PanelMenu } from 'primeng/panelmenu';
+import { PanelMenuModule } from 'primeng/panelmenu';
 import { LogoComponent } from '../../../shared/components/logo/logo.component';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
-import { NgClass } from '@angular/common';
+import { JsonPipe, NgClass } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [LogoComponent, ButtonModule, DividerModule, PanelMenu, NgClass],
+  imports: [LogoComponent, ButtonModule, DividerModule, PanelMenuModule, NgClass],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
