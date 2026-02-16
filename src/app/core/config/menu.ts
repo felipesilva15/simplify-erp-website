@@ -4,13 +4,31 @@ export const MENU: AppMenuItem[] = [
   {
     label: 'Home',
     icon: 'pi pi-home',
-    routerLink: '/',
+    link: '/',
     permission: 'home.viewAny'
+  },
+  {
+    label: 'Parceiros',
+    icon: 'pi pi-folder',
+    items: [
+      {
+        label: 'Cadastros',
+        icon: 'pi pi-users',
+        link: '/partners',
+        permission: 'partners.viewAny'
+      },
+      {
+        label: 'Como nos conheceu',
+        icon: 'pi pi-question',
+        link: '/partners/how-know',
+        permission: 'how-know.viewAny'
+      }
+    ]
   },
   {
     label: 'Configurações',
     icon: 'pi pi-cog',
-    routerLink: '/',
+    link: '/configurations',
     permission: 'core.configurations'
   },
   {
@@ -20,13 +38,13 @@ export const MENU: AppMenuItem[] = [
       {
         label: 'Usuários',
         icon: 'pi pi-users',
-        routerLink: '/users',
+        link: '/users',
         permission: 'users.viewAny'
       },
       {
         label: 'Papéis',
         icon: 'pi pi-star',
-        routerLink: '/roles',
+        link: '/roles',
         permission: 'roles.viewAny'
       }
     ]

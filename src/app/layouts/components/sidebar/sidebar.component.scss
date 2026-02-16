@@ -1,9 +1,4 @@
-.p-panelmenu,
-.p-panelmenu-header,
-.p-panelmenu-content {
-  border: none !important;
-}
-
-.p-panelmenu-content .p-menuitem {
-  margin: 0;
+.active {
+  color: var(--p-primary-contrast-color) !important;
+  background-color: var(--p-primary-color) !important;
 }

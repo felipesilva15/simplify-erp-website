@@ -22,10 +22,10 @@
             </ng-template> -->
 
             <ng-template #item let-item>
-                <div class="flex align-items-center justify-content-between px-3 py-2 border-round cursor-pointer hover:bg-blue-100">
+                <div class="flex align-items-center border-none justify-content-between px-3 py-2 border-round cursor-pointer" [class.active]="item.expanded && item.items">
                 <div class="flex align-items-center gap-3">
-                    <i [class]="item.icon" class="text-color text-lg"></i>
-                    <span class="text-900 text-sm">{{ item.label }}</span>
+                    <i [class]="item.icon" class="text-lg"></i>
+                    <span class="text-sm">{{ item.label }}</span>
                 </div>
                 @if (item.items) {
                     <i

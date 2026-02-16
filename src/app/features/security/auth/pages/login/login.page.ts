@@ -68,8 +68,7 @@ export class LoginPage implements OnInit {
 
     this.authService.login(this.requestData).subscribe({
       next: (res: TokenDetails) => {
-        this.authService.loadUser()
-        this.route.navigate(['/']);
+        this.authService.loadUser().then(() => this.route.navigate(['/']));
       },
       error: (err) => {
         if (err.error?.message)
