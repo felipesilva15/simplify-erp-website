@@ -3,13 +3,14 @@ import { PermissionService } from '../auth/services/permission-service';
 import { MenuItem } from 'primeng/api';
 import { MENU } from '../config/menu';
 import { AppMenuItem } from '../models/app-menu-item';
+import { isActive, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MenuService {
 
-  constructor(private permission: PermissionService) {}
+  constructor(private permission: PermissionService, private router: Router) {}
 
   getMenu(): MenuItem[] {
     return this.filterByPermission(MENU);
@@ -39,5 +40,37 @@ export class MenuService {
     }
 
     return this.permission.has(item.permission ?? '');
+  }
+
+  updateMenuActivation(menu: any[]): void {
+    if (!menu || menu.length <= 0) {
+      return;
+    }
+
+    for (let i = 0; i < menu.length; i++) {
+      const item: any = menu[i];
+      let hasActiveChild: boolean = false;
+
+      if (item.items && item.items.length) {
+        hasActiveChild = item.items.some((subItem: MenuItem) =>
+          subItem['link'] && this.isRouteActive(subItem['link'])
+        );
+      }
+
+      item.active = hasActiveChild || this.isRouteActive(item.link);
+      item.expanded = hasActiveChild;
+
+      this.updateMenuActivation(item.items);
+    }
+  }
+
+  private isRouteActive(url: string): boolean {
+    if(!url) {
+      return false;
+    }
+
+    const currentUrl: string = this.router.url.split('?')[0];
+
+    return currentUrl == url || (currentUrl != '/' && currentUrl.includes(url.trim() + '/form'))
   }
 }

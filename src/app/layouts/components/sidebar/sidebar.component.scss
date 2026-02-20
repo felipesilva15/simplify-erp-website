@@ -2,3 +2,8 @@
   color: var(--p-primary-contrast-color) !important;
   background-color: var(--p-primary-color) !important;
 }
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

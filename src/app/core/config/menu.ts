@@ -4,47 +4,34 @@ export const MENU: AppMenuItem[] = [
   {
     label: 'Home',
     icon: 'pi pi-home',
+    active: false,
     link: '/',
     permission: 'home.viewAny'
   },
   {
-    label: 'Parceiros',
-    icon: 'pi pi-folder',
-    items: [
-      {
-        label: 'Cadastros',
-        icon: 'pi pi-users',
-        link: '/partners',
-        permission: 'partners.viewAny'
-      },
-      {
-        label: 'Como nos conheceu',
-        icon: 'pi pi-question',
-        link: '/partners/how-know',
-        permission: 'how-know.viewAny'
-      }
-    ]
-  },
-  {
     label: 'Configurações',
     icon: 'pi pi-cog',
+    active: false,
     link: '/configurations',
     permission: 'core.configurations'
   },
   {
     label: 'Segurança',
     icon: 'pi pi-lock',
+    active: false,
     items: [
       {
         label: 'Usuários',
         icon: 'pi pi-users',
-        link: '/users',
+        active: false,
+        link: '/security/users',
         permission: 'users.viewAny'
       },
       {
         label: 'Papéis',
         icon: 'pi pi-star',
-        link: '/roles',
+        active: false,
+        link: '/security/roles',
         permission: 'roles.viewAny'
       }
     ]
