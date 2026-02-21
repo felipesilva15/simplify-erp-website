@@ -9,6 +9,11 @@ export const routes: Routes = [
     {
         path: '',
         component: MainLayout,
-        children: []
+        children: [
+            {
+                path: 'security/roles',
+                loadComponent: () => import('./features/roles/pages/role-list/role-list.page').then(p => p.RoleListPage),
+            }
+        ]
     }
 ];
