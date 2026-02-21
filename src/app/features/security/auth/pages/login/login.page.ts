@@ -1,5 +1,5 @@
 import { TokenDetails } from './../../../../../core/models/token-details';
-import { Component, computed, OnInit, Signal, signal, WritableSignal } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { LogoComponent } from '../../../../../shared/components/logo/logo.component';
 import { LoginRequest } from '../../models/login-request';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,7 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../../../../core/auth/services/auth-service';
 import { NgClass } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -25,22 +25,27 @@ import { Router } from '@angular/router';
     PasswordModule,
     MessageModule,
     NgClass
-],
+  ],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
 })
 export class LoginPage implements OnInit {
-  constructor(private fb: FormBuilder, private authService: AuthService, private route: Router) { }
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute) { }
 
   isSubmitting: WritableSignal<boolean> = signal<boolean>(false);
   requestData!: LoginRequest;
   form!: FormGroup;
+  redirectLink: WritableSignal<string> = signal<string>('');
   errorMessage: WritableSignal<string> = signal('');
   hasError: Signal<boolean> = computed(() => {
     return this.errorMessage() ? true : false;
   })
 
   ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.redirectLink.set(params['r'] as string);
+    });
+
     this.form = this.fb.nonNullable.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]],
@@ -68,7 +73,12 @@ export class LoginPage implements OnInit {
 
     this.authService.login(this.requestData).subscribe({
       next: (res: TokenDetails) => {
-        this.authService.loadUser().then(() => this.route.navigate(['/']));
+        
+        if (this.redirectLink()) {
+          this.authService.loadUser().then(() => this.router.navigate([this.redirectLink()]));
+        } else {
+          this.authService.loadUser().then(() => this.router.navigate(['/']));
+        }
       },
       error: (err) => {
         if (err.error?.message)

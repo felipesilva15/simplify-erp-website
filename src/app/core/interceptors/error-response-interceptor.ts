@@ -11,8 +11,13 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
         error: (err: any) => {
           switch (err.status) {
             case 401:
-              if (!req.url.includes('/security/auth/login'))
-                router.navigate(['/security/auth/login']);
+              if (!req.url.includes('/security/auth/login')) {
+                router.navigate(['/security/auth/login'], {
+                  queryParams: {
+                    r: router.url
+                  }
+                });
+              }
               break;
 
             case 403:
