@@ -1,9 +1,12 @@
+import { ApiLinkType } from "../types/api-link-type";
+import { ApiMetaType } from "../types/api-meta-type";
+
 export interface ApiResponse<T> {
     success: boolean;
     message: string;
     data: T;
     warnings?: string[],
-    links?: Map<string, string>;
-    errors?: Map<string, string>;
-    meta?: Map<string, any>;
+    links?: ApiLinkType;
+    errors?: Record<string, string>;
+    meta?: ApiMetaType;
 }
