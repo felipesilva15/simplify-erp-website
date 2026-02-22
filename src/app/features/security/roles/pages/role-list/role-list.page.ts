@@ -1,11 +1,9 @@
-import { withInterceptors } from '@angular/common/http';
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { BreadcrumbComponent } from "../../../../shared/components/breadcrumb/breadcrumb.component";
+import { BreadcrumbComponent } from "../../../../../shared/components/breadcrumb/breadcrumb.component";
 import { MenuItem } from 'primeng/api';
 import { RoleService } from '../../services/role-service';
-import { ApiResponse } from '../../../../core/models/api-response';
+import { ApiResponse } from '../../../../../core/models/api-response';
 import { Role } from '../../models/role';
-import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-role-list',
