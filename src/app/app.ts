@@ -4,14 +4,26 @@ import { ButtonModule } from 'primeng/button';
 import { AuthService } from './core/auth/services/auth-service';
 import { User } from './features/security/users/models/user';
 import { tap } from 'rxjs';
+import { AppLoadingService } from './core/services/app-loading-service';
+import { SplashScreenComponent } from "./shared/components/splash-screen/splash-screen.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ButtonModule],
+  imports: [
+    RouterOutlet,
+    ButtonModule,
+    SplashScreenComponent
+  ],
   template: `
-    <router-outlet />
+    @if (isLoading()) {
+      <app-splash-screen [message]="loadingMessage()" />
+    } @else {
+      <router-outlet />
+    }
   `
 })
 export class App {
   protected readonly title = signal('simplify-erp');
+  isLoading = inject(AppLoadingService).isLoading;
+  loadingMessage = inject(AppLoadingService).message;
 }

@@ -1,3 +1,4 @@
+import { AppLoadingService } from './../services/app-loading-service';
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
@@ -5,6 +6,7 @@ import { tap } from 'rxjs';
 
 export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
+  const appLoadingService: AppLoadingService = inject(AppLoadingService);
   
   return next(req).pipe(
       tap({
@@ -31,6 +33,8 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
             default:
               break;
           }
+
+          appLoadingService.stop();
         }
       })
     );

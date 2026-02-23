@@ -1,8 +1,9 @@
 import Aura from '@primeuix/themes/aura';
 import { definePreset } from "@primeuix/themes";
 import { Preset } from "@primeuix/themes/types";
+import { ThemeType } from 'primeng/config';
 
-export const THEME: Preset = definePreset(Aura, {
+const preset: Preset = definePreset(Aura, {
   semantic: {
     primary: {
       50: '{zinc.50}',
@@ -57,3 +58,12 @@ export const THEME: Preset = definePreset(Aura, {
     }
   }
 });
+
+export const THEME: ThemeType = {
+  preset: preset,
+  options: {
+    prefix: 'p',
+    darkModeSelector: '.dark-mode',
+    cssLayer: false
+  }
+};

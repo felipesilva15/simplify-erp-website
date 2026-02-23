@@ -7,6 +7,7 @@ import { routes } from './app.routes';
 import { AuthService } from './core/auth/services/auth-service';
 import { errorResponseInterceptor } from './core/interceptors/error-response-interceptor';
 import { THEME } from './core/config/theme';
+import { AppStartupService } from './core/services/app-startup-service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,18 +17,11 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
       ripple: true,
       inputStyle: 'outlined',
-      theme: {
-        preset: THEME,
-        options: {
-          prefix: 'p',
-          darkModeSelector: '.dark-mode',
-          cssLayer: false
-        }
-      }
+      theme: THEME
     }),
     provideAppInitializer(() => {
-      const auth = inject(AuthService);
-      return auth.loadUser();
+      const appStartupService = inject(AppStartupService);
+      appStartupService.init();
     })
   ]
 };
