@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MasterListComponent } from './master-list.component';
 
 describe('MasterListComponent', () => {
-  let component: MasterListComponent;
-  let fixture: ComponentFixture<MasterListComponent>;
+  let component: MasterListComponent<any>;
+  let fixture: ComponentFixture<MasterListComponent<any>>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
