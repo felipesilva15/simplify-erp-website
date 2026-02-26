@@ -14,7 +14,7 @@ export class RoleService {
   
   private http = inject(HttpClient)
 
-  list(): Observable<ApiResponse<Role[]>> {
+  list(params: any): Observable<ApiResponse<Role[]>> {
     return this.http.get<ApiResponse<Role[]>>(`${this.baseUrl}`, { withCredentials: true });
   }
 
