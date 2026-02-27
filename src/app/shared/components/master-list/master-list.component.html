@@ -56,10 +56,12 @@
                     </th>
                 }
                 @for (column of cols; track $index) {
-                    <th [pSortableColumn]="column.field" pResizableColumn>
+                    <th [pSortableColumn]="column.sortable ? column.field.toString() : ''" pResizableColumn>
                         <div class="flex align-items-center gap-2">
                             {{ column.header }}
-                            <p-sortIcon [field]="column.field"></p-sortIcon>
+                            @if(column.sortable) {
+                                <p-sortIcon [field]="column.field.toString()"></p-sortIcon>
+                            }
                         </div>
                     </th>
                 }
@@ -73,9 +75,19 @@
                     </td>
                 }
                 @for (column of cols; track $index) {
-                    <td>
-                        {{ record[column.field] }}
-                    </td>
+                    @if (column.template) {
+                        <ng-container *ngTemplateOutlet="column.template; context: { $implicit: record }"></ng-container>
+                    } @else if (column.type == 'boolean') {
+                        @if (record.active) {
+                            <td>
+                                <i class="pi pi-check" pTooltip="Sim"></i>
+                            </td>
+                        }
+                    } @else {
+                        <td>
+                            {{ formatRowValue(record, column) }}
+                        </td>
+                    }
                 }
             </tr>
         </ng-template>
@@ -102,4 +114,3 @@
         </ng-template>
     </p-table>
 </div>
-<p-contextmenu #cm [model]="menuItems" (onHide)="currentRecord = undefined" />

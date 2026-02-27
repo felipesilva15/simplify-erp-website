@@ -1,12 +1,13 @@
 import { MasterListComponent } from './../../../../../shared/components/master-list/master-list.component';
-import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { BreadcrumbComponent } from "../../../../../shared/components/breadcrumb/breadcrumb.component";
 import { MenuItem } from 'primeng/api';
 import { RoleService } from '../../services/role-service';
-import { ApiResponse } from '../../../../../core/models/api-response';
 import { Role } from '../../models/role';
 import { TableMenuItem } from '../../../../../core/models/table-menu-item';
 import { Router } from '@angular/router';
+import { TableColumn } from '../../../../../core/models/table-column';
+import { ColumnType } from '../../../../../core/enums/column-type';
 
 @Component({
   selector: 'app-role-list',
@@ -28,10 +29,10 @@ export class RoleListPage {
     { label: 'Listar', routerLink: '/security/roles' }
   ];
   listFn = (params: any) => this.roleService.list(params);
-  cols: any[] = [
-    { field: 'id', header: 'ID' },
-    { field: 'name', header: 'Nome' },
-    { field: 'description', header: 'Descrição' }
+  cols: TableColumn<Role>[] = [
+    { field: 'id', header: 'ID', sortable: true, type: ColumnType.INTEGER },
+    { field: 'name', header: 'Nome', sortable: true, type: ColumnType.TEXT },
+    { field: 'description', header: 'Descrição', sortable: false, type: ColumnType.TEXT }
   ];
   tableMenu: TableMenuItem<Role>[] = [
     { 

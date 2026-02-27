@@ -1,4 +1,6 @@
-import { Component, computed, input, Input, InputSignal, OnInit, Signal, signal, ViewChild, WritableSignal } from '@angular/core';
+import { ColumnType } from './../../../core/enums/column-type';
+import { TableColumn } from './../../../core/models/table-column';
+import { Component, computed, inject, input, Input, InputSignal, OnInit, Signal, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../../../core/models/api-response';
 import { TableModule } from 'primeng/table';
@@ -7,10 +9,9 @@ import { MenuItem } from 'primeng/api';
 import { Menu, MenuModule } from 'primeng/menu';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, NgTemplateOutlet, PercentPipe } from '@angular/common';
 import { ToolbarModule } from 'primeng/toolbar';
 import { RouterLink } from '@angular/router';
-import { required } from '@angular/forms/signals';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TooltipModule } from 'primeng/tooltip';
@@ -30,14 +31,24 @@ import { TableMenuItem } from '../../../core/models/table-menu-item';
     ButtonModule,
     TooltipModule,
     ContextMenuModule,
-    MenuModule
+    MenuModule,
+    NgTemplateOutlet
+  ],
+  providers: [
+    DatePipe,
+    CurrencyPipe,
+    PercentPipe
   ],
   templateUrl: './master-list.component.html',
   styleUrl: './master-list.component.scss',
 })
 export class MasterListComponent<T> implements OnInit {
+  private datePipe = inject(DatePipe);
+  private currencyPipe = inject(CurrencyPipe);
+  private percentPipe = inject(PercentPipe);
+
   @Input({ required: true }) listFn!: (params: any) => Observable<ApiResponse<any>>;
-  @Input({ required: true }) cols: any[] = [];
+  @Input({ required: true }) cols: TableColumn<T>[] = [];
   @Input() tableMenu: TableMenuItem<T>[] = [];
   formRoute: InputSignal<string> = input<string>('form');
   enableSelection: InputSignal<boolean> = input<boolean>(true);
@@ -57,11 +68,12 @@ export class MasterListComponent<T> implements OnInit {
   menuItems: MenuItem[] = [];
 
   @ViewChild('cm') cm!: Menu;
+  @ViewChild('checkIconField') checkIconField!: TemplateRef<any>
 
   ngOnInit(): void {
     this.loadInfo();
 
-    this.globalFilterFields = this.cols.map(r => r.field);
+    this.globalFilterFields = this.cols.map(r => r.field.toString());
   }
 
   loadInfo(): void {
@@ -74,6 +86,34 @@ export class MasterListComponent<T> implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  formatRowValue(row: any, column: TableColumn<T>) {
+    const value = row[column.field];
+
+    if (column.pipe) {
+      return column.pipe.transform(value, ...(column.pipeArgs ?? []));
+    }
+
+    switch (column.type) {
+      case ColumnType.DATE:
+        return this.datePipe.transform(value, 'dd/MM/yyyy');
+
+      case ColumnType.DATETIME:
+        return this.datePipe.transform(value, 'dd/MM/yyyy hh:mm:ss');
+
+      case ColumnType.CURRENCY:
+        return this.currencyPipe.transform(value, 'BRL');
+
+      case ColumnType.PERCENT:
+        return this.percentPipe.transform(value);
+
+      case ColumnType.BOOLEAN:
+        return value ? this.checkIconField.createEmbeddedView(null) : '';
+
+      default:
+        return value;
+    }
   }
 
   onContextMenuSelect(event: any) {
