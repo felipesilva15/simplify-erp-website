@@ -1,6 +1,7 @@
+import { BaseEntity } from "../../../../core/models/base-entity";
 import { RolePermission } from "./role-permission";
 
-export interface Role {
+export interface Role extends BaseEntity {
     id: number;
     name: string;
     description?: string;

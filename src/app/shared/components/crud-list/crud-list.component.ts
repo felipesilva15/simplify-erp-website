@@ -1,5 +1,6 @@
-import { ColumnType } from './../../../core/enums/column-type';
-import { TableColumn } from './../../../core/models/table-column';
+import { ListQueryParams } from './../../../core/types/list-query-params';
+import { ColumnType } from '../../../core/enums/column-type';
+import { TableColumn } from '../../../core/models/table-column';
 import { Component, computed, inject, input, Input, InputSignal, OnInit, Signal, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../../../core/models/api-response';
@@ -17,9 +18,12 @@ import { InputIconModule } from 'primeng/inputicon';
 import { TooltipModule } from 'primeng/tooltip';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { TableMenuItem } from '../../../core/models/table-menu-item';
+import { User } from '../../../features/security/users/models/user';
+import { CrudListFacade } from '../../facades/crud-list.facade';
+import { BaseEntity } from '../../../core/models/base-entity';
 
 @Component({
-  selector: 'app-master-list',
+  selector: 'app-crud-list',
   imports: [
     RouterLink,
     ToolbarModule,
@@ -39,57 +43,39 @@ import { TableMenuItem } from '../../../core/models/table-menu-item';
     CurrencyPipe,
     PercentPipe
   ],
-  templateUrl: './master-list.component.html',
-  styleUrl: './master-list.component.scss',
+  templateUrl: './crud-list.component.html',
+  styleUrl: './crud-list.component.scss',
 })
-export class MasterListComponent<T> implements OnInit {
+export class CrudListComponent<T extends BaseEntity> implements OnInit {
   private datePipe = inject(DatePipe);
   private currencyPipe = inject(CurrencyPipe);
   private percentPipe = inject(PercentPipe);
 
-  @Input({ required: true }) listFn!: (params: any) => Observable<ApiResponse<any>>;
   @Input({ required: true }) cols: TableColumn<T>[] = [];
   @Input() tableMenu: TableMenuItem<T>[] = [];
+  @Input() facade!: CrudListFacade<T>;
   formRoute: InputSignal<string> = input<string>('form');
   enableSelection: InputSignal<boolean> = input<boolean>(true);
   
-  response!: ApiResponse<T[]>;
-  records: T[] = [];
-  isLoading: WritableSignal<boolean> = signal<boolean>(true);
-  selectedRecords: T[] = [];
-  currentRecord?: T;
-  globalFilterFields: string[] = [];
   rows: number = 10;
-  rowsPerPage: number[] = [10, 20, 30];
-  filters?: any;
+  rowsPerPageOptions: number[] = [10, 20, 30];
+  menuItems: MenuItem[] = [];
   columnCount: Signal<number> = computed(() => {
     return this.cols.length + (this.enableSelection() ? 1 : 0);
   });
-  menuItems: MenuItem[] = [];
+
+  selectedRecords: T[] = [];
+  currentRecord?: T;
+  filters?: ListQueryParams<T>;
 
   @ViewChild('cm') cm!: Menu;
-  @ViewChild('checkIconField') checkIconField!: TemplateRef<any>
 
   ngOnInit(): void {
-    this.loadInfo();
-
-    this.globalFilterFields = this.cols.map(r => r.field.toString());
+    this.facade.load();
   }
 
-  loadInfo(): void {
-    this.isLoading.set(true);
-
-    this.listFn(this.filters).subscribe({
-      next: (res: ApiResponse<T[]>) => {
-        this.response = res;
-        this.records = res.data;
-        this.isLoading.set(false);
-      }
-    });
-  }
-
-  formatRowValue(row: any, column: TableColumn<T>) {
-    const value = row[column.field];
+  formatRowValue(row: any, column: TableColumn<T>): string {
+    const value = row[column.field] ?? '';
 
     if (column.pipe) {
       return column.pipe.transform(value, ...(column.pipeArgs ?? []));
@@ -97,19 +83,16 @@ export class MasterListComponent<T> implements OnInit {
 
     switch (column.type) {
       case ColumnType.DATE:
-        return this.datePipe.transform(value, 'dd/MM/yyyy');
+        return this.datePipe.transform(value, 'dd/MM/yyyy') ?? '';
 
       case ColumnType.DATETIME:
-        return this.datePipe.transform(value, 'dd/MM/yyyy hh:mm:ss');
+        return this.datePipe.transform(value, 'dd/MM/yyyy hh:mm:ss') ?? '';
 
       case ColumnType.CURRENCY:
-        return this.currencyPipe.transform(value, 'BRL');
+        return this.currencyPipe.transform(value, 'BRL') ?? '';
 
       case ColumnType.PERCENT:
-        return this.percentPipe.transform(value);
-
-      case ColumnType.BOOLEAN:
-        return value ? this.checkIconField.createEmbeddedView(null) : '';
+        return this.percentPipe.transform(value) ?? '';
 
       default:
         return value;
@@ -121,10 +104,9 @@ export class MasterListComponent<T> implements OnInit {
 
     this.menuItems = this.tableMenu.map(item => ({
       ...item,
-      command: () => {
-        if (item.action)
-          item.action(this.currentRecord)
-      }
+      disabled: !this.facade.can(item.permission),
+      tooltip: !this.facade.can(item.permission) ? 'Você não possui permissão para executar essa ação.' : '',
+      command: () => item.action && item.action(this.currentRecord)
     }));
   }
 }

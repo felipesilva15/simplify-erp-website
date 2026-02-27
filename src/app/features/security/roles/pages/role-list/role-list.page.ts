@@ -1,9 +1,12 @@
-import { MasterListComponent } from './../../../../../shared/components/master-list/master-list.component';
+import { CrudListFacade } from './../../../../../shared/facades/crud-list.facade';
+import { Role } from './../../models/role';
+import { ConfirmDialogService } from './../../../../../shared/services/confirm-dialog-service';
+import { PermissionService } from './../../../../../core/auth/services/permission-service';
+import { CrudListComponent } from './../../../../../shared/components/crud-list/crud-list.component';
 import { Component, inject } from '@angular/core';
 import { BreadcrumbComponent } from "../../../../../shared/components/breadcrumb/breadcrumb.component";
 import { MenuItem } from 'primeng/api';
 import { RoleService } from '../../services/role-service';
-import { Role } from '../../models/role';
 import { TableMenuItem } from '../../../../../core/models/table-menu-item';
 import { Router } from '@angular/router';
 import { TableColumn } from '../../../../../core/models/table-column';
@@ -14,7 +17,21 @@ import { ColumnType } from '../../../../../core/enums/column-type';
   standalone: true,
   imports: [
     BreadcrumbComponent,
-    MasterListComponent
+    CrudListComponent
+  ],
+  providers: [
+    {
+      provide: CrudListFacade,
+      useFactory: (service: RoleService) => new CrudListFacade<Role>(service, {
+        create: 'role.create',
+        update: 'role.update',
+        view: 'role.view',
+        delete: 'role.delete'
+      }),
+      deps: [
+        RoleService
+      ]
+    }
   ],
   templateUrl: './role-list.page.html',
   styleUrl: './role-list.page.scss',
@@ -22,6 +39,8 @@ import { ColumnType } from '../../../../../core/enums/column-type';
 export class RoleListPage {
   private router = inject(Router);
   private roleService: RoleService = inject(RoleService);
+  
+  constructor(public facade: CrudListFacade<Role>) { }
 
   breadcrumbItems: MenuItem[] = [
     { label: 'Segurança' },
@@ -38,16 +57,20 @@ export class RoleListPage {
     { 
       label: 'Visualizar', 
       icon: 'pi pi-eye',
+      permission: 'role.view',
       action: (record?: Role) => this.router.navigate([`form/${record?.id}/view`])
     },
     { 
       label: 'Editar', 
-      icon: 'pi pi-pencil', 
+      icon: 'pi pi-pencil',
+      permission: 'role.edit',
       action: (record?: Role) => this.router.navigate([`form/${record?.id}`])
     },
     { 
       label: 'Deletar', 
-      icon: 'pi pi-trash' 
+      icon: 'pi pi-trash',
+      permission: 'role.delete',
+      action: (record?: Role) => record && this.facade.delete(record)
     },
     { 
       separator: true 
@@ -55,6 +78,7 @@ export class RoleListPage {
     { 
       label: 'Permissões', 
       icon: 'pi pi-star',
+      permission: 'role.definePermissions',
       action: (record?: Role) => this.router.navigate([`${record?.id}/permissions`]) 
     }
   ];

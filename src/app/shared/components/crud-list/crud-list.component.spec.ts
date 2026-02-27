@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MasterListComponent } from './master-list.component';
+import { CrudListComponent } from './crud-list.component';
 
-describe('MasterListComponent', () => {
-  let component: MasterListComponent<any>;
-  let fixture: ComponentFixture<MasterListComponent<any>>;
+describe('CrudListComponent', () => {
+  let component: CrudListComponent<any>;
+  let fixture: ComponentFixture<CrudListComponent<any>>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MasterListComponent]
+      imports: [CrudListComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MasterListComponent);
+    fixture = TestBed.createComponent(CrudListComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

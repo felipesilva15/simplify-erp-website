@@ -5,21 +5,27 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from '../../../../core/models/api-response';
 import { RoleRequestData } from '../models/role-request-data';
 import { Role } from '../models/role';
+import { CrudService } from '../../../../core/contracts/crud-service';
+import { ListQueryParams } from '../../../../core/types/list-query-params';
 
 @Injectable({
   providedIn: 'root',
 })
-export class RoleService {
+export class RoleService implements CrudService<Role> {
   private readonly baseUrl: string = environment.baseUrlApi + '/security/roles';
   
   private http = inject(HttpClient)
 
-  list(params: any): Observable<ApiResponse<Role[]>> {
+  list(params?: ListQueryParams<Role>): Observable<ApiResponse<Role[]>> {
     return this.http.get<ApiResponse<Role[]>>(`${this.baseUrl}`, { withCredentials: true });
   }
 
   get(id: number): Observable<ApiResponse<Role>> {
     return this.http.get<ApiResponse<Role>>(`${this.baseUrl}/${id}`, { withCredentials: true });
+  }
+  
+  edit(id: number): Observable<ApiResponse<Role>> {
+    return this.http.get<ApiResponse<Role>>(`${this.baseUrl}/${id}/edit`, { withCredentials: true });
   }
 
   create(data: RoleRequestData): Observable<ApiResponse<Role>> {
