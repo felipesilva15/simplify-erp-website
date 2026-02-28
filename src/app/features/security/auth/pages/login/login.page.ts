@@ -42,10 +42,6 @@ export class LoginPage implements OnInit {
   })
 
   ngOnInit(): void {
-    this.activatedRoute.queryParams.subscribe(params => {
-      this.redirectLink.set(params['r'] as string);
-    });
-
     this.form = this.fb.nonNullable.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]],
