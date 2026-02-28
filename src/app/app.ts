@@ -1,20 +1,19 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { AuthService } from './core/auth/services/auth-service';
-import { User } from './features/security/users/models/user';
-import { tap } from 'rxjs';
 import { AppLoadingService } from './core/services/app-loading-service';
 import { SplashScreenComponent } from "./shared/components/splash-screen/splash-screen.component";
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    ButtonModule,
-    SplashScreenComponent
+    SplashScreenComponent,
+    ToastModule
   ],
   template: `
+    <p-toast></p-toast>
     @if (isLoading()) {
       <app-splash-screen [message]="loadingMessage()" />
     } @else {

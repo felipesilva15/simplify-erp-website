@@ -2,11 +2,13 @@ import { AppLoadingService } from './../services/app-loading-service';
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { tap } from 'rxjs';
 
 export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const appLoadingService: AppLoadingService = inject(AppLoadingService);
+  const messageService: MessageService = inject(MessageService);
   
   return next(req).pipe(
       tap({
@@ -14,11 +16,14 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
           switch (err.status) {
             case 401:
               if (!req.url.includes('/security/auth/login')) {
-                router.navigate(['/security/auth/login'], {
-                  queryParams: {
-                    r: router.url
-                  }
+                messageService.add({
+                  severity: 'error',
+                  summary: 'Ops...',
+                  detail: 'Você precisa estar logado para acessar este recurso!',
+                  life: 8000
                 });
+
+                router.navigate(['/security/auth/login']);
               }
               break;
 

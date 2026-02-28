@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layouts/pages/main/main.layout';
-import { permissionGuard } from './core/guards/permission-guard';
+import { appStartupGuard } from './core/guards/app-startup-guard';
 
 export const routes: Routes = [
     {
@@ -10,6 +10,7 @@ export const routes: Routes = [
     {
         path: '',
         component: MainLayout,
+        canActivate: [appStartupGuard],
         children: [
             {
                 path: 'security',

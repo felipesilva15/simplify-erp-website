@@ -4,13 +4,14 @@ import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
 
 import { routes } from './app.routes';
-import { AuthService } from './core/auth/services/auth-service';
 import { errorResponseInterceptor } from './core/interceptors/error-response-interceptor';
 import { THEME } from './core/config/theme';
 import { AppStartupService } from './core/services/app-startup-service';
+import { MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    MessageService,
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([errorResponseInterceptor])),
@@ -18,10 +19,6 @@ export const appConfig: ApplicationConfig = {
       ripple: true,
       inputStyle: 'outlined',
       theme: THEME
-    }),
-    provideAppInitializer(() => {
-      const appStartupService = inject(AppStartupService);
-      appStartupService.init();
     })
   ]
 };
