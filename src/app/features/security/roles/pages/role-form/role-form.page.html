@@ -1,0 +1,41 @@
+<div class="flex flex-column animation-duration-300 fadein">
+    <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+    <div class="flex flex-row justify-content-between align-items-end mt-5 mb-3">
+        <h2 class="text-3xl m-0">{{ title() }}</h2>
+        @if (!facade.loading() && facade.entity()?.updated_at) {
+            <span class="text-color-secondary">Última alteração em: {{ facade.entity()?.updated_at | date: 'dd/MM/yyyy hh:mm:ss' }}</span>
+        }
+    </div>
+    <div class="bg-white border-round p-3">
+        @if (!facade.loading()) {
+            <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
+                @if (facade.hasWarnings()) {
+                    <div class="flex flex-column w-full">
+                        @for (warning of facade.entityResponse()?.warnings; track $index) {
+                            <p-message icon="pi pi-exclamation-triangle" severity="warn">{{ warning }}</p-message>
+                        }
+                    </div>
+                }
+                <div class="p-fluid p-formgrid grid">
+                    <span class="font-bold">Dados gerais</span>
+                </div>
+            </form>
+        } @else {
+            <div class="p-fluid p-formgrid grid mt-1">
+                <div field class="field col-12 py-0">
+                    <p-skeleton height="16px" width="25%" class="mb-2"></p-skeleton>
+                    <p-skeleton width="100%" height="39px"></p-skeleton>
+                </div>
+
+                <div field class="field col-12 py-0">
+                    <p-skeleton height="16px" width="25%" class="mb-2"></p-skeleton>
+                    <p-skeleton width="100%" height="200px"></p-skeleton>
+                </div>
+                <div class="field col-12 flex justify-content-end mb-0 py-0 gap-2">
+                    <p-skeleton width="80px" height="40px"></p-skeleton>
+                    <p-skeleton width="80px" height="40px"></p-skeleton>
+                </div>
+            </div>
+        }
+    </div>
+</div>

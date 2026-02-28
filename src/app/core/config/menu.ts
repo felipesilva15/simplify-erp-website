@@ -27,7 +27,7 @@ export const MENU: AppMenuItem[] = [
         permission: 'users.viewAny'
       },
       {
-        label: 'Papéis',
+        label: 'Perfis',
         icon: 'pi pi-star',
         active: false,
         link: '/security/roles',

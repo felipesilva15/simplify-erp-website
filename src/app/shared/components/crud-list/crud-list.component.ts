@@ -54,7 +54,7 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
   @Input({ required: true }) cols: TableColumn<T>[] = [];
   @Input() tableMenu: TableMenuItem<T>[] = [];
   @Input() facade!: CrudListFacade<T>;
-  formRoute: InputSignal<string> = input<string>('form');
+  formRoute: InputSignal<string> = input<string>('new');
   enableSelection: InputSignal<boolean> = input<boolean>(true);
   
   rows: number = 10;
