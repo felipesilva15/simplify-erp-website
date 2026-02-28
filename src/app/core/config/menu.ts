@@ -5,8 +5,7 @@ export const MENU: AppMenuItem[] = [
     label: 'Home',
     icon: 'pi pi-home',
     active: false,
-    link: '/',
-    permission: 'home.viewAny'
+    link: '/'
   },
   {
     label: 'Configurações',

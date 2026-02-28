@@ -23,10 +23,10 @@ import { ColumnType } from '../../../../../core/enums/column-type';
     {
       provide: CrudListFacade,
       useFactory: (service: RoleService) => new CrudListFacade<Role>(service, {
-        create: 'role.create',
-        update: 'role.update',
-        view: 'role.view',
-        delete: 'role.delete'
+        create: 'roles.create',
+        update: 'roles.update',
+        view: 'roles.view',
+        delete: 'roles.delete'
       }),
       deps: [
         RoleService
@@ -57,19 +57,19 @@ export class RoleListPage {
     { 
       label: 'Visualizar', 
       icon: 'pi pi-eye',
-      permission: 'role.view',
+      permission: 'roles.view',
       action: (record?: Role) => this.router.navigate([`form/${record?.id}/view`])
     },
     { 
       label: 'Editar', 
       icon: 'pi pi-pencil',
-      permission: 'role.edit',
+      permission: 'roles.edit',
       action: (record?: Role) => this.router.navigate([`form/${record?.id}`])
     },
     { 
       label: 'Deletar', 
       icon: 'pi pi-trash',
-      permission: 'role.delete',
+      permission: 'roles.delete',
       action: (record?: Role) => record && this.facade.delete(record)
     },
     { 
@@ -78,7 +78,7 @@ export class RoleListPage {
     { 
       label: 'Permissões', 
       icon: 'pi pi-star',
-      permission: 'role.definePermissions',
+      permission: 'roles.definePermissions',
       action: (record?: Role) => this.router.navigate([`${record?.id}/permissions`]) 
     }
   ];

@@ -26,7 +26,7 @@ export class MenuService {
           : undefined
       }));
 
-    menu = menu.filter(item => item.permission || (item.items && item.items.length > 0))
+    menu = menu.filter(item => !item.items || (item.items && item.items.length > 0))
 
     return menu;
   }

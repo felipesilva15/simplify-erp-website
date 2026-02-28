@@ -34,7 +34,7 @@
                     </div>
                     <div class="flex gap-2">
                         <p-button pRipple label="Filtros" [icon]="filters ? 'pi pi-filter-fill' : 'pi pi-filter'" [text]="true" severity="secondary" [raised]="true"></p-button>
-                        <p-button pRipple label="Incluir" icon="pi pi-plus" [routerLink]="formRoute()" [disabled]="!facade.canCreate()" [pTooltip]="facade.canCreate() ? '' : 'Você não possui permissão para incluir.'"></p-button>
+                        <p-button pRipple label="Incluir" icon="pi pi-plus" [routerLink]="formRoute()" [disabled]="!facade.canCreate()" [pTooltip]="facade.canCreate() ? '' : 'Você não possui permissão para incluir.'" tooltipPosition="left"></p-button>
                     </div>
                 </div>
             </div>

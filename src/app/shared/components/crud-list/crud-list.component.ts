@@ -105,7 +105,6 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
     this.menuItems = this.tableMenu.map(item => ({
       ...item,
       disabled: !this.facade.can(item.permission),
-      tooltip: !this.facade.can(item.permission) ? 'Você não possui permissão para executar essa ação.' : '',
       command: () => item.action && item.action(this.currentRecord)
     }));
   }

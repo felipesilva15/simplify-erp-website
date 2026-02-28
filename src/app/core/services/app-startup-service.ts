@@ -1,6 +1,7 @@
 import { AppLoadingService } from './app-loading-service';
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from '../auth/services/auth-service';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,6 +9,9 @@ import { AuthService } from '../auth/services/auth-service';
 export class AppStartupService {
   private authService: AuthService = inject(AuthService);
   private appLoadingService: AppLoadingService = inject(AppLoadingService);
+
+  private _initalized = new ReplaySubject<boolean>(1);
+  initalized$ = this._initalized.asObservable();
 
   async init() {
     this.appLoadingService.start();
@@ -18,5 +22,6 @@ export class AppStartupService {
     ]);
 
     this.appLoadingService.stop();
+    this._initalized.next(true);
   }
 }
