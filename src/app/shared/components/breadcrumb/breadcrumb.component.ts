@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, Input } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 
@@ -10,7 +10,7 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
   styleUrl: './breadcrumb.component.scss',
 })
 export class BreadcrumbComponent {
-  @Input({required: true}) items: MenuItem[] = [];
+  items = input<MenuItem[]>([]);
   
   home: MenuItem = {
     icon: 'pi pi-home',
