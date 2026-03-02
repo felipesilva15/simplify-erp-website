@@ -69,16 +69,21 @@ export class MenuService {
       return false;
     }
 
-    const escapedUrl: string = url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escapedUrl: string = this.sanatizeUrl(url).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-    const viewFormPattern: RegExp = new RegExp(`${escapedUrl}\\/\d+(\\?.*)?$`);
-    const editFormPattern: RegExp = new RegExp(`${escapedUrl}\\/\d+\\/edit(\\?.*)?$`);
-    const createFormPattern: RegExp = new RegExp(`${escapedUrl}\\/new(\\?.*)?$`);
+    const viewFormPattern: RegExp = new RegExp(`${escapedUrl}\\/\\d+$`);
+    const editFormPattern: RegExp = new RegExp(`${escapedUrl}\\/\\d+\\/edit$`);
+    const createFormPattern: RegExp = new RegExp(`${escapedUrl}\\/new$`);
 
-    console.log(createFormPattern)
-
-    const currentUrl: string = this.router.url.split('?')[0];
+    const currentUrl: string = this.sanatizeUrl(this.router.url);
 
     return currentUrl == url || viewFormPattern.test(currentUrl) || editFormPattern.test(currentUrl) || createFormPattern.test(currentUrl)
+  }
+
+  private sanatizeUrl(url: string): string {
+    return url
+      .replace(/\?.*$/, '')
+      .replace(/^\/?/, '/')
+      .trim();
   }
 }

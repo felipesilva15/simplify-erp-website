@@ -6,11 +6,12 @@ import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 import { errorResponseInterceptor } from './core/interceptors/error-response-interceptor';
 import { THEME } from './core/config/theme';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     MessageService,
+    ConfirmationService,
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([errorResponseInterceptor])),
