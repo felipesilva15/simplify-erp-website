@@ -11,3 +11,8 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+textarea {
+  resize: vertical;
+  min-height: 39px;
+}

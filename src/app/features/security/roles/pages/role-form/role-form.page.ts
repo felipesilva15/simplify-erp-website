@@ -2,14 +2,23 @@ import { Component, computed, inject, Signal, signal, WritableSignal } from '@an
 import { CrudFormFacade } from '../../../../../shared/facades/crud-form.facade';
 import { Role } from '../../models/role';
 import { RoleService } from '../../services/role-service';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormMode, FormModeLabel } from '../../../../../core/enums/form-mode';
 import { MenuItem } from 'primeng/api';
 import { BreadcrumbComponent } from "../../../../../shared/components/breadcrumb/breadcrumb.component";
-import { DatePipe, JsonPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MessageModule } from "primeng/message";
 import { SkeletonModule } from 'primeng/skeleton';
+import { InputTextModule } from 'primeng/inputtext';
+import { FluidModule } from 'primeng/fluid';
+import { TextareaModule } from 'primeng/textarea';
+import { ButtonModule } from 'primeng/button';
+
+type FormType = {
+  name: FormControl<string>;
+  description: FormControl<string>;
+}
 
 @Component({
   selector: 'app-role-form',
@@ -17,8 +26,13 @@ import { SkeletonModule } from 'primeng/skeleton';
     BreadcrumbComponent,
     MessageModule,
     DatePipe,
+    FormsModule,
     ReactiveFormsModule,
-    SkeletonModule
+    SkeletonModule,
+    InputTextModule,
+    TextareaModule,
+    ButtonModule,
+    FluidModule
   ],
   providers: [
     {
@@ -45,9 +59,9 @@ export class RoleFormPage {
 
   id: WritableSignal<number> = signal<number>(0);
   mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.CREATE);
-  form: FormGroup = this.fb.group({
-    name: ['', Validators.required, Validators.maxLength(80)],
-    email: ['', Validators.maxLength(512)]
+  form: FormGroup<FormType> = this.fb.nonNullable.group({
+    name: ['', [Validators.required, Validators.maxLength(80)]],
+    description: ['', [Validators.maxLength(512)]]
   });
   modeLabel: Signal<string> = computed(() => {
       return FormModeLabel[this.mode()]
@@ -71,7 +85,8 @@ export class RoleFormPage {
 
     this.breadcrumbItems = [
       { label: 'Segurança' },
-      { label: 'Perfis', routerLink: '/security/roles' },
+      { label: 'Perfis' },
+      { label: 'Listar', routerLink: '/security/roles'},
       { label: this.activeBreadcrumbItemLabel(), routerLink: this.router.url }
     ]
 
@@ -80,5 +95,9 @@ export class RoleFormPage {
 
   onSubmit(): void {
     this.facade.submit(this.form, this.id()).subscribe();
+  }
+
+  isInvalid(controlName: keyof FormType): boolean {
+    return (this.form.get(controlName)?.invalid ?? false) && ((this.form.get(controlName)?.dirty ?? false) || (this.form.get(controlName)?.touched ?? false))
   }
 }

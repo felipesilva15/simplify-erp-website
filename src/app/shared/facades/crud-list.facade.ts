@@ -28,6 +28,8 @@ export class CrudListFacade<T extends BaseEntity> {
 
     load(params?: any) {
         this._loading.set(true);
+        this._data.set([]);
+        this._response.set(null);
 
         this.service.list(params)
             .pipe(
@@ -48,19 +50,14 @@ export class CrudListFacade<T extends BaseEntity> {
         }
 
         const confirmed = await this.confirmService.confirm({
-            message: `Deseja realmente excluir o registro de ID ${entity.id} registro?`
+            message: `Deseja realmente excluir o registro de ID ${entity.id}?`
         });
 
         if (!confirmed) {
             return;
         }
 
-        this._loading.set(true);
-
         this.service.delete(entity.id)
-            .pipe(
-                finalize(() => this._loading.set(false))
-            )
             .subscribe({
                 next: () => {
                     this._data.update(list =>

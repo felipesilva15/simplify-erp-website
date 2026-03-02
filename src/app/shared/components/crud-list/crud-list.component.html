@@ -27,13 +27,14 @@
                 <div  class="flex flex-row gap-4">
                     <div class="flex gap-2">
                         @if (enableSelection()) {
-                            <p-button icon="pi pi-trash" severity="danger" class="transition-duration-300" [text]="true" [raised]="true" [disabled]="!selectedRecords.length" pTooltip="Deletar registros selecionados" showDelay="600" hideDelay="300" />
+                            <p-button icon="pi pi-trash" severity="danger" class="transition-duration-300" [text]="true" [raised]="true" [disabled]="!selectedRecords.length || facade.loading()" pTooltip="Deletar registros selecionados" showDelay="600" hideDelay="300" />
                         }
-                        <p-button icon="pi pi-file-excel" severity="success" [text]="true" [raised]="true" pTooltip="Exportar dados para Excel" [disabled]="true" showDelay="600" hideDelay="300" />
-                        <p-button icon="pi pi-print" severity="secondary" [text]="true" [raised]="true" pTooltip="Imprimir registros" [disabled]="true" showDelay="600" hideDelay="300" />
+                        <p-button icon="pi pi-file-excel" severity="success" [text]="true" [raised]="true" pTooltip="Exportar dados para Excel" [disabled]="facade.loading() || true" showDelay="600" hideDelay="300" />
+                        <p-button icon="pi pi-print" severity="secondary" [text]="true" [raised]="true" pTooltip="Imprimir registros" [disabled]="facade.loading() || true" showDelay="600" hideDelay="300" />
+                        <p-button icon="pi pi-refresh" severity="secondary" [text]="true" [raised]="true" pTooltip="Atualizar consulta" [disabled]="facade.loading()" showDelay="600" hideDelay="300" (onClick)="facade.load()" />
                     </div>
                     <div class="flex gap-2">
-                        <p-button pRipple label="Filtros" [icon]="filters ? 'pi pi-filter-fill' : 'pi pi-filter'" [text]="true" severity="secondary" [raised]="true"></p-button>
+                        <p-button pRipple label="Filtros" [icon]="filters ? 'pi pi-filter-fill' : 'pi pi-filter'" [text]="true" severity="secondary" [raised]="true" [disabled]="facade.loading()"></p-button>
                         <p-button pRipple label="Incluir" icon="pi pi-plus" [routerLink]="formRoute()" [disabled]="!facade.canCreate()" [pTooltip]="facade.canCreate() ? '' : 'Você não possui permissão para incluir.'" tooltipPosition="left"></p-button>
                     </div>
                 </div>

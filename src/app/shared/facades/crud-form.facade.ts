@@ -103,7 +103,7 @@ export class CrudFormFacade<T extends BaseEntity> {
     }
 
     submit(form: FormGroup, id?: number): Observable<ApiResponse<T>> {
-        form.markAsTouched();
+        form.markAllAsTouched();
 
         if (form.invalid) {
             this.scrollTop();
@@ -155,12 +155,18 @@ export class CrudFormFacade<T extends BaseEntity> {
         });
     }
 
-    navigateBack(): void {
-        this.location.back();
+    navigateBack(form?: FormGroup): void {
+        if (!form) {
+            this.location.back();
+        }
+
+        this.canDeactivate(form).then(
+            (confirmed: boolean) => confirmed && this.location.back()
+        )
     }
 
-    async canDeactivate(form: FormGroup): Promise<boolean> {
-        if (!form.dirty || this.isView()) {
+    async canDeactivate(form?: FormGroup): Promise<boolean> {
+        if (!form || !form.dirty || this.isView()) {
             return true;
         }
 
