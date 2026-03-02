@@ -3,7 +3,6 @@ import { RouterOutlet } from '@angular/router';
 import { AppLoadingService } from './core/services/app-loading-service';
 import { SplashScreenComponent } from "./shared/components/splash-screen/splash-screen.component";
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-root',

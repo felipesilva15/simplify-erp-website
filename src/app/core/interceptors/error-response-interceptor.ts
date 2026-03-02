@@ -20,7 +20,7 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
                   severity: 'error',
                   summary: 'Ops...',
                   detail: 'Você precisa estar logado para acessar este recurso!',
-                  life: 8000
+                  life: 7000
                 });
 
                 router.navigate(['/security/auth/login']);

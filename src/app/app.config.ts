@@ -6,7 +6,6 @@ import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 import { errorResponseInterceptor } from './core/interceptors/error-response-interceptor';
 import { THEME } from './core/config/theme';
-import { AppStartupService } from './core/services/app-startup-service';
 import { MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
