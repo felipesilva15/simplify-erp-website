@@ -7,6 +7,7 @@ export interface User {
     phone_number: string;
     is_admin: boolean;
     permissions: string[];
+    avatar_url: string;
     created_at: Date;
     updated_at: Date;
     deleted_at?: Date;

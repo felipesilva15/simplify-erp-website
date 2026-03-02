@@ -1,16 +1,19 @@
 import { ApiResponse } from './../../models/api-response';
 import { LoginRequest } from './../../../features/security/auth/models/login-request';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
 import { TokenDetails } from '../../models/token-details';
 import { environment } from '../../../../environments/environment';
 import { User } from '../../../features/security/users/models/user';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  private router: Router = inject(Router);
+
   private readonly baseUrl = `${environment.baseUrlApi}/security/auth`;
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
@@ -46,5 +49,17 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.userSubject.value;
+  }
+
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/logout`, null, {
+      withCredentials: true
+    })
+    .pipe(
+      finalize(() => {
+        this.user$ = new BehaviorSubject(null);
+        this.router.navigate(['/security/auth/login']);
+      })
+    );
   }
 }
