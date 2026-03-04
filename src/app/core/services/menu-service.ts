@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { RouteUtilsService } from './route-utils-service';
+import { inject, Injectable } from '@angular/core';
 import { PermissionService } from '../auth/services/permission-service';
 import { MenuItem } from 'primeng/api';
 import { MENU } from '../config/menu';
@@ -10,7 +11,7 @@ import { isActive, Router } from '@angular/router';
 })
 export class MenuService {
 
-  constructor(private permission: PermissionService, private router: Router) {}
+  constructor(private permissionService: PermissionService, private router: Router, private routeUtilsService: RouteUtilsService) {}
 
   getMenu(): MenuItem[] {
     return this.filterByPermission(MENU);
@@ -36,10 +37,10 @@ export class MenuService {
       return true;
 
     if (Array.isArray(item.permission)) {
-      return this.permission.hasAny(item.permission);
+      return this.permissionService.hasAny(item.permission);
     }
 
-    return this.permission.has(item.permission ?? '');
+    return this.permissionService.has(item.permission ?? '');
   }
 
   updateMenuActivation(menu: any[]): void {
@@ -52,38 +53,13 @@ export class MenuService {
       let hasActiveChild: boolean = false;
 
       if (item.items && item.items.length) {
-        hasActiveChild = item.items.some((subItem: MenuItem) =>
-          subItem['link'] && this.isRouteActive(subItem['link'])
-        );
+        hasActiveChild = item.items.some((subItem: MenuItem) => subItem['link'] && this.routeUtilsService.isRouteActive(subItem['link']));
       }
 
-      item.active = hasActiveChild || this.isRouteActive(item.link);
+      item.active = hasActiveChild || this.routeUtilsService.isRouteActive(item.link);
       item.expanded = hasActiveChild;
 
       this.updateMenuActivation(item.items);
     }
-  }
-
-  private isRouteActive(url: string): boolean {
-    if(!url) {
-      return false;
-    }
-
-    const escapedUrl: string = this.sanatizeUrl(url).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-    const viewFormPattern: RegExp = new RegExp(`${escapedUrl}\\/\\d+$`);
-    const editFormPattern: RegExp = new RegExp(`${escapedUrl}\\/\\d+\\/edit$`);
-    const createFormPattern: RegExp = new RegExp(`${escapedUrl}\\/new$`);
-
-    const currentUrl: string = this.sanatizeUrl(this.router.url);
-
-    return currentUrl == url || viewFormPattern.test(currentUrl) || editFormPattern.test(currentUrl) || createFormPattern.test(currentUrl)
-  }
-
-  private sanatizeUrl(url: string): string {
-    return url
-      .replace(/\?.*$/, '')
-      .replace(/^\/?/, '/')
-      .trim();
   }
 }

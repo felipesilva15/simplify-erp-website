@@ -54,13 +54,7 @@ export class NavbarComponent implements OnInit {
       message: 'Deseja mesmo realizar logout do sistema?'
     })
     .then((confirmed: boolean) => {
-      console.log(confirmed)
-
-      if (!confirmed) {
-        return;
-      }
-
-      this.authService.logout().subscribe();
+      confirmed && this.authService.logout().subscribe();
     });
   }
 }
