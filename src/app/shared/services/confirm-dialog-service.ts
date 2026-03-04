@@ -17,8 +17,8 @@ export class ConfirmDialogService {
     }
     const acceptButtonProps = {
       ...config,
-      label: config.rejectButtonProps?.label ?? 'Sim',
-      severity: config.rejectButtonProps?.severity ?? 'danger'
+      label: config.acceptButtonProps?.label ?? 'Sim',
+      severity: config.acceptButtonProps?.severity
     }
 
     return new Promise((resolve) => {

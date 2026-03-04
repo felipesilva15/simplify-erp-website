@@ -50,7 +50,10 @@ export class CrudListFacade<T extends BaseEntity> {
         }
 
         const confirmed = await this.confirmService.confirm({
-            message: `Deseja realmente excluir o registro de ID ${entity.id}?`
+            message: `Deseja realmente excluir o registro de ID ${entity.id}?`,
+            acceptButtonProps: {
+                severity: 'danger'
+            }
         });
 
         if (!confirmed) {

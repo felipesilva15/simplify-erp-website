@@ -39,7 +39,7 @@ type FormType = {
       provide: CrudFormFacade<Role>,
       useFactory: (service: RoleService) =>
         new CrudFormFacade<Role>(service, {
-          successMessage: 'Registro salvo com sucesso!',
+          successMessage: 'Registro salvo!',
           permission: {
             create: 'roles.create',
             update: 'roles.update',

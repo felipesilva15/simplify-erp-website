@@ -1,3 +1,4 @@
+import { ToastService } from './../services/toast-service';
 import { computed, effect, inject, Signal, signal, WritableSignal } from "@angular/core";
 import { BaseEntity } from "../../core/models/base-entity";
 import { FormMode } from "../../core/enums/form-mode";
@@ -8,12 +9,12 @@ import { PermissionService } from "../../core/auth/services/permission-service";
 import { finalize, Observable, tap } from "rxjs";
 import { ApiResponse } from "../../core/models/api-response";
 import { ConfirmDialogService } from "../services/confirm-dialog-service";
-import { Router } from "@angular/router";
 import { Location } from "@angular/common";
 
 export class CrudFormFacade<T extends BaseEntity> {
     private permissionService: PermissionService = inject(PermissionService);
     private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
+    private toastService: ToastService = inject(ToastService);
     private location: Location = inject(Location);
 
     private _mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.CREATE);
@@ -131,7 +132,11 @@ export class CrudFormFacade<T extends BaseEntity> {
                 this.config?.afterSubmit?.(res.data);
 
                 if (this.config?.successMessage) {
-                    console.log(this.config.successMessage);
+                    this.toastService.show({
+                        title: 'Sucesso',
+                        message: this.config.successMessage,
+                        severity: 'success'
+                    })
                 }
 
                 if (this.config?.navigateAfterSave) {
@@ -158,6 +163,7 @@ export class CrudFormFacade<T extends BaseEntity> {
     navigateBack(form?: FormGroup): void {
         if (!form) {
             this.location.back();
+            return;
         }
 
         this.canDeactivate(form).then(

@@ -2,13 +2,13 @@ import { AppLoadingService } from './../services/app-loading-service';
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
 import { tap } from 'rxjs';
+import { ToastService } from '../../shared/services/toast-service';
 
 export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const appLoadingService: AppLoadingService = inject(AppLoadingService);
-  const messageService: MessageService = inject(MessageService);
+  const toastService: ToastService = inject(ToastService);
   
   return next(req).pipe(
       tap({
@@ -16,10 +16,10 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
           switch (err.status) {
             case 401:
               if (!req.url.includes('/security/auth/login')) {
-                messageService.add({
+                toastService.show({
                   severity: 'error',
-                  summary: 'Ops...',
-                  detail: 'Você precisa estar logado para acessar este recurso!',
+                  title: 'Ops...',
+                  message: 'Você precisa estar logado para acessar este recurso!',
                   life: 7000
                 });
 
