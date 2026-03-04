@@ -1,0 +1,14 @@
+<div class="flex flex-column animation-duration-300 fadein">
+    <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
+    <div class="flex flex-row justify-content-between align-items-end mt-5 mb-3">
+        <h2 class="text-3xl m-0">{{ title() }}</h2>
+        @if (entity()?.updated_at) {
+            <span class="text-color-secondary animation-duration-300 fadein">Última alteração em: {{ entity()?.updated_at | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+        }
+    </div>
+    <div class="bg-white border-round p-3">
+        @if(contentTemplate) {
+            <ng-container [ngTemplateOutlet]="contentTemplate"></ng-container>
+        }
+    </div>
+</div>

@@ -1,0 +1,9 @@
+<div class="flex flex-column animation-duration-300 fadein">
+    <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
+    <h2 class="text-3xl mt-5 mb-3">Listar perfis</h2>
+    <div class="bg-white border-round p-3">
+        @if(contentTemplate) {
+            <ng-container [ngTemplateOutlet]="contentTemplate"></ng-container>
+        }
+    </div>
+</div>
