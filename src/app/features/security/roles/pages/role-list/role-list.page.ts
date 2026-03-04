@@ -1,22 +1,24 @@
 import { CrudListFacade } from './../../../../../shared/facades/crud-list.facade';
 import { Role } from './../../models/role';
 import { CrudListComponent } from './../../../../../shared/components/crud-list/crud-list.component';
-import { Component, inject } from '@angular/core';
-import { BreadcrumbComponent } from "../../../../../shared/components/breadcrumb/breadcrumb.component";
+import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { RoleService } from '../../services/role-service';
 import { TableMenuItem } from '../../../../../core/models/table-menu-item';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableColumn } from '../../../../../core/models/table-column';
 import { ColumnType } from '../../../../../core/enums/column-type';
+import { ListPageUi } from "../../../../../shared/ui/list-page/list-page.ui";
+import { AppTemplate } from "../../../../../shared/directives/app-template";
 
 @Component({
   selector: 'app-role-list',
   standalone: true,
   imports: [
-    BreadcrumbComponent,
-    CrudListComponent
-  ],
+    CrudListComponent,
+    ListPageUi,
+    AppTemplate
+],
   providers: [
     {
       provide: CrudListFacade,
@@ -37,9 +39,9 @@ import { ColumnType } from '../../../../../core/enums/column-type';
 export class RoleListPage {
   private router = inject(Router);
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  public facade: CrudListFacade<Role> = inject(CrudListFacade<Role>);
 
-  constructor(public facade: CrudListFacade<Role>) { }
-
+  title: WritableSignal<string> = signal<string>('Listar perfis')
   breadcrumbItems: MenuItem[] = [
     { label: 'Segurança' },
     { label: 'Perfis' },

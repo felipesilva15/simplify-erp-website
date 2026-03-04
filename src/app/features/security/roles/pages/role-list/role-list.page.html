@@ -1,7 +1,5 @@
-<div class="flex flex-column animation-duration-300 fadein">
-    <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
-    <h2 class="text-3xl mt-5 mb-3">Listar perfis</h2>
-    <div class="bg-white border-round p-3">
+<app-list-page [title]="title()" [breadcrumbItems]="breadcrumbItems">
+    <ng-template appTemplate="content">
         <app-crud-list [cols]="cols" [facade]="facade" [tableMenu]="tableMenu" />
-    </div>
-</div>
+    </ng-template>
+</app-list-page>

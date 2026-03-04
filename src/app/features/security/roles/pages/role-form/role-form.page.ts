@@ -14,6 +14,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FluidModule } from 'primeng/fluid';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
+import { FormPageUi } from "../../../../../shared/ui/form-page/form-page.ui";
+import { AppTemplate } from "../../../../../shared/directives/app-template";
+import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
 
 type FormType = {
   name: FormControl<string>;
@@ -23,17 +26,17 @@ type FormType = {
 @Component({
   selector: 'app-role-form',
   imports: [
-    BreadcrumbComponent,
     MessageModule,
-    DatePipe,
     FormsModule,
     ReactiveFormsModule,
     SkeletonModule,
     InputTextModule,
     TextareaModule,
     ButtonModule,
-    FluidModule
-  ],
+    FluidModule,
+    FormPageUi,
+    AppTemplate
+],
   providers: [
     {
       provide: CrudFormFacade<Role>,
@@ -56,39 +59,32 @@ export class RoleFormPage {
   private fb: FormBuilder = inject(FormBuilder)
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
+  public facade: CrudFormFacade<Role> = inject(CrudFormFacade<Role>);
+  private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
 
-  id: WritableSignal<number> = signal<number>(0);
-  mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.CREATE);
+  breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(80)]],
     description: ['', [Validators.maxLength(512)]]
   });
-  modeLabel: Signal<string> = computed(() => {
-      return FormModeLabel[this.mode()]
-  });
-  title: Signal<string> = computed(() => this.modeLabel() + ' perfil')
-  breadcrumbItems!: MenuItem[];
+  
+  id: WritableSignal<number> = signal<number>(0);
+  mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.CREATE);
+  
+  modeLabel: Signal<string> = computed(() => FormModeLabel[this.mode()]);
+  title: Signal<string> = computed(() => this.modeLabel() + ' perfil');
   activeBreadcrumbItemLabel: Signal<string> = computed(() => this.modeLabel() + (this.id() ? ` (ID: ${this.id()})`: ''))
 
-  constructor(
-    public facade: CrudFormFacade<Role>
-  ) {
+  constructor() {
     this.id.set(Number(this.activatedRoute.snapshot.paramMap.get('id')));
-
-    if (this.router.url.includes('new')) {
-      this.mode.set(FormMode.CREATE);
-    } else if (this.router.url.includes('edit')) {
-      this.mode.set(FormMode.EDIT);
-    } else {
-      this.mode.set(FormMode.VIEW);
-    }
+    this.mode.set(this.routeUtilsService.getFormModeFromCurrentUrl());
 
     this.breadcrumbItems = [
       { label: 'Segurança' },
       { label: 'Perfis' },
       { label: 'Listar', routerLink: '/security/roles'},
       { label: this.activeBreadcrumbItemLabel(), routerLink: this.router.url }
-    ]
+    ];
 
     this.facade.init(this.mode(), this.form, this.id());
   }
