@@ -37,7 +37,8 @@ export class RouteUtilsService {
     return url
       .replace(/\?.*$/, '')
       .replace(/^\/?/, '/')
-      .trim();
+      .trim()
+      .toLowerCase();
   }
 
   private escapeForRegex(value: string): string {

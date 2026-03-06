@@ -1,12 +1,13 @@
-import { Component, computed, inject, OnInit, Signal } from '@angular/core';
+import { LogoType } from './../../../shared/enums/logo-type';
+import { Component, computed, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { MenuService } from '../../../core/services/menu-service';
 import { MenuItem } from 'primeng/api';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { LogoComponent } from '../../../shared/components/logo/logo.component';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
-import { JsonPipe, NgClass } from '@angular/common';
-import { isActive, NavigationEnd, Router, RouterLink } from '@angular/router';
+import { NgClass } from '@angular/common';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 
 @Component({
@@ -17,6 +18,11 @@ import { filter } from 'rxjs';
 })
 export class SidebarComponent implements OnInit {
   menu: MenuItem[] = [];
+  logoType: Signal<LogoType> = computed(() => this.isMobileScreen() ? LogoType.Mini : LogoType.Extended);
+  isExpanded: WritableSignal<boolean> = signal<boolean>(true);
+  windowWidth: WritableSignal<number> = signal<number>(window.innerWidth)
+  isMobileScreen: Signal<boolean> = computed(() => this.windowWidth() <= 576);
+  showSidebar: Signal<boolean> = computed(() => this.isMobileScreen() ? false : this.isExpanded());
 
   constructor(private menuService: MenuService, private router: Router) {
     this.menu = menuService.getMenu();
@@ -30,5 +36,9 @@ export class SidebarComponent implements OnInit {
       .subscribe(() => {
         this.menuService.updateMenuActivation(this.menu);
       });
+  }
+
+  toggle(): void {
+    this.isExpanded.update(expanded => !expanded);
   }
 }

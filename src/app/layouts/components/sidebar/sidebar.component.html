@@ -1,18 +1,20 @@
-<aside class="sidebar bg-white h-full w-18rem p-3 pt-4">
-    <div class="mb-7">
-        <app-logo [height]="'34px'" [link]="'/'" class="mr-4"></app-logo>
-        <!-- <button pButton [text]="true">
+
+
+<aside class="sidebar bg-white h-full pt-4 transition-all transition-duration-300 ease-in-out" [class.expanded]="showSidebar()">
+    <div class="mb-6 flex flex-row align-items-center justify-content-between relative transition-all transition-duration-300 w-5rem sm:w-16rem action-block" [class.expanded]="showSidebar()">
+        <app-logo [type]="logoType()" [height]="'34px'" [link]="'/'"></app-logo>
+        <button pButton [text]="true" (click)="toggle()">
             <span class="material-symbols-outlined font-light">
                 dock_to_right
             </span>
-        </button> -->
+        </button>
     </div>
-    <div>
+    <div class="p-3">
         <p-divider />
         <p-panelMenu [model]="menu">
             <ng-template #item let-item>
                 @if (item.link) {
-                    <a [routerLink]="[item.link]" class="flex align-items-center border-none justify-content-between px-3 py-2 border-round cursor-pointer no-underline transition-colors transition-duration-300" [class.active]="item.active">
+                    <a [routerLink]="[item.link]" class="flex align-items-center border-none justify-content-between px-3 py-2 border-round cursor-pointer no-underline transition-colors transition-duration-300 menu-item" [class.active]="item.active">
                         <div class="flex align-items-center gap-3">
                             <i [class]="item.icon" class="text-lg"></i>
                             <span class="text-sm">{{ item.label }}</span>
@@ -26,7 +28,7 @@
                     </a>
                 }
                 @else {
-                    <div class="flex align-items-center border-none justify-content-between px-3 py-2 border-round cursor-pointer transition-colors transition-duration-300" [class.active]="item.active">
+                    <div class="flex align-items-center border-none justify-content-between px-3 py-2 border-round cursor-pointer transition-colors transition-duration-300 menu-item" [class.active]="item.active">
                         <div class="flex align-items-center gap-3">
                             <i [class]="item.icon" class="text-lg"></i>
                             <span class="text-sm">{{ item.label }}</span>
