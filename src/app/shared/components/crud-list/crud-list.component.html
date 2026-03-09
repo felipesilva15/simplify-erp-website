@@ -106,6 +106,5 @@
         </ng-template>
     </p-table>
 </div>
-{{ facade.filterDefinitionVisible() }}
 <app-filter-definer [visible]="facade.filterDefinitionVisible()" [fields]="filterFieldDefinition" (apply)="facade.applyFilters($event)" (visibleChange)="facade.fitlersVisibleChange($event)"></app-filter-definer>
 <p-contextmenu #cm [model]="menuItems" />

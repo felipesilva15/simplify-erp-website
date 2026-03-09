@@ -80,7 +80,10 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
       name: col.field as string,
       label: col.header,
       type: col.type ?? ColumnType.TEXT
-    })) 
+    }));
+
+    this.filterFieldDefinition.push({name: 'created_at', label: 'Criado em', type: ColumnType.DATETIME});
+    this.filterFieldDefinition.push({name: 'updated_at', label: 'Atualizado em', type: ColumnType.DATE});
   }
 
   formatRowValue(row: any, column: TableColumn<T>): string {

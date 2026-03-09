@@ -59,11 +59,6 @@ export class CrudListFacade<T extends BaseEntity> {
 
     applyFilters(filters: any) {
         console.log(filters);
-
-        if (!filters) {
-            return;
-        }
-        
         this.load();
     }
 

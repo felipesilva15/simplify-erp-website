@@ -11,16 +11,25 @@
         <form [formGroup]="form">
             <p-fluid class="grid">
                 <div class="col-12 md:col-4">
-                    <p-select [options]="fields()" optionLabel="label" optionValue="name" id="field" formControlName="field"></p-select>
+                    <p-select [options]="fields()" optionLabel="label" id="field" formControlName="field" (onChange)="onChangeField()" ></p-select>
                 </div>
                 <div class="col-12 md:col-3">
                     <p-select [options]="FilterOperatorOptions" optionLabel="name" optionValue="code" id="operator" formControlName="operator"></p-select>
                 </div>
                 <div class="col-12 md:col-4">
                     @if (selectedField) {
-                        @switch (selectedField()?.type) {
+                        @switch (selectedField.type) {
                             @case (ColumnType.INTEGER) {
-                                <p-inputnumber inputId="value" name="value" formControlName="value" required />
+                                <p-inputnumber inputId="value" name="value" formControlName="value" required [showButtons]="true" />
+                            }
+                            @case (ColumnType.TEXT) {
+                                <input type="text" pInputText required id="value" formControlName="value"/>
+                            }
+                            @case (ColumnType.DATE) {
+                                <p-datepicker inputId="value"  name="value" formControlName="value" [showClear]="true" />
+                            }
+                            @case (ColumnType.DATETIME) {
+                                <p-datepicker inputId="value"  name="value" formControlName="value" [showTime]="true" hourFormat="24" [showClear]="true" />
                             }
                             @case (ColumnType.TEXT) {
                                 <input type="text" pInputText required id="value" formControlName="value"/>
@@ -29,10 +38,12 @@
                                 <input type="text" pInputText required id="value" formControlName="value"/>
                             }
                         }
+                    } @else {
+                        <input type="text" pInputText required id="value" formControlName="value"/>
                     }
                 </div>
                 <div class="col-12 md:col-1">
-                    <button pButton icon="pi pi-plus"></button>
+                    <button pButton icon="pi pi-plus" (click)="applyFilter()"></button>
                 </div>
             </p-fluid>
         </form>
@@ -53,11 +64,16 @@
                     </button>
                 </div>
             } -->
+            @for (filter of filters() | keyvalue; track filter.key) {
+                @for (definition of filter.value | keyvalue; track definition.key) {
+                    <span>{{ getFieldLabel(filter.key) }} {{ getOperatorLabel(definition.key) }}</span> <p-tag [value]="definition.value?.toString()"></p-tag>
+                }
+            }
 
         </div>
     </div>
     <!-- Lógica de filtros já aplicados em filters como uma string -->
-    
+
     <ng-template #footer>
         <div class="flex justify-content-end gap-2">
             <button pButton label="Limpar" (click)="clearFilters()" [text]="true" severity="secondary"></button>
