@@ -34,7 +34,7 @@
                         <p-button icon="pi pi-refresh" severity="secondary" [text]="true" [raised]="true" pTooltip="Atualizar consulta" [disabled]="facade.loading()" showDelay="600" hideDelay="300" (onClick)="facade.load()" />
                     </div>
                     <div class="flex gap-2">
-                        <p-button pRipple label="Filtros" [icon]="filters ? 'pi pi-filter-fill' : 'pi pi-filter'" [text]="true" severity="secondary" [raised]="true" [disabled]="facade.loading()"></p-button>
+                        <p-button pRipple label="Filtros" [icon]="requestParams?.filters ? 'pi pi-filter-fill' : 'pi pi-filter'" [text]="true" severity="secondary" [raised]="true" (onClick)="facade.openFilters()" [disabled]="facade.loading()"></p-button>
                         <p-button pRipple label="Incluir" icon="pi pi-plus" [routerLink]="formRoute()" [disabled]="!facade.canCreate()" [pTooltip]="facade.canCreate() ? '' : 'Você não possui permissão para incluir.'" tooltipPosition="left"></p-button>
                     </div>
                 </div>
@@ -106,4 +106,6 @@
         </ng-template>
     </p-table>
 </div>
+{{ facade.filterDefinitionVisible() }}
+<app-filter-definer [visible]="facade.filterDefinitionVisible()" [fields]="filterFieldDefinition" (apply)="facade.applyFilters($event)" (visibleChange)="facade.fitlersVisibleChange($event)"></app-filter-definer>
 <p-contextmenu #cm [model]="menuItems" />

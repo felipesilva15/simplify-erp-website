@@ -1,0 +1,1 @@
+export type FieldFilterValueType = string | number | boolean | Date;

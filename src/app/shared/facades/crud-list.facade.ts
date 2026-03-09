@@ -1,25 +1,30 @@
 import { CrudPermissionDefinition } from './../../core/models/crud-permission-definition';
-import { signal, computed, inject } from '@angular/core';
+import { signal, computed, inject, WritableSignal } from '@angular/core';
 import { finalize } from 'rxjs';
 import { CrudService } from '../../core/contracts/crud-service';
 import { PermissionService } from '../../core/auth/services/permission-service';
 import { ConfirmDialogService } from '../services/confirm-dialog-service';
 import { ApiResponse } from '../../core/models/api-response';
 import { BaseEntity } from '../../core/models/base-entity';
+import { ListRequestParams } from '../../core/models/list-request-params';
 
 export class CrudListFacade<T extends BaseEntity> {
     private permissionService: PermissionService = inject(PermissionService);
     private confirmService: ConfirmDialogService = inject(ConfirmDialogService);
 
-    private _response = signal<ApiResponse<T[]> | null>(null);
-    private _data = signal<T[]>([]);
-    private _loading = signal<boolean>(false);
-    private _error = signal<string | null>(null);
+    private _response: WritableSignal<ApiResponse<T[]> | null> = signal<ApiResponse<T[]> | null>(null);
+    private _data: WritableSignal<T[]> = signal<T[]>([]);
+    private _loading: WritableSignal<boolean> = signal<boolean>(false);
+    private _error: WritableSignal<string | null> = signal<string | null>(null);
+    private _filterDefinitionVisible: WritableSignal<boolean> = signal<boolean>(false);
+    private _requestParams: WritableSignal<ListRequestParams<T> | null> = signal<ListRequestParams<T> | null>(null);
 
     response = this._response.asReadonly();
     data = this._data.asReadonly();
     loading = this._loading.asReadonly();
     error = this._error.asReadonly();
+    filterDefinitionVisible = this._filterDefinitionVisible.asReadonly();
+    requestParams = this._requestParams.asReadonly();
 
     constructor(
         private service: CrudService<T>,
@@ -42,6 +47,24 @@ export class CrudListFacade<T extends BaseEntity> {
                 },
                 error: () => this._error.set('Erro ao carregar registros.')
             });
+    }
+
+    openFilters(): void {
+        this._filterDefinitionVisible.set(true);
+    }
+
+    fitlersVisibleChange(visible: boolean): void {
+        this._filterDefinitionVisible.set(visible);
+    }
+
+    applyFilters(filters: any) {
+        console.log(filters);
+
+        if (!filters) {
+            return;
+        }
+        
+        this.load();
     }
 
     async delete(entity: T) {

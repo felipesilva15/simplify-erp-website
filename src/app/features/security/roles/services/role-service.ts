@@ -6,7 +6,7 @@ import { ApiResponse } from '../../../../core/models/api-response';
 import { RoleRequestData } from '../models/role-request-data';
 import { Role } from '../models/role';
 import { CrudService } from '../../../../core/contracts/crud-service';
-import { ListQueryParams } from '../../../../core/types/list-query-params';
+import { ListRequestParams } from '../../../../core/models/list-request-params';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +16,7 @@ export class RoleService implements CrudService<Role> {
   
   private http = inject(HttpClient)
 
-  list(params?: ListQueryParams<Role>): Observable<ApiResponse<Role[]>> {
+  list(params?: ListRequestParams<Role>): Observable<ApiResponse<Role[]>> {
     return this.http.get<ApiResponse<Role[]>>(`${this.baseUrl}`, { withCredentials: true });
   }
 

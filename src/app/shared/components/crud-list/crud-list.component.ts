@@ -1,9 +1,7 @@
-import { ListQueryParams } from './../../../core/types/list-query-params';
+
 import { ColumnType } from '../../../core/enums/column-type';
 import { TableColumn } from '../../../core/models/table-column';
 import { Component, computed, inject, input, Input, InputSignal, OnInit, Signal, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ApiResponse } from '../../../core/models/api-response';
 import { TableModule } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MenuItem } from 'primeng/api';
@@ -18,9 +16,12 @@ import { InputIconModule } from 'primeng/inputicon';
 import { TooltipModule } from 'primeng/tooltip';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { TableMenuItem } from '../../../core/models/table-menu-item';
-import { User } from '../../../features/security/users/models/user';
 import { CrudListFacade } from '../../facades/crud-list.facade';
 import { BaseEntity } from '../../../core/models/base-entity';
+import { ListRequestParams } from '../../../core/models/list-request-params';
+import { FilterDefinerComponent } from "../filter-definer/filter-definer.component";
+import { FilterFieldDefinition } from '../../../core/models/filter-field-definition';
+import { label } from '@primeuix/themes/aura/metergroup';
 
 @Component({
   selector: 'app-crud-list',
@@ -36,8 +37,9 @@ import { BaseEntity } from '../../../core/models/base-entity';
     TooltipModule,
     ContextMenuModule,
     MenuModule,
-    NgTemplateOutlet
-  ],
+    NgTemplateOutlet,
+    FilterDefinerComponent
+],
   providers: [
     DatePipe,
     CurrencyPipe,
@@ -63,15 +65,22 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
   columnCount: Signal<number> = computed(() => {
     return this.cols.length + (this.enableSelection() ? 1 : 0);
   });
+  filterFieldDefinition!: FilterFieldDefinition[];
 
   selectedRecords: T[] = [];
   currentRecord?: T;
-  filters?: ListQueryParams<T>;
+  requestParams?: ListRequestParams<T>;
 
   @ViewChild('cm') cm!: Menu;
 
   ngOnInit(): void {
     this.facade.load();
+
+    this.filterFieldDefinition = this.cols.map((col: TableColumn<T>) => ({
+      name: col.field as string,
+      label: col.header,
+      type: col.type ?? ColumnType.TEXT
+    })) 
   }
 
   formatRowValue(row: any, column: TableColumn<T>): string {

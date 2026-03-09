@@ -1,0 +1,67 @@
+<p-drawer
+  [visible]="visible()"
+  position="right"
+  header="Filtros"
+  [modal]="true"
+  (onHide)="close()"
+  styleClass="w-full md:w-10 lg:w-6"
+>
+    <div>
+        <h3>Aplicar filtro</h3>
+        <form [formGroup]="form">
+            <p-fluid class="grid">
+                <div class="col-12 md:col-4">
+                    <p-select [options]="fields()" optionLabel="label" optionValue="name" id="field" formControlName="field"></p-select>
+                </div>
+                <div class="col-12 md:col-3">
+                    <p-select [options]="FilterOperatorOptions" optionLabel="name" optionValue="code" id="operator" formControlName="operator"></p-select>
+                </div>
+                <div class="col-12 md:col-4">
+                    @if (selectedField) {
+                        @switch (selectedField()?.type) {
+                            @case (ColumnType.INTEGER) {
+                                <p-inputnumber inputId="value" name="value" formControlName="value" required />
+                            }
+                            @case (ColumnType.TEXT) {
+                                <input type="text" pInputText required id="value" formControlName="value"/>
+                            }
+                            @default {
+                                <input type="text" pInputText required id="value" formControlName="value"/>
+                            }
+                        }
+                    }
+                </div>
+                <div class="col-12 md:col-1">
+                    <button pButton icon="pi pi-plus"></button>
+                </div>
+            </p-fluid>
+        </form>
+    </div>
+    <div>
+        <h3>Filtros aplicados</h3>
+        <div class="flex flex-column gap-2">
+            <!-- @for (filter of filters.; track filter) {
+                <div class="flex align-items-center justify-content-between surface-100 border-round px-3 py-2">
+                    <span class="text-sm">
+                    </span>
+                    <button
+                        pButton
+                        icon="pi pi-times"
+                        severity="secondary"
+                        text
+                        (click)="removeFilter(filter)">
+                    </button>
+                </div>
+            } -->
+
+        </div>
+    </div>
+    <!-- Lógica de filtros já aplicados em filters como uma string -->
+    
+    <ng-template #footer>
+        <div class="flex justify-content-end gap-2">
+            <button pButton label="Limpar" (click)="clearFilters()" [text]="true" severity="secondary"></button>
+            <button pButton label="Aplicar" (click)="applyFilters()"></button>
+        </div>
+    </ng-template>
+</p-drawer>
