@@ -1,12 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../../../../core/models/api-response';
 import { RoleRequestData } from '../models/role-request-data';
 import { Role } from '../models/role';
 import { CrudService } from '../../../../core/contracts/crud-service';
 import { ListRequestParams } from '../../../../core/models/list-request-params';
+import { HttpQueryBuilderService } from '../../../../core/services/http-query-builder-service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,10 +15,12 @@ import { ListRequestParams } from '../../../../core/models/list-request-params';
 export class RoleService implements CrudService<Role> {
   private readonly baseUrl: string = environment.baseUrlApi + '/security/roles';
   
-  private http = inject(HttpClient)
+  private http: HttpClient = inject(HttpClient)
+  private queryBuilder: HttpQueryBuilderService = inject(HttpQueryBuilderService)
 
-  list(params?: ListRequestParams<Role>): Observable<ApiResponse<Role[]>> {
-    return this.http.get<ApiResponse<Role[]>>(`${this.baseUrl}`, { withCredentials: true });
+  list(params?: ListRequestParams): Observable<ApiResponse<Role[]>> {
+    const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
+    return this.http.get<ApiResponse<Role[]>>(`${this.baseUrl}`, { withCredentials: true, params: httpParams });
   }
 
   get(id: number): Observable<ApiResponse<Role>> {

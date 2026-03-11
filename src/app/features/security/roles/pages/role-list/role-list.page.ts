@@ -10,6 +10,7 @@ import { TableColumn } from '../../../../../core/models/table-column';
 import { ColumnType } from '../../../../../core/enums/column-type';
 import { ListPageUi } from "../../../../../shared/ui/list-page/list-page.ui";
 import { AppTemplate } from "../../../../../shared/directives/app-template";
+import { FilterFieldDefinition } from '../../../../../core/models/filter-field-definition';
 
 @Component({
   selector: 'app-role-list',
@@ -52,6 +53,11 @@ export class RoleListPage {
     { field: 'name', header: 'Nome', sortable: true, type: ColumnType.TEXT },
     { field: 'description', header: 'Descrição', sortable: false, type: ColumnType.TEXT }
   ];
+  filterDefinition: FilterFieldDefinition[] = [
+    { name: 'id', label: 'ID', type: ColumnType.INTEGER },
+    { name: 'name', label: 'Nome', type: ColumnType.TEXT },
+    { name: 'description', label: 'Descrição', type: ColumnType.TEXT }
+  ]
   tableMenu: TableMenuItem<Role>[] = [
     { 
       label: 'Visualizar', 
