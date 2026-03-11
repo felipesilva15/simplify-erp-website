@@ -1,7 +1,7 @@
 
 import { ColumnType } from '../../../core/enums/column-type';
 import { TableColumn } from '../../../core/models/table-column';
-import { Component, computed, inject, input, Input, InputSignal, OnInit, Signal, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
+import { Component, computed, inject, input, Input, InputSignal, model, ModelSignal, OnInit, Signal, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MenuItem } from 'primeng/api';
@@ -39,7 +39,7 @@ import { label } from '@primeuix/themes/aura/metergroup';
     MenuModule,
     NgTemplateOutlet,
     FilterDefinerComponent
-],
+  ],
   providers: [
     DatePipe,
     CurrencyPipe,
@@ -57,7 +57,8 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
   @Input() tableMenu: TableMenuItem<T>[] = [];
   @Input() facade!: CrudListFacade<T>;
   formRoute: InputSignal<string> = input<string>('new');
-  enableSelection: InputSignal<boolean> = input<boolean>(true);
+  enableSelection: InputSignal<boolean> = input<boolean>(false);
+  filterFieldDefinition: ModelSignal<FilterFieldDefinition[]> = model<FilterFieldDefinition[]>([]);
   
   rows: number = 10;
   rowsPerPageOptions: number[] = [10, 20, 30];
@@ -65,25 +66,22 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
   columnCount: Signal<number> = computed(() => {
     return this.cols.length + (this.enableSelection() ? 1 : 0);
   });
-  filterFieldDefinition!: FilterFieldDefinition[];
 
   selectedRecords: T[] = [];
   currentRecord?: T;
-  requestParams?: ListRequestParams<T>;
+  requestParams?: ListRequestParams;
 
   @ViewChild('cm') cm!: Menu;
 
   ngOnInit(): void {
     this.facade.load();
 
-    this.filterFieldDefinition = this.cols.map((col: TableColumn<T>) => ({
-      name: col.field as string,
-      label: col.header,
-      type: col.type ?? ColumnType.TEXT
-    }));
+    this.filterFieldDefinition.update((filterFieldDefinition: FilterFieldDefinition[]) => {
+      filterFieldDefinition.push({name: 'created_at', label: 'Criado em', type: ColumnType.DATETIME});
+      filterFieldDefinition.push({name: 'updated_at', label: 'Atualizado em', type: ColumnType.DATETIME});
 
-    this.filterFieldDefinition.push({name: 'created_at', label: 'Criado em', type: ColumnType.DATETIME});
-    this.filterFieldDefinition.push({name: 'updated_at', label: 'Atualizado em', type: ColumnType.DATE});
+      return filterFieldDefinition;
+    });
   }
 
   formatRowValue(row: any, column: TableColumn<T>): string {

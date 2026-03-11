@@ -50,26 +50,28 @@
     </div>
     <div>
         <h3>Filtros aplicados</h3>
-        <div class="flex flex-column gap-2">
-            <!-- @for (filter of filters.; track filter) {
-                <div class="flex align-items-center justify-content-between surface-100 border-round px-3 py-2">
-                    <span class="text-sm">
-                    </span>
-                    <button
-                        pButton
-                        icon="pi pi-times"
-                        severity="secondary"
-                        text
-                        (click)="removeFilter(filter)">
-                    </button>
+        <div class="flex flex-column gap-1">
+            @for (filter of appliedFilters(); track $index) {
+                <div class="flex flex-row justify-content-between animation-duration-200 fadein">
+                    <div class="flex flex-row gap-2 align-items-center">
+                        <span>{{ filter.label }}</span>
+                        <span>{{ filter.operatorLabel }}</span>
+                        <p-tag [value]="formatFilterValue(filter)" />
+                    </div>
+                    <div>
+                        <button
+                            pButton
+                            icon="pi pi-times"
+                            severity="secondary"
+                            text
+                            (click)="removeFilter(filter)">
+                        </button>
+                    </div>
                 </div>
-            } -->
-            @for (filter of filters() | keyvalue; track filter.key) {
-                @for (definition of filter.value | keyvalue; track definition.key) {
-                    <span>{{ getFieldLabel(filter.key) }} {{ getOperatorLabel(definition.key) }}</span> <p-tag [value]="definition.value?.toString()"></p-tag>
+                @if ($index + 1 < appliedFilters().length) {
+                    <p-divider class="my-0" />
                 }
             }
-
         </div>
     </div>
     <!-- Lógica de filtros já aplicados em filters como uma string -->

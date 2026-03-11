@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FilterDefinerComponent } from './filter-definer.component';
 
 describe('FilterDefinerComponent', () => {
-  let component: FilterDefinerComponent<any>;
-  let fixture: ComponentFixture<FilterDefinerComponent<any>>;
+  let component: FilterDefinerComponent;
+  let fixture: ComponentFixture<FilterDefinerComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

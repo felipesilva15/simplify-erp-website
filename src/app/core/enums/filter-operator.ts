@@ -1,20 +1,20 @@
 export enum FilterOperator {
     Equal = 'eq',
     Like = 'like',
-    LessThan = 'lt',
-    LessThanEqual = 'lte',
     GreaterThan = 'gt',
     GreaterThanEqual = 'gte',
+    LessThan = 'lt',
+    LessThanEqual = 'lte',
     NotEqual = 'ne'
 }
 
 export const FilterOperatorLabels: Record<FilterOperator, string> = {
     [FilterOperator.Equal]: 'Igual',
     [FilterOperator.Like]: 'Contém',
-    [FilterOperator.LessThan]: 'Menor',
-    [FilterOperator.LessThanEqual]: 'Menor igual',
     [FilterOperator.GreaterThan]: 'Maior',
     [FilterOperator.GreaterThanEqual]: 'Maior igual',
+    [FilterOperator.LessThan]: 'Menor',
+    [FilterOperator.LessThanEqual]: 'Menor igual',
     [FilterOperator.NotEqual]: 'Diferente'
 };
   

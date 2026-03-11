@@ -1,12 +1,13 @@
 import { CrudPermissionDefinition } from './../../core/models/crud-permission-definition';
 import { signal, computed, inject, WritableSignal } from '@angular/core';
-import { finalize } from 'rxjs';
+import { filter, finalize } from 'rxjs';
 import { CrudService } from '../../core/contracts/crud-service';
 import { PermissionService } from '../../core/auth/services/permission-service';
 import { ConfirmDialogService } from '../services/confirm-dialog-service';
 import { ApiResponse } from '../../core/models/api-response';
 import { BaseEntity } from '../../core/models/base-entity';
 import { ListRequestParams } from '../../core/models/list-request-params';
+import { RequestFiltersType } from '../../core/types/request-filters-type';
 
 export class CrudListFacade<T extends BaseEntity> {
     private permissionService: PermissionService = inject(PermissionService);
@@ -17,7 +18,7 @@ export class CrudListFacade<T extends BaseEntity> {
     private _loading: WritableSignal<boolean> = signal<boolean>(false);
     private _error: WritableSignal<string | null> = signal<string | null>(null);
     private _filterDefinitionVisible: WritableSignal<boolean> = signal<boolean>(false);
-    private _requestParams: WritableSignal<ListRequestParams<T> | null> = signal<ListRequestParams<T> | null>(null);
+    private _requestParams: WritableSignal<ListRequestParams | undefined> = signal<ListRequestParams | undefined>(undefined);
 
     response = this._response.asReadonly();
     data = this._data.asReadonly();
@@ -31,12 +32,12 @@ export class CrudListFacade<T extends BaseEntity> {
         private crudPermissionDefinition: CrudPermissionDefinition
     ) {}
 
-    load(params?: any) {
+    load() {
         this._loading.set(true);
         this._data.set([]);
         this._response.set(null);
 
-        this.service.list(params)
+        this.service.list(this._requestParams())
             .pipe(
                 finalize(() => this._loading.set(false))
             )
@@ -57,8 +58,20 @@ export class CrudListFacade<T extends BaseEntity> {
         this._filterDefinitionVisible.set(visible);
     }
 
-    applyFilters(filters: any) {
-        console.log(filters);
+    applyFilters(filters: RequestFiltersType | undefined) {
+        this._requestParams.update((p: ListRequestParams | undefined) => {
+            if (!p) {
+                p = {};
+            }
+
+            if (filters) {
+                p.filters = filters;
+            } else {
+                delete p.filters;
+            }
+            
+            return p; 
+        })
         this.load();
     }
 
