@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormMode, FormModeLabel } from '../../../../../core/enums/form-mode';
 import { MenuItem } from 'primeng/api';
 import { BreadcrumbComponent } from "../../../../../shared/components/breadcrumb/breadcrumb.component";
-import { DatePipe } from '@angular/common';
+import { DatePipe, JsonPipe } from '@angular/common';
 import { MessageModule } from "primeng/message";
 import { SkeletonModule } from 'primeng/skeleton';
 import { InputTextModule } from 'primeng/inputtext';
@@ -17,10 +17,14 @@ import { ButtonModule } from 'primeng/button';
 import { FormPageUi } from "../../../../../shared/ui/form-page/form-page.ui";
 import { AppTemplate } from "../../../../../shared/directives/app-template";
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
+import { LookupComponent } from '../../../../../shared/components/lookup/lookup.component';
+import { LookupFacade } from '../../../../../shared/facades/lookup.facade';
+import { LookupItem } from '../../../../../core/models/lookup-item';
 
 type FormType = {
   name: FormControl<string>;
   description: FormControl<string>;
+  father_role: FormControl<LookupItem | null>
 }
 
 @Component({
@@ -35,7 +39,9 @@ type FormType = {
     ButtonModule,
     FluidModule,
     FormPageUi,
-    AppTemplate
+    AppTemplate,
+    JsonPipe,
+    LookupComponent
 ],
   providers: [
     {
@@ -61,11 +67,14 @@ export class RoleFormPage {
   private router: Router = inject(Router);
   public facade: CrudFormFacade<Role> = inject(CrudFormFacade<Role>);
   private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
+  private roleService: RoleService = inject(RoleService);
 
+  roleLookupFacade: LookupFacade = new LookupFacade(this.roleService);
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(80)]],
-    description: ['', [Validators.maxLength(512)]]
+    description: ['', [Validators.maxLength(512)]],
+    father_role:  [null as LookupItem | null, Validators.required],
   });
   
   id: WritableSignal<number> = signal<number>(0);
@@ -95,5 +104,9 @@ export class RoleFormPage {
 
   isInvalid(controlName: keyof FormType): boolean {
     return (this.form.get(controlName)?.invalid ?? false) && ((this.form.get(controlName)?.dirty ?? false) || (this.form.get(controlName)?.touched ?? false))
+  }
+
+  onRoleSelected(event: any): void {
+    console.log('Role:', event);
   }
 }
