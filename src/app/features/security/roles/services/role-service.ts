@@ -46,25 +46,8 @@ export class RoleService implements CrudService<Role>, LookupService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
-  search(filter: LookupFilter): Observable<ApiResponse<LookupItem[]>> | Promise<ApiResponse<LookupItem[]>> {
-    return this.http
-      .get<ApiResponse<any[]>>(`${this.baseUrl}`, {
-        params: {
-          q: filter.query,
-          page: String(filter.page ?? 1),
-          per_page: String(filter.pageSize ?? 10),
-        },
-        withCredentials: true
-      })
-      .pipe(
-        map((response) => ({
-          ...response,
-          data: response.data.map((c) => ({
-            key: c.id,
-            label: c.name,
-            meta: { ...c },
-          })),
-        }))
-      );
+  search(params: LookupFilter): Observable<ApiResponse<LookupItem[]>> | Promise<ApiResponse<LookupItem[]>> {
+    const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
+    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/lookup`, { withCredentials: true, params: httpParams });
   }
 }

@@ -94,7 +94,7 @@ export class LookupComponent {
     this.loading.set(true);
  
     this.facade
-      .search({ query: event.query, pageSize: this.pageSize })
+      .search({ q: event.query, pageSize: this.pageSize })
       .pipe(
         catchError(() => of({ items: [], total: 0 })),
         finalize(() => {

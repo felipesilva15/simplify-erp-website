@@ -36,22 +36,22 @@
                     </div>
                     <div class="col-12">
                         <label htmlFor="father_role">Perfil pai</label>
-                        <!-- <app-lookup
-                            [facade]="roleLookupFacade"
-                            formControlName="father_role"
-                            placeholder="Buscar por nome ou ID..."
-                            (selected)="onRoleSelected($event)"
-                        /> -->
                         <app-lookup
                             [facade]="roleLookupFacade"
                             formControlName="father_role"
-                            placeholder="Adicionar produto..."
+                            placeholder="Buscar por nome ou código..."
+                            (selected)="onRoleSelected($event)"
+                        />
+                        <!-- <app-lookup
+                            [facade]="roleLookupFacade"
+                            formControlName="father_role"
+                            placeholder="Buscar por nome ou código..."
                             [multiple]="true"
                             [debounce]="400"
                             [minChars]="0"
                             [pageSize]="20"
                             (selected)="onRoleSelected($event)"
-                        />
+                        /> -->
                         @if (isInvalid('father_role')) {
                             @if (form.get('father_role')?.errors?.['required']) {
                                 <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
