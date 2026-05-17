@@ -6,8 +6,6 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormMode, FormModeLabel } from '../../../../../core/enums/form-mode';
 import { MenuItem } from 'primeng/api';
-import { BreadcrumbComponent } from "../../../../../shared/components/breadcrumb/breadcrumb.component";
-import { DatePipe } from '@angular/common';
 import { MessageModule } from "primeng/message";
 import { SkeletonModule } from 'primeng/skeleton';
 import { InputTextModule } from 'primeng/inputtext';

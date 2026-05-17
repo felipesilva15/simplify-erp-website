@@ -1,0 +1,61 @@
+<div class="lookup-wrapper flex flex-column gap-1">
+        <p-autoComplete
+            #lookup
+            [formControl]="internalControl"
+            [suggestions]="suggestions()"
+            [multiple]="multiple"
+            [placeholder]="placeholder"
+            [disabled]="isDisabled"
+            [showClear]="!multiple && !!internalControl.value"
+            [minLength]="minChars"
+            [delay]="debounce"
+            [emptyMessage]="emptyMessage"
+            optionLabel="label"
+            dataKey="key"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            (completeMethod)="onSearch($event)"
+            (onClear)="onClear()"
+            (onBlur)="onTouched()"
+            (onSelect)="onSelect()"
+            (onFocus)="onFocus(lookup, $event)"
+            appendTo="body"
+            [forceSelection]="true"
+            [showClear]="true"
+            [invalid]="invalid"
+        >
+        <ng-template pTemplate="item" let-item>
+            <div class="flex align-items-center gap-3 py-1">
+                @if (multiple && isSelected(item)) {
+                    <i class="pi pi-check text-sm flex-shrink-0"></i>
+                } @else {
+                    <i class="pi pi-search text-sm flex-shrink-0"></i>
+                }
+                <div class="flex flex-column flex-1 min-w-0">
+                    <span
+                        class="font-medium white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                        [innerHTML]="item.label"
+                    ></span>
+                    @if (item.sublabel) {
+                        <span class="text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                            {{ item.sublabel }}
+                        </span>
+                    }
+                </div>
+            </div>
+        </ng-template>
+        @if (multiple) {
+            <ng-template pTemplate="selectedItem" let-item>
+                <span class="text-sm font-medium">{{ item.label }}</span>
+            </ng-template>
+        }
+        @if (total() !== null && total()! > suggestions().length) {
+            <ng-template pTemplate="footer">
+                <div class="px-3 py-2 text-color-secondary text-sm text-center surface-50 border-top-1 surface-border">
+                    <i class="pi pi-info-circle mr-1"></i>
+                    Exibindo {{ suggestions().length }} de {{ total() }}. Refine a busca.
+                </div>
+            </ng-template>
+        }
+    </p-autoComplete>
+</div>
