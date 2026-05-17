@@ -3,8 +3,6 @@ import {
   Input,
   Output,
   EventEmitter,
-  OnInit,
-  OnDestroy,
   forwardRef,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -12,19 +10,17 @@ import {
   WritableSignal,
 } from '@angular/core';
 import {
-  ControlValueAccessor,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
   FormControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil, catchError, of, finalize } from 'rxjs';
-import { AutoCompleteModule, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
+import { AutoCompleteModule, AutoCompleteCompleteEvent, AutoComplete } from 'primeng/autocomplete';
 import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LookupItem } from './../../../core/models/lookup-item';
 import { LookupFacade } from './../../facades/lookup.facade';
-import { LookupResult } from '../../../core/models/lookup-result';
 
 @Component({
   selector: 'app-lookup',
@@ -54,14 +50,13 @@ export class LookupComponent {
   @Input() debounce: number = 300;
   @Input() minChars: number = 1;
   @Input() pageSize: number = 10;
+  @Input() invalid: boolean = false;
 
   @Output() selected = new EventEmitter<LookupItem | LookupItem[]>();
 
   protected suggestions: WritableSignal<LookupItem[]> = signal<LookupItem[]>([]);
   protected loading: WritableSignal<boolean> = signal(false);
   protected total: WritableSignal<number | null> = signal<number | null>(null);
- 
-  private lastQuery: string = '';
  
   protected internalControl: FormControl<LookupItem | LookupItem[] | null> = new FormControl<LookupItem | LookupItem[] | null>(null);
   protected isDisabled: boolean = false;
@@ -90,7 +85,6 @@ export class LookupComponent {
   }
 
   onSearch(event: AutoCompleteCompleteEvent): void {
-    this.lastQuery = event.query;
     this.loading.set(true);
  
     this.facade
@@ -104,38 +98,45 @@ export class LookupComponent {
         takeUntil(this.destroy$)
       )
       .subscribe((result) => {
-        console.log(result);
         this.suggestions.set(result.items);
         this.total.set(result.total ?? null);
       });
   }
- 
-  onSelect(item: LookupItem): void {
+
+  get selectedValue(): LookupItem | LookupItem[] {
     const value = this.internalControl.value;
-    this.selected.emit(this.multiple ? (value as LookupItem[]) : item);
+    return this.multiple ? (value as LookupItem[]) : (value as LookupItem)
+  }
+ 
+  onSelect(): void {
+    this.selected.emit(this.selectedValue);
   }
  
   onUnselect(item: LookupItem): void {
-    const value = this.internalControl.value as LookupItem[];
-    this.selected.emit(value);
+    this.selected.emit(this.selectedValue);
   }
  
   onClear(): void {
     this.onChange(null);
+    this.internalControl.setValue(null);
     this.selected.emit(this.multiple ? [] : (null as any));
+  }
+
+  onFocus(autoComplete: AutoComplete, event: Event) {
+    if (this.isEmpty() && this.minChars == 0) {
+      autoComplete.handleDropdownClick(event)
+    }
   }
  
   isSelected(item: LookupItem): boolean {
-    const value = this.internalControl.value;
+    const value = this.selectedValue;
     if (!value || !Array.isArray(value)) return false;
     return (value as LookupItem[]).some((i) => i.key === item.key);
   }
- 
-  highlight(label: string): string {
-    const query = this.lastQuery.trim();
-    if (!query) return label;
-    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return label.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>');
+
+  isEmpty(): boolean {
+    const value = this.selectedValue;
+    return !value || (this.multiple && (!Array.isArray(value) || (value as LookupItem[])?.length == 0));
   }
  
   writeValue(value: LookupItem | LookupItem[] | null): void {

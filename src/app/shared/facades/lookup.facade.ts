@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LookupService } from '../../core/contracts/lookup-service';
@@ -16,7 +15,6 @@ export class LookupFacade {
     
     search(filter: LookupFilter): Observable<LookupResult> {
         if (!this.service) {
-            console.warn('[LookupFacade] Nenhum service registrado.');
             return of(this.emptyResult());
         }
     
@@ -30,7 +28,6 @@ export class LookupFacade {
     
     private normalize(response: ApiResponse<LookupItem[]>): LookupResult {
         if (!response.success) {
-            console.warn('[LookupFacade] API retornou success=false:', response.message);
             return this.emptyResult();
         }
     
@@ -43,6 +40,11 @@ export class LookupFacade {
     }
     
     private emptyResult(): LookupResult {
-        return { items: [], total: 0, page: 1, perPage: 0 };
+        return { 
+            items: [],
+            total: 0, 
+            page: 1, 
+            perPage: 0
+        };
     }
 }
