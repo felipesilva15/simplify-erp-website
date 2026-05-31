@@ -7,6 +7,7 @@ import { routes } from './app.routes';
 import { errorResponseInterceptor } from './core/interceptors/error-response-interceptor';
 import { THEME } from './core/config/theme';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { TRANSLATION } from './core/config/translation';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,7 +19,8 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
       ripple: true,
       inputStyle: 'outlined',
-      theme: THEME
+      theme: THEME,
+      translation: TRANSLATION
     })
   ]
 };
