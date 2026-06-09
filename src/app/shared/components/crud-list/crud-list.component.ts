@@ -1,8 +1,7 @@
-
 import { ColumnType } from '../../../core/enums/column-type';
 import { TableColumn } from '../../../core/models/table-column';
-import { Component, computed, inject, input, Input, InputSignal, model, ModelSignal, OnInit, Signal, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
-import { TableModule } from 'primeng/table';
+import { Component, computed, inject, input, Input, InputSignal, model, ModelSignal, OnInit, Signal, ViewChild } from '@angular/core';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MenuItem } from 'primeng/api';
 import { Menu, MenuModule } from 'primeng/menu';
@@ -21,7 +20,6 @@ import { BaseEntity } from '../../../core/models/base-entity';
 import { ListRequestParams } from '../../../core/models/list-request-params';
 import { FilterDefinerComponent } from "../filter-definer/filter-definer.component";
 import { FilterFieldDefinition } from '../../../core/models/filter-field-definition';
-import { label } from '@primeuix/themes/aura/metergroup';
 
 @Component({
   selector: 'app-crud-list',
@@ -58,10 +56,11 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
   @Input() facade!: CrudListFacade<T>;
   formRoute: InputSignal<string> = input<string>('new');
   enableSelection: InputSignal<boolean> = input<boolean>(false);
+  lazyLoadEnabled: InputSignal<boolean> = input<boolean>(true);
   filterFieldDefinition: ModelSignal<FilterFieldDefinition[]> = model<FilterFieldDefinition[]>([]);
   
   rows: number = 10;
-  rowsPerPageOptions: number[] = [10, 20, 30];
+  rowsPerPageOptions: number[] = [3,5,10,20,50];
   menuItems: MenuItem[] = [];
   columnCount: Signal<number> = computed(() => {
     return this.cols.length + (this.enableSelection() ? 1 : 0);
@@ -74,7 +73,9 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
   @ViewChild('cm') cm!: Menu;
 
   ngOnInit(): void {
-    this.facade.load();
+    if (!this.lazyLoadEnabled()) {
+      this.facade.load();
+    }
 
     this.filterFieldDefinition.update((filterFieldDefinition: FilterFieldDefinition[]) => {
       filterFieldDefinition.push({name: 'created_at', label: 'Criado em', type: ColumnType.DATETIME});
@@ -117,5 +118,22 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
       disabled: !this.facade.can(item.permission),
       command: () => item.action && item.action(this.currentRecord)
     }));
+  }
+
+  onLazyLoad(event: TableLazyLoadEvent): void {
+    if (!this.lazyLoadEnabled()) {
+      return;
+    }
+
+    const perPage = event.rows ?? this.rows;
+    const page = Math.floor((event.first ?? 0) / perPage) + 1;
+
+    let sorts: string | undefined;
+    if (event.sortField) {
+      const field = Array.isArray(event.sortField) ? event.sortField[0] : event.sortField;
+      sorts = event.sortOrder === -1 ? `-${field}` : field;
+    }
+
+    this.facade.applyLazyLoad(page, perPage, sorts);
   }
 }

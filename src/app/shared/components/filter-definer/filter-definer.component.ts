@@ -46,6 +46,7 @@ interface RequestFilterViewData {
   ],
   templateUrl: './filter-definer.component.html',
   styleUrl: './filter-definer.component.scss',
+  standalone: true
 })
 export class FilterDefinerComponent implements OnInit {
   private fb: FormBuilder = inject(FormBuilder);
@@ -60,7 +61,6 @@ export class FilterDefinerComponent implements OnInit {
   visible: ModelSignal<boolean> = model<boolean>(false);
 
   apply = output<RequestFiltersType | undefined>();
-  visibleChange = output<boolean>();
 
   FilterOperatorOptions = FilterOperatorOptions;
   FilterOperatorLabels = FilterOperatorLabels;
@@ -189,7 +189,7 @@ export class FilterDefinerComponent implements OnInit {
 
   close(): void {
     this.setBlankForm();
-    this.visibleChange.emit(false);
+    this.visible.set(false);
   }
 
   getOperatorLabel(operator: any): string {
@@ -218,7 +218,7 @@ export class FilterDefinerComponent implements OnInit {
         return this.datePipe.transform(value, 'dd/MM/yyyy') ?? '';
 
       case ColumnType.DATETIME:
-        return this.datePipe.transform(value, 'dd/MM/yyyy hh:mm') ?? '';
+        return this.datePipe.transform(value, 'dd/MM/yyyy HH:mm') ?? '';
 
       case ColumnType.CURRENCY:
         return this.currencyPipe.transform(value, 'BRL') ?? '';

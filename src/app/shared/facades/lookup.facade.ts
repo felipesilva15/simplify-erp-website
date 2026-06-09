@@ -5,6 +5,7 @@ import { LookupFilter } from '../../core/models/lookup-filter';
 import { LookupResult } from '../../core/models/lookup-result';
 import { LookupItem } from '../../core/models/lookup-item';
 import { ApiResponse } from '../../core/models/api-response';
+import { ApiMetaOption } from '../../core/enums/api-meta-option';
 
 export class LookupFacade {
     constructor(private service: LookupService) {}
@@ -33,9 +34,9 @@ export class LookupFacade {
     
         return {
             items: response.data ?? [],
-            total: response.meta?.total ?? 0,
-            page: response.meta?.current_page ?? 1,
-            perPage: response.meta?.per_page ?? 0,
+            total: response.meta?.[ApiMetaOption.Total] ?? 0,
+            page: response.meta?.[ApiMetaOption.CurrentPage] ?? 1,
+            perPage: response.meta?.[ApiMetaOption.PerPage] ?? 0,
         };
     }
     

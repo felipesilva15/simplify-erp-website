@@ -26,10 +26,10 @@
                                 <input type="text" pInputText required id="value" formControlName="value"/>
                             }
                             @case (ColumnType.DATE) {
-                                <p-datepicker inputId="value"  name="value" formControlName="value" [showClear]="true" />
+                                <p-datepicker inputId="value"  name="value" formControlName="value" [showIcon]="true" [iconDisplay]="'input'" [showClear]="true" />
                             }
                             @case (ColumnType.DATETIME) {
-                                <p-datepicker inputId="value"  name="value" formControlName="value" [showTime]="true" hourFormat="24" [showClear]="true" />
+                                <p-datepicker inputId="value"  name="value" formControlName="value" [showIcon]="true" [iconDisplay]="'input'" [showTime]="true" hourFormat="24" [showClear]="true" />
                             }
                             @case (ColumnType.TEXT) {
                                 <input type="text" pInputText required id="value" formControlName="value"/>
@@ -43,7 +43,7 @@
                     }
                 </div>
                 <div class="col-12 md:col-1">
-                    <button pButton icon="pi pi-plus" (click)="applyFilter()"></button>
+                    <button pButton icon="pi pi-plus" class="w-full" (click)="applyFilter()"></button>
                 </div>
             </p-fluid>
         </form>

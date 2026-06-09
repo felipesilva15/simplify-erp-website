@@ -8,6 +8,7 @@ import { ApiResponse } from '../../core/models/api-response';
 import { BaseEntity } from '../../core/models/base-entity';
 import { ListRequestParams } from '../../core/models/list-request-params';
 import { RequestFiltersType } from '../../core/types/request-filters-type';
+import { ApiMetaOption } from '../../core/enums/api-meta-option';
 
 export class CrudListFacade<T extends BaseEntity> {
     private permissionService: PermissionService = inject(PermissionService);
@@ -19,6 +20,7 @@ export class CrudListFacade<T extends BaseEntity> {
     private _error: WritableSignal<string | null> = signal<string | null>(null);
     private _filterDefinitionVisible: WritableSignal<boolean> = signal<boolean>(false);
     private _requestParams: WritableSignal<ListRequestParams | undefined> = signal<ListRequestParams | undefined>(undefined);
+    private _totalRecords: WritableSignal<number> = signal<number>(0);
 
     response = this._response.asReadonly();
     data = this._data.asReadonly();
@@ -26,6 +28,7 @@ export class CrudListFacade<T extends BaseEntity> {
     error = this._error.asReadonly();
     filterDefinitionVisible = this._filterDefinitionVisible.asReadonly();
     requestParams = this._requestParams.asReadonly();
+    totalRecords = this._totalRecords.asReadonly();
 
     constructor(
         private service: CrudService<T>,
@@ -45,6 +48,7 @@ export class CrudListFacade<T extends BaseEntity> {
                 next: (res: ApiResponse<T[]>) => {
                     this._response.set(res);
                     this._data.set(res.data);
+                    this._totalRecords.set(res.meta?.[ApiMetaOption.Total] ?? res.data.length);
                 },
                 error: () => this._error.set('Erro ao carregar registros.')
             });
@@ -69,9 +73,21 @@ export class CrudListFacade<T extends BaseEntity> {
             } else {
                 delete p.filters;
             }
+
+            p.page = 1;
             
             return p; 
         })
+        this.load();
+    }
+
+    applyLazyLoad(page: number, per_page: number, sorts: string | undefined): void {
+        this._requestParams.update(p => ({
+            ...(p ?? {}),
+            page,
+            per_page,
+            sorts,
+        }));
         this.load();
     }
 

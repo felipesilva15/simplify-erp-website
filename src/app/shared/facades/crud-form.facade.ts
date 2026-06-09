@@ -10,6 +10,7 @@ import { finalize, Observable, tap } from "rxjs";
 import { ApiResponse } from "../../core/models/api-response";
 import { ConfirmDialogService } from "../services/confirm-dialog-service";
 import { Location } from "@angular/common";
+import { ApiMetaOption } from '../../core/enums/api-meta-option';
 
 export class CrudFormFacade<T extends BaseEntity> {
     private permissionService: PermissionService = inject(PermissionService);
@@ -44,12 +45,12 @@ export class CrudFormFacade<T extends BaseEntity> {
     init(mode: FormMode, form: FormGroup, id?: number): void {
         this._mode.set(mode);
 
-        if (!this.hasPermission(mode)) {
-        throw new Error('Sem permissão');
+        if (!this.hasPermission()) {
+            throw new Error('Sem permissão para a ação.');
         }
 
         effect(() => {
-            if (this.isView() || (this.isEdit() && this._entityResponse() && this.entityResponse()?.meta && !this.entityResponse()?.meta?.editable )) {
+            if (this.isView() || (this.isEdit() && this.entityResponse()?.meta && !this.entityResponse()?.meta?.[ApiMetaOption.Editable] )) {
                 form.disable();
             }
         });
@@ -59,7 +60,7 @@ export class CrudFormFacade<T extends BaseEntity> {
         }
     }
 
-    private hasPermission(mode: FormMode): boolean {
+    private hasPermission(): boolean {
         if (!this.config?.permission) {
             return true;
         }
