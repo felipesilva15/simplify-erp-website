@@ -1,6 +1,6 @@
 import { ColumnType } from '../../../core/enums/column-type';
 import { TableColumn } from '../../../core/models/table-column';
-import { Component, computed, inject, input, Input, InputSignal, model, ModelSignal, OnInit, Signal, ViewChild } from '@angular/core';
+import { Component, computed, inject, input, Input, InputSignal, model, ModelSignal, OnInit, signal, Signal, ViewChild, WritableSignal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MenuItem } from 'primeng/api';
@@ -62,9 +62,7 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
   rows: number = 10;
   rowsPerPageOptions: number[] = [3,5,10,20,50];
   menuItems: MenuItem[] = [];
-  columnCount: Signal<number> = computed(() => {
-    return this.cols.length + (this.enableSelection() ? 1 : 0);
-  });
+  columnCount: WritableSignal<number> = signal(0);
 
   selectedRecords: T[] = [];
   currentRecord?: T;
@@ -73,6 +71,8 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit {
   @ViewChild('cm') cm!: Menu;
 
   ngOnInit(): void {
+    this.columnCount.set(this.cols.length + (this.enableSelection() ? 1 : 0));
+
     if (!this.lazyLoadEnabled()) {
       this.facade.load();
     }

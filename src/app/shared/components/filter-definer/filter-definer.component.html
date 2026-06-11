@@ -34,6 +34,9 @@
                             @case (ColumnType.TEXT) {
                                 <input type="text" pInputText required id="value" formControlName="value"/>
                             }
+                            @case (ColumnType.BOOLEAN) {
+                                <p-toggleswitch name="value" formControlName="value" />
+                            }
                             @default {
                                 <input type="text" pInputText required id="value" formControlName="value"/>
                             }

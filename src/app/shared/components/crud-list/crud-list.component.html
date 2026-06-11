@@ -74,11 +74,11 @@
                     @if (column.template) {
                         <ng-container *ngTemplateOutlet="column.template; context: { $implicit: record }"></ng-container>
                     } @else if (column.type == 'boolean') {
-                        @if (record.active) {
                             <td>
+                            @if (record?.[column.field]) {
                                 <i class="pi pi-check" pTooltip="Sim"></i>
+                            }
                             </td>
-                        }
                     } @else {
                         <td>
                             {{ formatRowValue(record, column) }}
