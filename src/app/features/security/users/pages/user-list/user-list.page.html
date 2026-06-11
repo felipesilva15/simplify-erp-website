@@ -1,0 +1,12 @@
+<ng-template #rolesTemplate let-record>
+    <td>
+        @for (role of record?.roles; track $index) {
+            <p-tag [value]="role.name" />
+        }
+    </td>
+</ng-template>
+<app-list-page [title]="title()" [breadcrumbItems]="breadcrumbItems">
+    <ng-template appTemplate="content">
+        <app-crud-list [cols]="cols" [facade]="facade" [tableMenu]="tableMenu" [filterFieldDefinition]="filterDefinition" />
+    </ng-template>
+</app-list-page>
