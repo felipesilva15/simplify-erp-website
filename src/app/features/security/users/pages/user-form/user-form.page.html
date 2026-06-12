@@ -1,0 +1,148 @@
+<app-form-page
+    [title]="title()"
+    [breadcrumbItems]="breadcrumbItems"
+    [entity]="facade.entity()"
+    >
+    <ng-template appTemplate="content">
+        @if (!facade.loading()) {
+            <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
+                @if (facade.hasWarnings()) {
+                    <div class="flex flex-column w-full">
+                        @for (warning of facade.entityResponse()?.warnings; track $index) {
+                            <p-message icon="pi pi-exclamation-triangle" severity="warn">{{ warning }}</p-message>
+                        }
+                    </div>
+                }
+                <p-fluid class="grid">
+                    <div class="col-12">
+                        <span class="font-bold">Dados gerais</span>
+                    </div>
+                    <div class="col-12 md:col-6">
+                        <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
+                        <input id="name" formControlName="name" pInputText required autofocus [invalid]="isInvalid('name')" />
+                        @if (isInvalid('name')) {
+                            @if (form.get('name')?.errors?.['required']) {
+                                <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
+                            } @else if (form.get('name')?.errors?.['maxlength']) {
+                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('name')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
+                            }
+                        }
+                    </div>
+                    <div class="col-12 md:col-6">
+                        <label htmlFor="username">Usuário<span class="text-red-500 font-bold">*</span></label>
+                        <input id="username" formControlName="username" pInputText required [invalid]="isInvalid('username')" />
+                        @if (isInvalid('username')) {
+                            @if (form.get('username')?.errors?.['required']) {
+                                <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
+                            } @else if (form.get('username')?.errors?.['maxlength']) {
+                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('username')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
+                            }
+                        }
+                    </div>
+                    <div class="col-12 md:col-6">
+                        <label htmlFor="email">E-mail<span class="text-red-500 font-bold">*</span></label>
+                        <input id="email" formControlName="email" pInputText required [invalid]="isInvalid('email')" />
+                        @if (isInvalid('email')) {
+                            @if (form.get('email')?.errors?.['required']) {
+                                <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
+                            } @else if (form.get('email')?.errors?.['maxlength']) {
+                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('email')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
+                            }
+                        }
+                    </div>
+                    <div class="col-12 md:col-6">
+                        <label htmlFor="phone_number">Telefone<span class="text-red-500 font-bold">*</span></label>
+                        <input id="phone_number" formControlName="phone_number" pInputText required [invalid]="isInvalid('phone_number')" />
+                        @if (isInvalid('phone_number')) {
+                            @if (form.get('phone_number')?.errors?.['required']) {
+                                <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
+                            } @else if (form.get('phone_number')?.errors?.['maxlength']) {
+                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('phone_number')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
+                            }
+                        }
+                    </div>
+                    @if (facade.isCreate()) {
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="password">Senha<span class="text-red-500 font-bold">*</span></label>
+                            <p-password formControlName="password" required [toggleMask]="true" [feedback]="false" autocomplete="off" [invalid]="isInvalid('password')" />
+                            @if (isInvalid('password')) {
+                                @if (form.get('password')?.errors?.['required']) {
+                                    <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
+                                } @else if (form.get('password')?.errors?.['maxlength']) {
+                                    <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('password')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
+                                }
+                            }
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="password_confirmation">Confirmação da senha<span class="text-red-500 font-bold">*</span></label>
+                            <p-password formControlName="password_confirmation" required [toggleMask]="true" [feedback]="false" autocomplete="off" [invalid]="isInvalid('password_confirmation')" />
+                            @if (isInvalid('password_confirmation')) {
+                                @if (form.get('password_confirmation')?.errors?.['required']) {
+                                    <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
+                                } @else if (form.get('password_confirmation')?.errors?.['maxlength']) {
+                                    <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('password_confirmation')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
+                                }
+                            }
+                        </div>
+                    }
+                </p-fluid>
+                <p-fluid class="grid">
+                    <div class="col-12">
+                        <span class="font-bold">Permissões & hierarquia</span>
+                    </div>
+                    <div class="col-12">
+                        <label htmlFor="roles">Perfis</label>
+                        <app-lookup
+                            id="roles"
+                            formControlName="roles"
+                            [facade]="roleLookupFacade"
+                            placeholder="Buscar por nome ou código..."
+                            [multiple]="true"
+                            [debounce]="400"
+                            [minChars]="0"
+                            [pageSize]="20"
+                        />
+                    </div>
+                    <div class="col-12">
+                        <div class="flex align-items-center gap-1">
+                            <p-toggleswitch name="is_admin" formControlName="is_admin" [invalid]="isInvalid('is_admin')" />
+                            <label htmlFor="is_admin">Administrador</label>
+                        </div>
+                        <p-message severity="secondary" size="small" variant="simple">Usuários administradores possuem permissão de realizar qualquer ação no sistema.</p-message>
+                    </div>
+                    <div class="col-12">
+                        <div class="flex justify-content-end gap-2">
+                            <p-button label="Voltar" [outlined]="true" [disabled]="facade.loading()" (onClick)="facade.navigateBack(form)" />
+                            <p-button label="Salvar" icon="pi pi-save" type="submit" [disabled]="form.disabled" [loading]="facade.saving()" />
+                        </div>
+                    </div>
+                </p-fluid>
+            </form>
+        } @else {
+            <p-fluid class="grid">
+                <div class="col-12 md:col-6">
+                    <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+                    <p-skeleton width="100%" height="39px"></p-skeleton>
+                </div>
+                <div class="col-12 md:col-6">
+                    <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+                    <p-skeleton width="100%" height="39px"></p-skeleton>
+                </div>
+                <div class="col-12 md:col-6">
+                    <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+                    <p-skeleton width="100%" height="39px"></p-skeleton>
+                </div>
+                <div class="col-12 md:col-6">
+                    <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+                    <p-skeleton width="100%" height="39px"></p-skeleton>
+                </div>
+                <div class="col-12">
+                    <div class="flex justify-content-end gap-2">
+                        <p-skeleton width="69px" height="39px"></p-skeleton>
+                        <p-skeleton width="93px" height="39px"></p-skeleton>
+                    </div>
+                </div>
+            </p-fluid>
+        }
+    </ng-template>
+</app-form-page>
