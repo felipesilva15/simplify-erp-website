@@ -20,6 +20,7 @@ import { RoleService } from '../../../roles/services/role-service';
 import { LookupFacade } from '../../../../../shared/facades/lookup.facade';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { PasswordModule } from 'primeng/password';
+import { LookupItem } from '../../../../../core/models/lookup-item';
 
 type FormType = {
   name: FormControl<string>;
@@ -28,10 +29,9 @@ type FormType = {
   phone_number: FormControl<string>;
   password: FormControl<string>;
   password_confirmation: FormControl<string>;
-  roles: FormControl<Role[]>;
+  roles: FormControl<LookupItem[]>;
   is_admin: FormControl<boolean>;
 }
-
 
 @Component({
   selector: 'app-user-form',
@@ -84,7 +84,7 @@ export class UserFormPage {
     phone_number: ['', [Validators.maxLength(14)]],
     password: ['', [Validators.required, Validators.maxLength(255)]],
     password_confirmation: ['', [Validators.required, Validators.maxLength(255)]],
-    roles: [[] as Role[], []],
+    roles: [[] as LookupItem[], []],
     is_admin: [false, []],
   });
   

@@ -120,6 +120,7 @@ export class CrudFormFacade<T extends BaseEntity> {
         this._saving.set(true);
 
         let payload = form.getRawValue();
+        payload = this.unwrapLookups(payload);
 
         if (this.config?.beforeSubmit) {
             payload = this.config.beforeSubmit(payload);
@@ -160,6 +161,36 @@ export class CrudFormFacade<T extends BaseEntity> {
             left: 0, 
             behavior: 'smooth' 
         });
+    }
+
+    private unwrapLookups(payload: Record<string, unknown>): Record<string, unknown> {
+        return Object.fromEntries(
+            Object.entries(payload).map(([key, value]) => {
+                if (this.isLookupItem(value)) {
+                    return [key, (value as LookupItem).meta ?? null];
+                }
+
+                if (Array.isArray(value) && value.every(this.isLookupItem)) {
+                    return [key, value.map((item: LookupItem) => item.meta ?? null)];
+                }
+
+                if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+                    return [key, this.unwrapLookups(value as Record<string, unknown>)];
+                }
+
+                return [key, value];
+            })
+        );
+    }
+
+    private isLookupItem(value: unknown): boolean {
+        return (
+            typeof value === 'object' &&
+            value !== null &&
+            'key' in value &&
+            'label' in value &&
+            'metadata' in value
+        );
     }
 
     navigateBack(form?: FormGroup): void {
