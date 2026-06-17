@@ -189,7 +189,7 @@ export class CrudFormFacade<T extends BaseEntity> {
             value !== null &&
             'key' in value &&
             'label' in value &&
-            'metadata' in value
+            'meta' in value
         );
     }
 

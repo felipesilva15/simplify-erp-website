@@ -17,9 +17,6 @@ import { HttpQueryBuilderService } from '../../../../core/services/http-query-bu
   providedIn: 'root',
 })
 export class UserService implements CrudService<User>, LookupService {
-  edit(id: number): Observable<ApiResponse<User>> {
-    throw new Error('Method not implemented.');
-  }
   private readonly baseUrl: string = environment.baseUrlApi + '/security/users';
   
   private http = inject(HttpClient)
@@ -32,6 +29,10 @@ export class UserService implements CrudService<User>, LookupService {
 
   get(id: number): Observable<ApiResponse<User>> {
     return this.http.get<ApiResponse<User>>(`${this.baseUrl}/${id}`, { withCredentials: true });
+  }
+
+  edit(id: number): Observable<ApiResponse<User>> {
+    return this.http.get<ApiResponse<User>>(`${this.baseUrl}/${id}/edit`, { withCredentials: true });
   }
 
   create(data: Partial<User>): Observable<ApiResponse<User>> {
