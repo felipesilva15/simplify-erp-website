@@ -16,6 +16,10 @@ export class HttpQueryBuilderService {
 
       if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
         params = this.buildHttpParams(value, paramKey, params);
+      } else if (Array.isArray(value)) {
+        value.forEach((value: any) => {
+          params = params.append(`${paramKey}[]`, value);
+        })
       } else {
         params = params.append(paramKey, value);
       }

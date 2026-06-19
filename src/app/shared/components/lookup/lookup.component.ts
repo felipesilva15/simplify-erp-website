@@ -1,3 +1,4 @@
+import { LookupFilter } from './../../../core/models/lookup-filter';
 import {
   Component,
   Input,
@@ -21,6 +22,7 @@ import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LookupItem } from './../../../core/models/lookup-item';
 import { LookupFacade } from './../../facades/lookup.facade';
+import { LookupResult } from '../../../core/models/lookup-result';
 
 @Component({
   selector: 'app-lookup',
@@ -139,8 +141,81 @@ export class LookupComponent {
     return !value || (this.multiple && (!Array.isArray(value) || (value as LookupItem[])?.length == 0));
   }
  
-  writeValue(value: LookupItem | LookupItem[] | null): void {
-    this.internalControl.setValue(value, { emitEvent: false });
+  writeValue(value: LookupItem | LookupItem[] | string | number | (string | number)[] | null): void {
+    if (value === null || value === undefined) {
+      this.internalControl.setValue(null, { emitEvent: false });
+      return;
+    }
+ 
+    if (this.multiple) {
+      const values = Array.isArray(value) ? value : [value];
+ 
+      // Todos já são LookupItem — aplica direto
+      if (values.every(this.isLookupItem)) {
+        this.internalControl.setValue(values as LookupItem[], { emitEvent: false });
+        return;
+      }
+ 
+      // São keys primitivas — hidrata elas buscando pela key
+      this.loading.set(true);
+
+      const keys = values.map((item: any) => {
+        return item?.id ?? null
+      }).filter(
+        (value: any) => value != null && value != undefined
+      ) as Array<string | number>;
+
+      const filter: LookupFilter = {
+        q: '',
+        keys: keys,
+        page: 1,
+        pageSize: keys.length
+      } 
+
+      this.facade.search(filter).subscribe({
+        next: (res: LookupResult) => {
+          this.internalControl.setValue(res.items, { emitEvent: false });
+          this.loading.set(false);
+          this.cdr.markForCheck();
+        }
+      });
+ 
+      return;
+    }
+ 
+    // Modo single — já é LookupItem
+    if (this.isLookupItem(value)) {
+      this.internalControl.setValue(value as LookupItem, { emitEvent: false });
+      return;
+    }
+ 
+    // Modo single — é key primitiva: busca e hidrata
+    this.loading.set(true);
+
+    const filter: LookupFilter = {
+      q: '',
+      keys: [value as string | number],
+      page: 1,
+      pageSize: 1
+    }
+
+    this.facade.search(filter).subscribe({
+      next: (res: LookupResult) => {
+        this.internalControl.setValue(res.total ? res.items[0] : null, { emitEvent: false });
+        this.loading.set(false);
+        this.cdr.markForCheck();
+      }
+    });
+  }
+ 
+  /** Distingue um LookupItem já montado de um objeto bruto da API */
+  private isLookupItem(value: unknown): boolean {
+    return (
+      typeof value === 'object' &&
+      value !== null &&
+      'key' in value &&
+      'label' in value
+    );
   }
  
   registerOnChange(fn: (v: unknown) => void): void {
