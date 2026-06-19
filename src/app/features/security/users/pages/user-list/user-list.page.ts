@@ -12,14 +12,16 @@ import { ColumnType } from '../../../../../core/enums/column-type';
 import { FilterFieldDefinition } from '../../../../../core/models/filter-field-definition';
 import { TableMenuItem } from '../../../../../core/models/table-menu-item';
 import { TagModule } from 'primeng/tag';
+import { PhonePipe } from '../../../../../shared/pipes/phone-pipe';
 
 @Component({
   selector: 'app-user-list',
   imports: [
-      CrudListComponent,
-      ListPageUi,
-      AppTemplate,
-      TagModule
+    CrudListComponent,
+    ListPageUi,
+    AppTemplate,
+    TagModule,
+    PhonePipe
   ],
   providers: [
     {
@@ -87,7 +89,7 @@ export class UserListPage implements AfterViewInit {
       { field: 'name', header: 'Nome', sortable: true, type: ColumnType.TEXT },
       { field: 'email', header: 'E-mail', sortable: true, type: ColumnType.TEXT },
       { field: 'username', header: 'Usuário', sortable: true, type: ColumnType.TEXT },
-      { field: 'phone_number', header: 'Telefone', sortable: true, type: ColumnType.TEXT },
+      { field: 'phone_number', header: 'Telefone', sortable: true, type: ColumnType.TEXT, pipe: new PhonePipe() },
       { field: 'is_admin', header: 'Admin', sortable: true, type: ColumnType.BOOLEAN },
       { field: 'roles', header: 'Perfis', sortable: false, template: this.rolesTemplate }
     ]
