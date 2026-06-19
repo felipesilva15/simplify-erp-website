@@ -7,7 +7,6 @@ import { MessageModule } from 'primeng/message';
 import { SkeletonModule } from 'primeng/skeleton';
 import { FormPageUi } from '../../../../../shared/ui/form-page/form-page.ui';
 import { AppTemplate } from '../../../../../shared/directives/app-template';
-import { Role } from '../../../roles/models/role';
 import { CrudFormFacade } from '../../../../../shared/facades/crud-form.facade';
 import { User } from '../../models/user';
 import { UserService } from '../../services/user-service';
@@ -21,6 +20,7 @@ import { LookupFacade } from '../../../../../shared/facades/lookup.facade';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { PasswordModule } from 'primeng/password';
 import { LookupItem } from '../../../../../core/models/lookup-item';
+import { FormControlErrorsComponent } from '../../../../../shared/components/form-control-errors/form-control-errors.component';
 
 type FormType = {
   name: FormControl<string>;
@@ -47,7 +47,8 @@ type FormType = {
     AppTemplate,
     LookupComponent,
     ToggleSwitchModule,
-    PasswordModule
+    PasswordModule,
+    FormControlErrorsComponent
 ],
   providers: [
     {
@@ -56,9 +57,9 @@ type FormType = {
         new CrudFormFacade<User>(service, {
           successMessage: 'Registro salvo!',
           permission: {
-            create: 'roles.create',
-            update: 'roles.update',
-            view: 'roles.view'
+            create: 'users.create',
+            update: 'users.update',
+            view: 'users.view'
           }
         }),
       deps: [UserService]
@@ -80,7 +81,7 @@ export class UserFormPage {
   form: FormGroup<FormType> = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(255)]],
     username: ['', [Validators.required, Validators.maxLength(255)]],
-    email: ['', [Validators.required, Validators.maxLength(80)]],
+    email: ['', [Validators.required, Validators.maxLength(80), Validators.email]],
     phone_number: ['', [Validators.maxLength(14)]],
     password: ['', [Validators.required, Validators.maxLength(255)]],
     password_confirmation: ['', [Validators.required, Validators.maxLength(255)]],
@@ -107,6 +108,25 @@ export class UserFormPage {
     ];
 
     this.facade.init(this.mode(), this.form, this.id());
+    this.configureFormValidators();
+  }
+
+  private configureFormValidators(): void {
+    const password = this.form.controls.password;
+    const confirmation = this.form.controls.password_confirmation;
+
+    if (this.facade.isCreate()) {
+      password.addValidators(Validators.required);
+      password.addValidators(Validators.maxLength(255));
+      confirmation.addValidators(Validators.required);
+      confirmation.addValidators(Validators.maxLength(255));
+    } else {
+      password.clearValidators();
+      confirmation.clearValidators();
+    }
+
+    password.updateValueAndValidity();
+    confirmation.updateValueAndValidity();
   }
 
   onSubmit(): void {

@@ -20,35 +20,17 @@
                     <div class="col-12 md:col-6">
                         <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
                         <input id="name" formControlName="name" pInputText required autofocus [invalid]="isInvalid('name')" />
-                        @if (isInvalid('name')) {
-                            @if (form.get('name')?.errors?.['required']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
-                            } @else if (form.get('name')?.errors?.['maxlength']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('name')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
-                            }
-                        }
+                        <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
                     </div>
                     <div class="col-12 md:col-6">
                         <label htmlFor="username">Usuário<span class="text-red-500 font-bold">*</span></label>
                         <input id="username" formControlName="username" pInputText required [invalid]="isInvalid('username')" />
-                        @if (isInvalid('username')) {
-                            @if (form.get('username')?.errors?.['required']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
-                            } @else if (form.get('username')?.errors?.['maxlength']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('username')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
-                            }
-                        }
+                        <app-form-control-errors [control]="form.get('username')"></app-form-control-errors>
                     </div>
                     <div class="col-12 md:col-6">
                         <label htmlFor="email">E-mail<span class="text-red-500 font-bold">*</span></label>
                         <input id="email" formControlName="email" pInputText required [invalid]="isInvalid('email')" />
-                        @if (isInvalid('email')) {
-                            @if (form.get('email')?.errors?.['required']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
-                            } @else if (form.get('email')?.errors?.['maxlength']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('email')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
-                            }
-                        }
+                        <app-form-control-errors [control]="form.get('email')"></app-form-control-errors>
                     </div>
                     <div class="col-12 md:col-6">
                         <label htmlFor="phone_number">Telefone<span class="text-red-500 font-bold">*</span></label>
@@ -57,7 +39,7 @@
                             @if (form.get('phone_number')?.errors?.['required']) {
                                 <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
                             } @else if (form.get('phone_number')?.errors?.['maxlength']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('phone_number')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
+                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('phone_number')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('phone_number')?.errors?.['maxlength'].actualLength }} caracteres.</p-message>
                             }
                         }
                     </div>
@@ -65,24 +47,12 @@
                         <div class="col-12 md:col-6">
                             <label htmlFor="password">Senha<span class="text-red-500 font-bold">*</span></label>
                             <p-password formControlName="password" required [toggleMask]="true" [feedback]="false" autocomplete="off" [invalid]="isInvalid('password')" />
-                            @if (isInvalid('password')) {
-                                @if (form.get('password')?.errors?.['required']) {
-                                    <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
-                                } @else if (form.get('password')?.errors?.['maxlength']) {
-                                    <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('password')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
-                                }
-                            }
+                            <app-form-control-errors [control]="form.get('password')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
                             <label htmlFor="password_confirmation">Confirmação da senha<span class="text-red-500 font-bold">*</span></label>
                             <p-password formControlName="password_confirmation" required [toggleMask]="true" [feedback]="false" autocomplete="off" [invalid]="isInvalid('password_confirmation')" />
-                            @if (isInvalid('password_confirmation')) {
-                                @if (form.get('password_confirmation')?.errors?.['required']) {
-                                    <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
-                                } @else if (form.get('password_confirmation')?.errors?.['maxlength']) {
-                                    <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('password_confirmation')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
-                                }
-                            }
+                            <app-form-control-errors [control]="form.get('password_confirmation')"></app-form-control-errors>
                         </div>
                     }
                 </p-fluid>

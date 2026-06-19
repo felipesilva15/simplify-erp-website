@@ -1,0 +1,7 @@
+@if (showErrors()) {
+    @for (error of errorMessages(); track error) {
+        <p-message severity="error" size="small" variant="simple">
+            {{ error }}
+        </p-message>
+    }
+}
