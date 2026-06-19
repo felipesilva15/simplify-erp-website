@@ -2,10 +2,16 @@ import { AppMenuItem } from "../models/app-menu-item";
 
 export const MENU: AppMenuItem[] = [
   {
+    separator: true
+  },
+  {
     label: 'Home',
     icon: 'pi pi-home',
     active: false,
     link: '/'
+  },
+  {
+    separator: true
   },
   {
     label: 'Configurações',
@@ -34,5 +40,8 @@ export const MENU: AppMenuItem[] = [
         permission: 'roles.viewAny'
       }
     ]
+  },
+  {
+    separator: true
   }
 ];

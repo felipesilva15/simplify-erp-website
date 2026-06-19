@@ -10,10 +10,11 @@
         </button>
     </div>
     <div class="p-3">
-        <p-divider />
         <p-panelMenu [model]="menu">
             <ng-template #item let-item>
-                @if (item.link) {
+                @if (item.separator) {
+                    <p-divider class="my-0" />
+                } @else if (item.link) {
                     <a [routerLink]="[item.link]" class="flex align-items-center border-none justify-content-between px-3 py-2 border-round cursor-pointer no-underline transition-colors transition-duration-300 menu-item" [class.active]="item.active">
                         <div class="flex align-items-center gap-3">
                             <i [class]="item.icon" class="text-lg"></i>
@@ -43,6 +44,5 @@
                 }
             </ng-template>
         </p-panelMenu>
-        <p-divider />
     </div>
 </aside>
