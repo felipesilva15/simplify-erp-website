@@ -21,6 +21,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { PasswordModule } from 'primeng/password';
 import { LookupItem } from '../../../../../core/models/lookup-item';
 import { FormControlErrorsComponent } from '../../../../../shared/components/form-control-errors/form-control-errors.component';
+import { InputMaskModule } from 'primeng/inputmask';
 
 type FormType = {
   name: FormControl<string>;
@@ -48,6 +49,7 @@ type FormType = {
     LookupComponent,
     ToggleSwitchModule,
     PasswordModule,
+    InputMaskModule,
     FormControlErrorsComponent
 ],
   providers: [

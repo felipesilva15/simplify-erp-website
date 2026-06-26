@@ -20,8 +20,7 @@ import { PhonePipe } from '../../../../../shared/pipes/phone-pipe';
     CrudListComponent,
     ListPageUi,
     AppTemplate,
-    TagModule,
-    PhonePipe
+    TagModule
   ],
   providers: [
     {

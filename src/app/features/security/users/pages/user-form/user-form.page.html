@@ -34,7 +34,7 @@
                     </div>
                     <div class="col-12 md:col-6">
                         <label htmlFor="phone_number">Telefone<span class="text-red-500 font-bold">*</span></label>
-                        <input id="phone_number" formControlName="phone_number" pInputText required [invalid]="isInvalid('phone_number')" />
+                        <p-inputMask mask="(99) 99999999?9" [unmask]="true" id="phone_number" required formControlName="phone_number" [invalid]="isInvalid('phone_number')"></p-inputMask>
                         @if (isInvalid('phone_number')) {
                             @if (form.get('phone_number')?.errors?.['required']) {
                                 <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
