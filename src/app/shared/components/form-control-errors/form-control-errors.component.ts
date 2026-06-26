@@ -66,6 +66,8 @@ export class FormControlErrorsComponent implements OnDestroy {
 
     const messages: string[] = [];
 
+    console.log(errors)
+
     if (errors['required']) {
       messages.push(`${label} é obrigatório(a).`);
     }
@@ -90,6 +92,10 @@ export class FormControlErrorsComponent implements OnDestroy {
 
     if (errors['email']) {
       messages.push(`Informe um e-mail válido.`);
+    }
+
+    if (errors['phone']) {
+      messages.push(`Informe um telefone válido.`);
     }
 
     if (errors['pattern']) {

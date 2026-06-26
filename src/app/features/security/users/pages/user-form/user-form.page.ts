@@ -22,6 +22,7 @@ import { PasswordModule } from 'primeng/password';
 import { LookupItem } from '../../../../../core/models/lookup-item';
 import { FormControlErrorsComponent } from '../../../../../shared/components/form-control-errors/form-control-errors.component';
 import { InputMaskModule } from 'primeng/inputmask';
+import { phoneValidator } from '../../../../../shared/validators/phone.validator';
 
 type FormType = {
   name: FormControl<string>;
@@ -51,7 +52,7 @@ type FormType = {
     PasswordModule,
     InputMaskModule,
     FormControlErrorsComponent
-],
+  ],
   providers: [
     {
       provide: CrudFormFacade<User>,
@@ -84,7 +85,7 @@ export class UserFormPage {
     name: ['', [Validators.required, Validators.maxLength(255)]],
     username: ['', [Validators.required, Validators.maxLength(255)]],
     email: ['', [Validators.required, Validators.maxLength(80), Validators.email]],
-    phone_number: ['', [Validators.maxLength(14)]],
+    phone_number: ['', [phoneValidator()]],
     password: ['', [Validators.required, Validators.maxLength(255)]],
     password_confirmation: ['', [Validators.required, Validators.maxLength(255)]],
     roles: [[] as LookupItem[], []],

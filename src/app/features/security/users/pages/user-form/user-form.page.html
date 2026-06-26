@@ -35,13 +35,7 @@
                     <div class="col-12 md:col-6">
                         <label htmlFor="phone_number">Telefone<span class="text-red-500 font-bold">*</span></label>
                         <p-inputMask mask="(99) 99999999?9" [unmask]="true" id="phone_number" required formControlName="phone_number" [invalid]="isInvalid('phone_number')"></p-inputMask>
-                        @if (isInvalid('phone_number')) {
-                            @if (form.get('phone_number')?.errors?.['required']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
-                            } @else if (form.get('phone_number')?.errors?.['maxlength']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('phone_number')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('phone_number')?.errors?.['maxlength'].actualLength }} caracteres.</p-message>
-                            }
-                        }
+                        <app-form-control-errors [control]="form.get('phone_number')"></app-form-control-errors>
                     </div>
                     @if (facade.isCreate()) {
                         <div class="col-12 md:col-6">
