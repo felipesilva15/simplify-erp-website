@@ -7,10 +7,11 @@ import { AppStartupService } from '../services/app-startup-service';
 
 export const permissionGuard: CanActivateFn = async (route) => {
   const permissionService: PermissionService = inject(PermissionService);
+  const authService: AuthService = inject(AuthService);
   const router: Router = inject(Router);
   const appStartupService: AppStartupService = inject(AppStartupService);
 
-  const permission = route.data?.['permission'];
+  const permission: string = route.data?.['permission'] as string;
 
   await firstValueFrom(appStartupService.initalized$);
 
@@ -19,7 +20,11 @@ export const permissionGuard: CanActivateFn = async (route) => {
   }
 
   if (!router.url.includes('error')) {
-    router.navigate(['/error/403']);
+    router.navigate(['/error/403'], {
+      state: {
+        username: authService.user?.username ?? ''
+      }
+    });
   }
 
   return false;

@@ -4,11 +4,13 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { ToastService } from '../../shared/services/toast-service';
+import { AuthService } from '../auth/services/auth-service';
 
 export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const appLoadingService: AppLoadingService = inject(AppLoadingService);
   const toastService: ToastService = inject(ToastService);
+  const authService: AuthService = inject(AuthService)
   
   return next(req).pipe(
       tap({
@@ -19,7 +21,7 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
                 toastService.show({
                   severity: 'error',
                   title: 'Ops...',
-                  message: 'Você precisa estar logado para acessar este recurso!',
+                  message: 'Você precisa fazer login para acessar este recurso!',
                   life: 7000
                 });
 
@@ -28,11 +30,19 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
               break;
 
             case 403:
-              router.navigate(['/error/403']);
+              router.navigate(['/error/403'], {
+                state: {
+                  username: authService.user?.username ?? ''
+                }
+              });
               break;
 
             case 404:
-              router.navigate(['/error/404']);
+              router.navigate(['/error/404'], {
+                state: {
+                  username: authService.user?.username ?? ''
+                }
+              });
               break;
           
             default:

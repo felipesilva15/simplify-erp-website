@@ -1,0 +1,22 @@
+<div class="w-screen px-3 py-3 flex justify-content-between bg-gray-100">
+    <div class="flex align-items-center gap-2">
+        <i class="pi pi-clock text-sm text-color-secondary"></i>
+        <span class="text-color-secondary">Data de acesso em </span>
+        <span class="font-bold">{{ accessDate() | date: "dd/MM/yyyy HH:mm:ss" }}</span>
+    </div>
+    <div class="flex flex-row gap-3 align-items-center justify-content-center">
+        @if (username()) {
+            <div>
+                <i class="pi pi-user text-sm text-color-secondary"></i>
+                <span class="text-color-secondary"> Usuário </span>
+                <span class="font-bold">{{ username() | lowercase }}</span>
+            </div>
+            <i class="pi pi-circle-fill" style="font-size: 0.375rem"></i>
+        }
+        <div>
+            <i class="pi pi-globe text-sm text-color-secondary"></i>
+            <span class="text-color-secondary"> IP </span>
+            <span class="font-bold">{{ ip() }}</span>
+        </div>
+    </div>
+</div>
