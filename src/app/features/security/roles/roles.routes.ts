@@ -11,6 +11,12 @@ export const ROLES_ROUTES: Routes = [
         canActivate: [permissionGuard]
     },
     {
+        path: 'new',
+        data: { permission: 'roles.create' },
+        component: RoleFormPage,
+        canActivate: [permissionGuard]
+    },
+    {
         path: ':id/edit',
         data: { permission: 'roles.edit' },
         component: RoleFormPage,
@@ -19,12 +25,6 @@ export const ROLES_ROUTES: Routes = [
     {
         path: ':id',
         data: { permission: 'roles.view' },
-        component: RoleFormPage,
-        canActivate: [permissionGuard]
-    },
-    {
-        path: 'new',
-        data: { permission: 'roles.create' },
         component: RoleFormPage,
         canActivate: [permissionGuard]
     }

@@ -10,22 +10,22 @@ export const USERS_ROUTES: Routes = [
         component: UserListPage,
         canActivate: [permissionGuard]
     },
-        {
-            path: ':id/edit',
-            data: { permission: 'users.edit' },
-            component: UserFormPage,
-            canActivate: [permissionGuard]
-        },
-        {
-            path: ':id',
-            data: { permission: 'users.view' },
-            component: UserFormPage,
-            canActivate: [permissionGuard]
-        },
-        {
-            path: 'new',
-            data: { permission: 'users.create' },
-            component: UserFormPage,
-            canActivate: [permissionGuard]
-        }
+    {
+        path: 'new',
+        data: { permission: 'users.create' },
+        component: UserFormPage,
+        canActivate: [permissionGuard]
+    },
+    {
+        path: ':id/edit',
+        data: { permission: 'users.edit' },
+        component: UserFormPage,
+        canActivate: [permissionGuard]
+    },
+    {
+        path: ':id',
+        data: { permission: 'users.view' },
+        component: UserFormPage,
+        canActivate: [permissionGuard]
+    }
 ];
