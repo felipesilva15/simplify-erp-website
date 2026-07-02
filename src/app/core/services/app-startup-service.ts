@@ -15,7 +15,7 @@ export class AppStartupService {
   private _initalized = new ReplaySubject<boolean>(1);
   initalized$ = this._initalized.asObservable();
 
-  async init() {
+  async init(): Promise<void> {
     this.toastService.clear();
 
     this.appLoadingService.start();
