@@ -5,7 +5,7 @@ export default defineConfig({
     coverage: {
         provider: 'v8',
         reporter: ['text', 'json', 'html'],
-        reportOnFailure: true, // Garante a geração do report mesmo em caso de falhas
+        reportOnFailure: true,
     },
   },
 });
