@@ -9,6 +9,10 @@ export class PermissionService {
   constructor(private authService: AuthService) {}
 
   has(permission: string): boolean {
+    if (!this.authService.user?.permissions) {
+      return false;
+    }
+
     if (this.authService.user?.permissions.includes('*')) {
       return true;
     }
