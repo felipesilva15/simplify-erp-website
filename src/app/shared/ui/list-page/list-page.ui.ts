@@ -17,7 +17,7 @@ export class ListPageUi {
   @ContentChildren(AppTemplate)
   templates!: QueryList<AppTemplate>;
 
-  contentTemplate!: TemplateRef<any>;
+  contentTemplate!: TemplateRef<any> | null;
 
   ngAfterContentInit(): void {
     this.templates.forEach(template => {
