@@ -52,16 +52,16 @@ describe('PermissionService', () => {
 
   it('should return true when the user has one of the required permissions', () => {
     authService.user.permissions = ['test.list', 'test.create'];
-    expect(service.has('test.list')).toBe(true);
+    expect(service.hasAny(['test.list'])).toBe(true);
   });
 
   it('should return false when the user does not have any of the required permissions', () => {
     authService.user.permissions = ['test.list', 'test.create'];
-    expect(service.has('test.delete')).toBe(false);
+    expect(service.hasAny(['test.delete'])).toBe(false);
   });
 
   it('should return true when the user has all of the required permissions', () => {
     authService.user.permissions = ['*'];
-    expect(service.has('test.delete')).toBe(true);
+    expect(service.hasAny(['test.delete'])).toBe(true);
   });
 });
