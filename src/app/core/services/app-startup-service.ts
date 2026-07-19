@@ -14,6 +14,11 @@ export class AppStartupService {
 
   private _initalized = new ReplaySubject<boolean>(1);
   initalized$ = this._initalized.asObservable();
+  delay: number = 800;
+
+  constructor() {
+    this._initalized.next(false);
+  }
 
   async init(): Promise<void> {
     this.toastService.clear();
@@ -22,7 +27,7 @@ export class AppStartupService {
     
     await Promise.all([
       this.authService.loadUser(),
-      new Promise(r => setTimeout(r, 800))
+      new Promise(r => setTimeout(r, this.delay))
     ]);
 
     this.appLoadingService.stop();
