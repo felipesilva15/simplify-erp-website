@@ -9,9 +9,9 @@ export class RouteUtilsService {
   private router: Router = inject(Router);
 
   getFormModeFromCurrentUrl(): FormMode {
-    if (this.router.url.includes('new')) {
+    if (this.router.url.slice(-4) === '/new') {
       return FormMode.CREATE;
-    } else if (this.router.url.includes('edit')) {
+    } else if (this.router.url.slice(-5) === '/edit') {
       return FormMode.EDIT;
     } else {
       return FormMode.VIEW;
