@@ -51,4 +51,56 @@ describe('RouteUtilsService', () => {
       expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.VIEW);
     });
   });
+
+  describe('isRouteActive', () => {
+    it('should return false when url is empty', () => {
+      router.url = '/test';
+      expect(service.isRouteActive('')).toBe(false);
+    });
+
+    it('should return true when currentUrl matches the url exactly', () => {
+      router.url = '/test';
+      expect(service.isRouteActive('/test')).toBe(true);
+    });
+
+    it('should return true when currentUrl matches view pattern (url/id)', () => {
+      router.url = '/test/123';
+      expect(service.isRouteActive('/test')).toBe(true);
+    });
+
+    it('should return true when currentUrl matches edit pattern (url/id/edit)', () => {
+      router.url = '/test/123/edit';
+      expect(service.isRouteActive('/test')).toBe(true);
+    });
+
+    it('should return true when currentUrl matches create pattern (url/new)', () => {
+      router.url = '/test/new';
+      expect(service.isRouteActive('/test')).toBe(true);
+    });
+
+    it('should return false when currentUrl does not match any pattern', () => {
+      router.url = '/other';
+      expect(service.isRouteActive('/test')).toBe(false);
+    });
+
+    it('should ignore query parameters in currentUrl', () => {
+      router.url = '/test?param=value';
+      expect(service.isRouteActive('/test')).toBe(true);
+    });
+
+    it('should handle url without leading slash in view pattern match', () => {
+      router.url = '/test/123';
+      expect(service.isRouteActive('test')).toBe(true);
+    });
+
+    it('should lowercase urls for comparison', () => {
+      router.url = '/Test';
+      expect(service.isRouteActive('/test')).toBe(true);
+    });
+
+    it('should handle regex special characters in url', () => {
+      router.url = '/test(1)';
+      expect(service.isRouteActive('/test(1)')).toBe(true);
+    });
+  });
 });
