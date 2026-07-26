@@ -141,11 +141,11 @@ describe('RoleListPage', () => {
     });
 
     it('should have name filter', () => {
-      expect(component.filterDefinition[0].name).toEqual('name');
+      expect(component.filterDefinition[1].name).toEqual('name');
     });
 
     it('should have description filter', () => {
-      expect(component.filterDefinition[0].name).toEqual('description');
+      expect(component.filterDefinition[2].name).toEqual('description');
     });
   });
 
