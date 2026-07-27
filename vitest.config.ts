@@ -7,6 +7,7 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       reportOnFailure: true,
       exclude: [
+        '*.layout.html',
         '*.page.html'
       ]
     },
