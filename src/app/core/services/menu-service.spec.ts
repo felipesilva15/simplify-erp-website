@@ -144,13 +144,11 @@ describe('MenuService', () => {
 
   describe('updateMenuActivation', () => {
     it('should return early for null menu', () => {
-      service.updateMenuActivation(null as any);
-      expect(service.updateMenuActivation).toHaveBeenCalledTimes(1);
+      expect(() => service.updateMenuActivation(null as any)).not.toThrow();
     });
 
     it('should return early for empty menu', () => {
-      service.updateMenuActivation([]);
-      expect(service.updateMenuActivation).toHaveBeenCalledTimes(1);
+      expect(() => service.updateMenuActivation([])).not.toThrow();
     });
 
     it('should set active to true when route matches item link', () => {

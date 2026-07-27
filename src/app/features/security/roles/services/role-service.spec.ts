@@ -12,7 +12,8 @@ import { ApiResponse } from '../../../../core/models/api-response';
 import { RoleRequestData } from '../models/role-request-data';
 import { LookupFilter } from '../../../../core/models/lookup-filter';
 import { LookupItem } from '../../../../core/models/lookup-item';
-import { of } from 'rxjs';
+import { Observable } from 'rxjs';
+
 
 describe('RoleService', () => {
   let service: RoleService;
@@ -204,9 +205,6 @@ describe('RoleService', () => {
   it('should lookup roles', () => {
     const filter: LookupFilter = { q: 'Financeiro' };
 
-    expect(() => service.search(filter)).toThrow('Method not implemented.');
-    expect(queryBuilder.buildHttpParams).not.toHaveBeenCalled();
-
     const httpParams = new HttpParams();
     const response: ApiResponse<LookupItem[]> = {
       success: true,
@@ -216,7 +214,7 @@ describe('RoleService', () => {
 
     queryBuilder.buildHttpParams.mockReturnValue(httpParams);
 
-    of(service.search(filter)).subscribe(result => {
+    (service.search(filter) as Observable<ApiResponse<LookupItem[]>>).subscribe(result => {
       expect(result).toEqual(response);
     });
 

@@ -54,7 +54,7 @@ export class FormControlErrorsComponent implements OnDestroy {
     return !!state.errors && (state.dirty || state.touched);
   });
 
-  errorMessages = computed<string[]>(() => {
+  errorMessages = computed<{ key: string; message: string }[]>(() => {
     if (!this.showErrors()) 
       return [];
 
@@ -64,50 +64,48 @@ export class FormControlErrorsComponent implements OnDestroy {
     if (!errors) 
       return [];
 
-    const messages: string[] = [];
-
-    console.log(errors)
+    const messages: { key: string; message: string }[] = [];
 
     if (errors['required']) {
-      messages.push(`${label} é obrigatório(a).`);
+      messages.push({ key: 'required', message: `${label} é obrigatório(a).` });
     }
 
     if (errors['minlength']) {
       const { requiredLength, actualLength } = errors['minlength'];
-      messages.push(`${label} deve ter no mínimo ${requiredLength} caracteres. Foram informados ${actualLength}.`);
+      messages.push({ key: 'minlength', message: `${label} deve ter no mínimo ${requiredLength} caracteres. Foram informados ${actualLength}.` });
     }
 
     if (errors['maxlength']) {
       const { requiredLength, actualLength } = errors['maxlength'];
-      messages.push(`${label} deve ter no máximo ${requiredLength} caracteres. Foram informados ${actualLength}.`);
+      messages.push({ key: 'maxlength', message: `${label} deve ter no máximo ${requiredLength} caracteres. Foram informados ${actualLength}.` });
     }
 
     if (errors['min']) {
-      messages.push(`${label} deve ser no mínimo ${errors['min'].min}.`);
+      messages.push({ key: 'min', message: `${label} deve ser no mínimo ${errors['min'].min}.` });
     }
 
     if (errors['max']) {
-      messages.push(`${label} deve ser no máximo ${errors['max'].max}.`);
+      messages.push({ key: 'max', message: `${label} deve ser no máximo ${errors['max'].max}.` });
     }
 
     if (errors['email']) {
-      messages.push(`Informe um e-mail válido.`);
+      messages.push({ key: 'email', message: `Informe um e-mail válido.` });
     }
 
     if (errors['phone']) {
-      messages.push(`Informe um telefone válido.`);
+      messages.push({ key: 'phone', message: `Informe um telefone válido.` });
     }
 
     if (errors['pattern']) {
-      messages.push(`${label} possui formato inválido.`);
+      messages.push({ key: 'pattern', message: `${label} possui formato inválido.` });
     }
 
     if (errors['cpf']) {
-      messages.push(`Informe um CPF válido.`);
+      messages.push({ key: 'cpf', message: `Informe um CPF válido.` });
     }
 
     if (errors['cnpj']) {
-      messages.push(`Informe um CNPJ válido.`);
+      messages.push({ key: 'cnpj', message: `Informe um CNPJ válido.` });
     }
 
     return messages;
