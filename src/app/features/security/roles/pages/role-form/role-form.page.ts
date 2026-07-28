@@ -15,6 +15,7 @@ import { ButtonModule } from 'primeng/button';
 import { FormPageUi } from "../../../../../shared/ui/form-page/form-page.ui";
 import { AppTemplate } from "../../../../../shared/directives/app-template";
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
+import { FormControlErrorsComponent } from "../../../../../shared/components/form-control-errors/form-control-errors.component";
 
 type FormType = {
   name: FormControl<string>;
@@ -33,7 +34,8 @@ type FormType = {
     ButtonModule,
     FluidModule,
     FormPageUi,
-    AppTemplate
+    AppTemplate,
+    FormControlErrorsComponent
 ],
   providers: [
     {

@@ -17,22 +17,12 @@
                     <div class="col-12">
                         <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
                         <input id="name" formControlName="name" pInputText required autofocus [invalid]="isInvalid('name')" />
-                        @if (isInvalid('name')) {
-                            @if (form.get('name')?.errors?.['required']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo é obrigatório.</p-message>
-                            } @else if (form.get('name')?.errors?.['maxlength']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('name')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('name')?.value?.length }} caracteres.</p-message>
-                            }
-                        }
+                        <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
                     </div>
                     <div class="col-12">
                         <label htmlFor="description">Descrição</label>
                         <textarea rows="5" cols="30" id="description" pTextarea formControlName="description" [invalid]="isInvalid('description')"></textarea>
-                        @if (isInvalid('description')) {
-                            @if (form.get('description')?.errors?.['maxlength']) {
-                                <p-message severity="error" size="small" variant="simple">Este campo deve ter no máximo {{ form.get('description')?.errors?.['maxlength'].requiredLength }} caracteres. Foram informados {{ form.get('description')?.value?.length }} caracteres.</p-message>
-                            }
-                        }
+                        <app-form-control-errors [control]="form.get('description')"></app-form-control-errors>
                     </div>
                     <div class="col-12">
                         <div class="flex justify-content-end gap-2">

@@ -363,7 +363,7 @@ describe('RoleFormPage', () => {
       component.form.get('name')!.markAsDirty();
       fixture.detectChanges();
       const native = fixture.nativeElement as HTMLElement;
-      expect(native.textContent).toContain('Este campo é obrigatório.');
+      expect(native.textContent).toContain('Este campo é obrigatório(a).');
     });
 
     it('should show maxlength validation message for name', () => {
