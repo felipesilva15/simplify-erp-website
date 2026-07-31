@@ -14,6 +14,13 @@
                 }
             </div>
         }
+        @if (facade?.hasServerErrors()) {
+            <div class="flex flex-column w-full mb-4">
+                @for (error of facade?.serverErrors(); track $index) {
+                    <p-message icon="pi pi-exclamation-triangle" severity="error">{{ error.value }}</p-message>
+                }
+            </div>
+        }
         @if(contentTemplate) {
             <ng-container [ngTemplateOutlet]="contentTemplate"></ng-container>
         }

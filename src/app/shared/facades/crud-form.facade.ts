@@ -7,11 +7,12 @@ import { CrudService } from "../../core/contracts/crud-service";
 import { CrudFormConfig } from "../../core/models/crud-form-config";
 import { FormGroup } from "@angular/forms";
 import { PermissionService } from "../../core/auth/services/permission-service";
-import { finalize, Observable, tap } from "rxjs";
+import { catchError, finalize, Observable, take, tap } from "rxjs";
 import { ApiResponse } from "../../core/models/api-response";
 import { ConfirmDialogService } from "../services/confirm-dialog-service";
-import { Location } from "@angular/common";
+import { KeyValue, Location } from "@angular/common";
 import { ApiMetaOption } from '../../core/enums/api-meta-option';
+import { ToastConfig } from '../../core/models/toast-config';
 
 export class CrudFormFacade<T extends BaseEntity> {
     private permissionService: PermissionService = inject(PermissionService);
@@ -25,6 +26,7 @@ export class CrudFormFacade<T extends BaseEntity> {
     private _loading: WritableSignal<boolean> = signal<boolean>(false);
     private _saving: WritableSignal<boolean> = signal<boolean>(false);
     private _error: WritableSignal<string | null> = signal<string | null>(null);
+    private _serverErrors: WritableSignal<KeyValue<string, string>[]> = signal<KeyValue<string, string>[]>([])
 
     mode: Signal<FormMode> = this._mode.asReadonly();
     entity: Signal<T | null> = this._entity.asReadonly();
@@ -32,11 +34,13 @@ export class CrudFormFacade<T extends BaseEntity> {
     loading: Signal<boolean> = this._loading.asReadonly();
     saving: Signal<boolean> = this._saving.asReadonly();
     error: Signal<string | null> = this._error.asReadonly();
+    serverErrors: Signal<KeyValue<string, string>[]> = this._serverErrors.asReadonly();
 
     isCreate: Signal<boolean> = computed(() => this._mode() === FormMode.CREATE);
     isEdit: Signal<boolean> = computed(() => this._mode() === FormMode.EDIT);
     isView: Signal<boolean> = computed(() => this._mode() === FormMode.VIEW);
     hasWarnings: Signal<boolean> = computed(() => (this.entityResponse()?.warnings?.length ?? 0) > 0);
+    hasServerErrors: Signal<boolean> = computed(() => this.serverErrors().length > 0);
 
     constructor(
         private service: CrudService<T>,
@@ -107,6 +111,8 @@ export class CrudFormFacade<T extends BaseEntity> {
 
     submit(form: FormGroup, id?: number): Observable<ApiResponse<T>> {
         form.markAllAsTouched();
+        
+        this.unsetServerErrors(form);
 
         if (form.invalid) {
             this.scrollTop();
@@ -129,27 +135,35 @@ export class CrudFormFacade<T extends BaseEntity> {
         const request$ = this.isCreate() ? this.service.create(payload) : this.service.update(id!, payload);
 
         return request$.pipe(
-            tap((res: ApiResponse<T>) => {
-                this._entity.set(res.data);
+            tap({
+                next: (res: ApiResponse<T>) => {
+                    this._entity.set(res.data);
 
-                this.config?.afterSubmit?.(res.data);
+                    this.config?.afterSubmit?.(res.data);
 
-                if (this.config?.successMessage) {
-                    this.toastService.show({
-                        title: 'Sucesso',
-                        message: this.config.successMessage,
-                        severity: 'success'
-                    })
+                    if (this.config?.successMessage) {
+                        this.toastService.show({
+                            title: 'Sucesso',
+                            message: this.config.successMessage,
+                            severity: 'success'
+                        })
+                    }
+
+                    if (this.config?.navigateAfterSave) {
+                        this.config.navigateAfterSave(res.data);
+                    }
+                    else {
+                        this.navigateBack();
+                    }
+
+                    form.markAsPristine();
+                },
+                error: (err: any) => {
+                    if (err.error) {
+                        this.applyServerErrors(form, err.error);
+                        this.scrollTop();
+                    }
                 }
-
-                if (this.config?.navigateAfterSave) {
-                    this.config.navigateAfterSave(res.data);
-                }
-                else {
-                    this.navigateBack();
-                }
-
-                form.markAsPristine();
             }),
             finalize(() => this._saving.set(false))
         );
@@ -191,6 +205,51 @@ export class CrudFormFacade<T extends BaseEntity> {
             'label' in value &&
             'meta' in value
         );
+    }
+
+    applyServerErrors(form: FormGroup, response: ApiResponse<undefined>): void {
+        const serverErrors: KeyValue<string, string>[] = [];
+
+        if (response.errors) {
+            Object.entries(response.errors).forEach(([path, messages]) => {
+                const control = form.get(this.toControlPath(path));
+                if (control) {
+                    control.setErrors({ ...control.errors, server: messages });
+                    control.markAsTouched();
+
+                    control.valueChanges.pipe(take(1)).subscribe(() => {
+                        const { server, ...rest } = control.errors ?? {};
+                        control.setErrors(Object.keys(rest).length ? rest : null);
+                    });
+                } else {
+                   serverErrors.push({key: path, value: messages[0]});
+                }
+            });
+        }
+
+        if (!response.success && response.message && !response.errors) {
+            serverErrors.push({key: 'server', value: response.message});
+        }
+
+        this._serverErrors.set(serverErrors);
+    }
+
+    private toControlPath(path: string): string {
+        return path;
+    }
+
+    unsetServerErrors(form: FormGroup): void {
+        this._serverErrors.set([]);
+        Object.keys(form.controls).forEach(key => {
+            const control = form.get(key);
+
+            if (control) {
+                const currentErrors = { ...control?.errors };
+                delete currentErrors['server'];
+
+                control.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+            }
+        });
     }
 
     navigateBack(form?: FormGroup): void {

@@ -108,6 +108,10 @@ export class FormControlErrorsComponent implements OnDestroy {
       messages.push({ key: 'cnpj', message: `Informe um CNPJ válido.` });
     }
 
+    if (errors['server']) {
+      messages.push({ key: 'server', message: errors['server'] });
+    }
+
     return messages;
   });
 
