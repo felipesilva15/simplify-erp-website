@@ -2,11 +2,18 @@
     <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
     <div class="flex flex-row justify-content-between align-items-end mt-5 mb-3">
         <h2 class="text-3xl m-0">{{ title() }}</h2>
-        @if (entity()?.updated_at) {
-            <span id="last-updated-date" class="text-color-secondary animation-duration-300 fadein">Última alteração em: {{ entity()?.updated_at | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+        @if (facade?.entity()?.updated_at) {
+            <span id="last-updated-date" class="text-color-secondary animation-duration-300 fadein">Última alteração em: {{ facade?.entity()?.updated_at | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
         }
     </div>
     <div class="bg-white border-round p-3">
+        @if (facade?.hasWarnings()) {
+            <div class="flex flex-column w-full mb-4">
+                @for (warning of facade?.entityResponse()?.warnings; track $index) {
+                    <p-message icon="pi pi-exclamation-triangle" severity="warn">{{ warning }}</p-message>
+                }
+            </div>
+        }
         @if(contentTemplate) {
             <ng-container [ngTemplateOutlet]="contentTemplate"></ng-container>
         }
