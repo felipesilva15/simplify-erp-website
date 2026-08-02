@@ -30,7 +30,7 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
               break;
 
             case 403:
-              router.navigate(['/error/403'], {
+              router.navigate(['/error', 403], {
                 state: {
                   username: authService.user?.username ?? ''
                 }
@@ -38,14 +38,45 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
               break;
 
             case 404:
-              router.navigate(['/error/404'], {
+              router.navigate(['/error', 404], {
                 state: {
                   username: authService.user?.username ?? ''
                 }
               });
               break;
-          
+
+            case 500:
+              router.navigate(['/error', 500], {
+                state: {
+                  username: authService.user?.username ?? ''
+                }
+              });
+              break;
+
+            case 502:
+              router.navigate(['/error', 502], {
+                state: {
+                  username: authService.user?.username ?? ''
+                }
+              });
+              break;
+
+            case 503:
+              router.navigate(['/error', 503], {
+                state: {
+                  username: authService.user?.username ?? ''
+                }
+              });
+              break;
+
             default:
+              if (err.statusText === 'Unknown Error') {
+                router.navigate(['/error', 503], {
+                  state: {
+                    username: authService.user?.username ?? ''
+                  }
+                });
+              }
               break;
           }
 

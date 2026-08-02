@@ -1,0 +1,36 @@
+<div class="flex gap-8 justify-content-center">
+    <div class="flex flex-column gap-3 align-items-center justify-content-center">
+        <div class="flex align-items-center">
+            <div class="flex align-items-center justify-content-center w-10rem h-10rem border-solid border-gray-300 text-gray-300 bg-gray-50 border-circle" style="border-width: 4px;">
+                <i [class]="config().mainIcon" style="font-size: 5rem"></i>
+            </div>
+        </div>
+        <div class="flex flex-column text-center text-gray-300">
+            <span class="font-bold line-height-1" style="font-size: 9rem;">{{ config().code }}</span>
+            <span class="mt-1 uppercase font-bold" style="letter-spacing: 0.1rem;">{{ config().codeDescription }}</span>
+        </div>
+    </div>
+    <p-divider class="my-4" layout="vertical"/>
+    <div class="flex flex-column gap-4 max-w-28rem">
+        <div class="flex align-items-center gap-3">
+            <div class="flex align-items-center justify-content-center border-circle w-3rem" [class]="config().badge.backgroundClass" style="min-width: 2.5rem !important; min-height: 2.5rem !important;">
+                <i [class]="config().badge.icon + ' ' + config().badge.textClass" class="text-base"></i>
+            </div>
+            <h2 class="text-xl font-bold text-gray-900 m-0">{{ config().title }}</h2>
+        </div>
+        <p class="text-gray-400 line-height-3 m-0">
+            {{ config().description }}
+        </p> 
+        <p-message [severity]="config().message.severity" icon="pi pi-info-circle">
+            <p class="m-0">{{ config().message.title }}</p>
+            <p class="mt-1 mb-0 text-sm font-normal">{{ config().message.description }}</p>
+        </p-message>
+        <div class="flex gap-2">
+            @for (button of config().buttons; track $index) {
+                <a [routerLink]="button.route" pButton [icon]="button.icon" [severity]="button.severity" (click)="button.command?.()" class="no-underline">
+                    <span pButtonLabel>{{ button.label }}</span>
+                </a>
+            }
+        </div>
+    </div>
+</div>
