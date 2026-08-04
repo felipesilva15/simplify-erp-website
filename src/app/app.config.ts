@@ -8,11 +8,13 @@ import { errorResponseInterceptor } from './core/interceptors/error-response-int
 import { THEME } from './core/config/theme';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { TRANSLATION } from './core/config/translation';
+import { DialogService } from 'primeng/dynamicdialog';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     MessageService,
     ConfirmationService,
+    DialogService,
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([errorResponseInterceptor])),
