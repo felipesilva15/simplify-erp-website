@@ -2,6 +2,7 @@ import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalE
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
+import { provideEnvironmentNgxMask } from 'ngx-mask';
 
 import { routes } from './app.routes';
 import { errorResponseInterceptor } from './core/interceptors/error-response-interceptor';
@@ -23,6 +24,12 @@ export const appConfig: ApplicationConfig = {
       inputStyle: 'outlined',
       theme: THEME,
       translation: TRANSLATION
+    }),
+    provideEnvironmentNgxMask({
+      validation: true,
+      maskAliases: {
+        TELEFONE_CELULAR_BR: '(00) 0000-0000||(00) 00000-0000' 
+      }
     })
   ]
 };

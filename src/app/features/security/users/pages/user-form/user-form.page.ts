@@ -23,6 +23,7 @@ import { LookupItem } from '../../../../../core/models/lookup-item';
 import { FormControlErrorsComponent } from '../../../../../shared/components/form-control-errors/form-control-errors.component';
 import { InputMaskModule } from 'primeng/inputmask';
 import { phoneValidator } from '../../../../../shared/validators/phone.validator';
+import { NgxMaskDirective } from 'ngx-mask';
 
 type FormType = {
   name: FormControl<string>;
@@ -51,7 +52,8 @@ type FormType = {
     ToggleSwitchModule,
     PasswordModule,
     InputMaskModule,
-    FormControlErrorsComponent
+    FormControlErrorsComponent,
+    NgxMaskDirective
   ],
   providers: [
     {
