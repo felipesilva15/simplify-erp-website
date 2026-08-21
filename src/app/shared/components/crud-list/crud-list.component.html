@@ -1,15 +1,103 @@
-<div>
-    <p-table 
-        #dt 
-        [value]="facade.data()" 
-        [columns]="cols"
+<div class="mb-3 flex flex-row md:justify-content-end justify-content-between flex-wrap align-items-center gap-2">
+    <div class="flex flex-row flex-wrap gap-2">
+        @if (enableSelection()) {
+            <p-button icon="pi pi-trash" severity="danger" [text]="true" [raised]="true" [disabled]="!selectedRecords.length || facade.loading()" pTooltip="Deletar registros selecionados" showDelay="600" hideDelay="300" />
+        }
+        <p-button icon="pi pi-file-excel" severity="success" [text]="true" [raised]="true" pTooltip="Exportar dados para Excel" [disabled]="facade.loading() || true" showDelay="600" hideDelay="300" />
+        <p-button icon="pi pi-print" severity="secondary" [text]="true" [raised]="true" pTooltip="Imprimir registros" [disabled]="facade.loading() || true" showDelay="600" hideDelay="300" />
+        <p-button icon="pi pi-refresh" severity="secondary" [text]="true" [raised]="true" pTooltip="Atualizar consulta" [disabled]="facade.loading()" showDelay="600" hideDelay="300" (onClick)="facade.load()" />
+    </div>
+    <div class="flex flex-row flex-wrap gap-2">
+        <p-button pRipple label="Filtros" [icon]="facade.requestParams()?.filters ? 'pi pi-filter-fill' : 'pi pi-filter'" [text]="true" severity="secondary" [raised]="true" (onClick)="facade.openFilters()" [disabled]="facade.loading()" />
+        <p-button pRipple label="Incluir" icon="pi pi-plus" [routerLink]="formRoute()" [disabled]="!facade.canCreate()" [pTooltip]="facade.canCreate() ? '' : 'Você não possui permissão para incluir.'" tooltipPosition="left" />
+    </div>
+</div>
+
+@if (isMobile()) {
+    <div class="flex flex-column gap-3">
+        @if (facade.loading()) {
+            @for (_ of [].constructor(4); track $index) {
+                <div [class]="cardClass">
+                    <div [class]="cardHeaderClass">
+                        @if (enableSelection()) {
+                            <p-skeleton shape="circle" size="1.25rem" />
+                        }
+                        <p-skeleton width="8rem" height="1.25rem" />
+                        <p-skeleton shape="circle" size="1.25rem" />
+                    </div>
+                    <div class="flex flex-column gap-2">
+                        @for (_ of [].constructor(3); track $index) {
+                            <div class="flex justify-content-between gap-3">
+                                <p-skeleton width="5rem" height="1rem" />
+                                <p-skeleton width="60%" height="1rem" />
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        } @else if (!mobileDisplayData().length) {
+            <div class="flex flex-column align-items-center gap-2 py-6 text-color-secondary">
+                <i class="pi pi-inbox text-4xl"></i>
+                <span>Nenhum registro encontrado.</span>
+            </div>
+        } @else {
+            @let records = mobileDisplayData();
+            @for (record of records; track $index) {
+                <div [class]="cardClass" [class.border-primary]="isSelected(record)" [class.surface-border]="!isSelected(record)">
+                    <div [class]="cardHeaderClass">
+                        <div class="flex align-items-center gap-2 min-w-0">
+                            @if (enableSelection()) {
+                                <p-checkbox [binary]="true" [ngModel]="isSelected(record)" (ngModelChange)="toggleSelection(record, $event)" />
+                            }
+                            <span class="font-semibold overflow-hidden white-space-nowrap text-overflow-ellipsis">{{ mobileCardTitle(record) }}</span>
+                        </div>
+                        <div class="flex align-items-center gap-2 flex-shrink-0">
+                            <span class="text-xs text-color-secondary">#{{ record.id }}</span>
+                            @if (tableMenu.length) {
+                                <p-button icon="pi pi-ellipsis-v" severity="secondary" [text]="true" [rounded]="true" (onClick)="onMobileMenuClick($event, record)" />
+                            }
+                        </div>
+                    </div>
+                    <div class="flex flex-column gap-2">
+                        @for (column of mobileBodyColumns(); track $index) {
+                            <div class="flex align-items-baseline justify-content-between gap-3">
+                                <span class="text-sm text-color-secondary flex-shrink-0">{{ column.header }}</span>
+                                @if (column.template) {
+                                    <div class="crud-card-template w-full">
+                                        <ng-container *ngTemplateOutlet="column.template; context: { $implicit: record }" />
+                                    </div>
+                                } @else {
+                                    <span class="text-sm text-right">{{ formatRowValue(record, column) }}</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <p-paginator
         [rows]="rows"
+        [first]="first"
+        [totalRecords]="mobileTotalRecords()"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
+        (onPageChange)="onPageChange($event)"
+    />
+} @else {
+    <p-table
+        [value]="facade.data()"
+        [columns]="cols"
+        [(rows)]="rows"
+        [(first)]="first"
         [paginator]="true"
         [rowsPerPageOptions]="rowsPerPageOptions"
         [showCurrentPageReport]="true"
         currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
         [lazy]="lazyLoadEnabled()"
-        [lazyLoadOnInit]="lazyLoadEnabled()"
+        [lazyLoadOnInit]="false"
         [totalRecords]="facade.totalRecords()"
         (onLazyLoad)="onLazyLoad($event)"
         [(selection)]="selectedRecords"
@@ -26,24 +114,6 @@
         (onContextMenuSelect)="onContextMenuSelect($event)"
         [contextMenu]="cm"
     >
-        <ng-template pTemplate="caption">
-            <div class="flex flex-column md:flex-row md:justify-content-end md:align-items-center">
-                <div  class="flex flex-row gap-4">
-                    <div class="flex gap-2">
-                        @if (enableSelection()) {
-                            <p-button icon="pi pi-trash" severity="danger" class="transition-duration-300" [text]="true" [raised]="true" [disabled]="!selectedRecords.length || facade.loading()" pTooltip="Deletar registros selecionados" showDelay="600" hideDelay="300" />
-                        }
-                        <p-button icon="pi pi-file-excel" severity="success" [text]="true" [raised]="true" pTooltip="Exportar dados para Excel" [disabled]="facade.loading() || true" showDelay="600" hideDelay="300" />
-                        <p-button icon="pi pi-print" severity="secondary" [text]="true" [raised]="true" pTooltip="Imprimir registros" [disabled]="facade.loading() || true" showDelay="600" hideDelay="300" />
-                        <p-button icon="pi pi-refresh" severity="secondary" [text]="true" [raised]="true" pTooltip="Atualizar consulta" [disabled]="facade.loading()" showDelay="600" hideDelay="300" (onClick)="facade.load()" />
-                    </div>
-                    <div class="flex gap-2">
-                        <p-button pRipple label="Filtros" [icon]="facade.requestParams()?.filters ? 'pi pi-filter-fill' : 'pi pi-filter'" [text]="true" severity="secondary" [raised]="true" (onClick)="facade.openFilters()" [disabled]="facade.loading()"></p-button>
-                        <p-button pRipple label="Incluir" icon="pi pi-plus" [routerLink]="formRoute()" [disabled]="!facade.canCreate()" [pTooltip]="facade.canCreate() ? '' : 'Você não possui permissão para incluir.'" tooltipPosition="left"></p-button>
-                    </div>
-                </div>
-            </div>
-        </ng-template>
         <ng-template pTemplate="header">
             <tr>
                 @if (enableSelection()) {
@@ -74,11 +144,11 @@
                     @if (column.template) {
                         <ng-container *ngTemplateOutlet="column.template; context: { $implicit: record }"></ng-container>
                     } @else if (column.type == 'boolean') {
-                            <td>
+                        <td>
                             @if (record?.[column.field]) {
                                 <i class="pi pi-check" pTooltip="Sim"></i>
                             }
-                            </td>
+                        </td>
                     } @else {
                         <td>
                             {{ formatRowValue(record, column) }}
@@ -109,6 +179,8 @@
             }
         </ng-template>
     </p-table>
-</div>
+}
+
 <app-filter-definer [visible]="facade.filterDefinitionVisible()" [fields]="filterFieldDefinition()" (apply)="facade.applyFilters($event)" (visibleChange)="facade.fitlersVisibleChange($event)"></app-filter-definer>
 <p-contextmenu #cm [model]="menuItems" />
+<p-menu #mobileMenu [model]="menuItems" popup="true" appendTo="body" />

@@ -36,8 +36,8 @@ describe('CrudListComponent', () => {
   let facade: ReturnType<typeof createMockFacade>;
 
   const defaultCols: TableColumn<TestEntity>[] = [
-    { field: 'name', header: 'Name', sortable: true, type: ColumnType.TEXT },
-    { field: 'value', header: 'Value', type: ColumnType.CURRENCY },
+    { field: 'name', header: 'Name', sortable: true, type: ColumnType.Text },
+    { field: 'value', header: 'Value', type: ColumnType.Currency },
   ];
 
   beforeAll(() => {
@@ -112,12 +112,12 @@ describe('CrudListComponent', () => {
       expect(filters[0]).toEqual({
         name: 'created_at',
         label: 'Criado em',
-        type: ColumnType.DATETIME,
+        type: ColumnType.Datetime,
       });
       expect(filters[1]).toEqual({
         name: 'updated_at',
         label: 'Atualizado em',
-        type: ColumnType.DATETIME,
+        type: ColumnType.Datetime,
       });
     });
   });
@@ -166,7 +166,7 @@ describe('CrudListComponent', () => {
       const col: TableColumn<TestEntity> = {
         field: 'date',
         header: 'Date',
-        type: ColumnType.DATE,
+        type: ColumnType.Date,
       };
       const result = component.formatRowValue(
         { date: new Date(2024, 0, 15) },
@@ -179,16 +179,16 @@ describe('CrudListComponent', () => {
       const col: TableColumn<TestEntity> = {
         field: 'date',
         header: 'Date',
-        type: ColumnType.DATE,
+        type: ColumnType.Date,
       };
       expect(component.formatRowValue({ date: null }, col)).toBe('');
     });
 
-    it('should format DATETIME type with datePipe', () => {
+    it('should format Datetime type with datePipe', () => {
       const col: TableColumn<TestEntity> = {
         field: 'date',
         header: 'Date',
-        type: ColumnType.DATETIME,
+        type: ColumnType.Datetime,
       };
       const result = component.formatRowValue(
         { date: new Date(2024, 0, 15, 14, 30, 0) },
@@ -197,11 +197,11 @@ describe('CrudListComponent', () => {
       expect(result).toContain('15/01/2024');
     });
 
-    it('should return empty string for null DATETIME value', () => {
+    it('should return empty string for null Datetime value', () => {
       const col: TableColumn<TestEntity> = {
         field: 'date',
         header: 'Date',
-        type: ColumnType.DATETIME,
+        type: ColumnType.Datetime,
       };
       expect(component.formatRowValue({ date: null }, col)).toBe('');
     });
@@ -210,7 +210,7 @@ describe('CrudListComponent', () => {
       const col: TableColumn<TestEntity> = {
         field: 'value',
         header: 'Value',
-        type: ColumnType.CURRENCY,
+        type: ColumnType.Currency,
       };
       const result = component.formatRowValue({ value: 100 }, col);
       expect(result).toBeTruthy();
@@ -220,7 +220,7 @@ describe('CrudListComponent', () => {
       const col: TableColumn<TestEntity> = {
         field: 'value',
         header: 'Value',
-        type: ColumnType.CURRENCY,
+        type: ColumnType.Currency,
       };
       expect(component.formatRowValue({ value: null }, col)).toBe('');
     });
@@ -229,7 +229,7 @@ describe('CrudListComponent', () => {
       const col: TableColumn<TestEntity> = {
         field: 'value',
         header: 'Value',
-        type: ColumnType.PERCENT,
+        type: ColumnType.Percent,
       };
       const result = component.formatRowValue({ value: 0.5 }, col);
       expect(result).toBe('50%');
@@ -239,19 +239,23 @@ describe('CrudListComponent', () => {
       const col: TableColumn<TestEntity> = {
         field: 'value',
         header: 'Value',
-        type: ColumnType.PERCENT,
+        type: ColumnType.Percent,
       };
       expect(component.formatRowValue({ value: null }, col)).toBe('');
+    });
+
+    it('should return Sim for truthy BOOLEAN value', () => {
+      const col = { field: 'name', header: 'Name', type: ColumnType.Boolean };
+      expect(component.formatRowValue({ name: 'x' } as any, col)).toBe('Sim');
+    });
+
+    it('should return Não for falsy BOOLEAN value', () => {
+      const col = { field: 'name', header: 'Name', type: ColumnType.Boolean };
+      expect(component.formatRowValue({ name: '' } as any, col)).toBe('Não');
     });
   });
 
   describe('onContextMenuSelect', () => {
-    it('should set currentRecord from event data', () => {
-      const record = { id: 1, name: 'test' } as TestEntity;
-      component.onContextMenuSelect({ data: record });
-      expect(component.currentRecord).toBe(record);
-    });
-
     it('should map tableMenu items with enabled permission', () => {
       component.tableMenu = [{ label: 'Edit', permission: 'edit.action' }];
       facade.can.mockReturnValue(true);
@@ -410,6 +414,175 @@ describe('CrudListComponent', () => {
       });
 
       expect(facade.applyLazyLoad).toHaveBeenCalledWith(1, 10, '-name');
+    });
+  });
+
+  describe('Mobile', () => {
+    it('should initialize isMobile from matchMedia', () => {
+      fixture.detectChanges();
+      expect(component.isMobile()).toBe(false);
+    });
+
+    it('should render mobile cards instead of the table when isMobile is true', () => {
+      facade.data.mockReturnValue([{ id: 1, name: 'Felipe', value: 100 }]);
+      fixture.detectChanges();
+      component.isMobile.set(true);
+      fixture.detectChanges();
+
+      const el: HTMLElement = fixture.nativeElement;
+      const card = el.querySelector('.surface-card');
+      expect(card).toBeTruthy();
+      expect(el.querySelector('.p-datatable')).toBeFalsy();
+      expect(card?.textContent).toContain('Felipe');
+    });
+
+    it('should highlight selected cards', () => {
+      facade.data.mockReturnValue([{ id: 1, name: 'Felipe', value: 100 }]);
+      fixture.detectChanges();
+      component.isMobile.set(true);
+      component.toggleSelection({ id: 1 } as TestEntity, true);
+      fixture.detectChanges();
+
+      const el: HTMLElement = fixture.nativeElement;
+      expect(el.querySelector('.border-primary')).toBeTruthy();
+    });
+
+    it('should not display the id column in the card body', () => {
+      facade.data.mockReturnValue([{ id: 1, name: 'Felipe', value: 100 }]);
+      component.cols = [
+        { field: 'id', header: 'ID', type: ColumnType.Integer },
+        { field: 'name', header: 'Nome', type: ColumnType.Text },
+        { field: 'value', header: 'Value', type: ColumnType.Currency },
+      ];
+      fixture.detectChanges();
+      component.isMobile.set(true);
+      fixture.detectChanges();
+
+      const el: HTMLElement = fixture.nativeElement;
+      const card = el.querySelector('.surface-card');
+      expect(card?.textContent).toContain('#1');
+      expect(card?.textContent).not.toContain('ID');
+    });
+
+    it('should render the table when isMobile is false', () => {
+      fixture.detectChanges();
+      const el: HTMLElement = fixture.nativeElement;
+      expect(el.querySelector('.p-datatable')).toBeTruthy();
+      expect(el.querySelector('.crud-card')).toBeFalsy();
+    });
+  });
+
+  describe('mobileCardTitle', () => {
+    it('should use the name column when present', () => {
+      component.cols = [
+        { field: 'id', header: 'ID', type: ColumnType.Integer },
+        { field: 'name', header: 'Nome', type: ColumnType.Text },
+      ];
+      expect(component.mobileCardTitle({ id: 1, name: 'Felipe' } as TestEntity)).toBe('Felipe');
+    });
+
+    it('should fall back to the first column when there is no name column', () => {
+      component.cols = [
+        { field: 'email', header: 'E-mail', type: ColumnType.Text },
+        { field: 'username', header: 'Usuário', type: ColumnType.Text },
+      ];
+      expect(component.mobileCardTitle({ email: 'a@b.com' } as any)).toBe('a@b.com');
+    });
+
+    it('should fall back to the record id when value is empty', () => {
+      component.cols = [{ field: 'email', header: 'E-mail', type: ColumnType.Text }];
+      expect(component.mobileCardTitle({ id: 42 } as any)).toBe('#42');
+    });
+  });
+
+  describe('mobileBodyColumns', () => {
+    it('should exclude the title and id columns from the body', () => {
+      component.cols = [
+        { field: 'id', header: 'ID', type: ColumnType.Integer },
+        { field: 'name', header: 'Nome', type: ColumnType.Text },
+        { field: 'value', header: 'Value', type: ColumnType.Currency },
+      ];
+      expect(component.mobileBodyColumns().map(c => c.field)).toEqual(['value']);
+    });
+
+    it('should keep template-only columns when no title column is defined', () => {
+      component.cols = [
+        { field: 'name', header: 'Nome', template: {} as any },
+      ];
+      expect(component.mobileBodyColumns()).toEqual(component.cols);
+    });
+  });
+
+  describe('mobile selection', () => {
+    it('should add and remove records from selection by id', () => {
+      const a = { id: 1 } as TestEntity;
+      const b = { id: 2 } as TestEntity;
+
+      component.toggleSelection(a, true);
+      component.toggleSelection(b, true);
+
+      expect(component.selectedRecords).toEqual([a, b]);
+      expect(component.isSelected(a)).toBe(true);
+
+      component.toggleSelection(a, false);
+
+      expect(component.selectedRecords).toEqual([b]);
+      expect(component.isSelected(a)).toBe(false);
+    });
+  });
+
+  describe('mobileDisplayData', () => {
+    it('should return all data when lazy loading is enabled', () => {
+      const data = [{ id: 1 }, { id: 2 }];
+      facade.data.mockReturnValue(data);
+      fixture.detectChanges();
+      expect(component.mobileDisplayData()).toEqual(data);
+    });
+
+    it('should slice data for the current page when lazy loading is disabled', () => {
+      component.first = 2;
+      component.rows = 1;
+      facade.data.mockReturnValue([{ id: 1 }, { id: 2 }, { id: 3 }]);
+      fixture.componentRef.setInput('lazyLoadEnabled', false);
+      fixture.detectChanges();
+      expect(component.mobileDisplayData()).toEqual([{ id: 3 }]);
+      expect(component.mobileTotalRecords()).toBe(3);
+    });
+  });
+
+  describe('onPageChange', () => {
+    it('should update first and rows and trigger a lazy load', () => {
+      fixture.detectChanges();
+      component.onPageChange({ first: 10, rows: 5 });
+      expect(component.first).toBe(10);
+      expect(component.rows).toBe(5);
+      expect(facade.applyLazyLoad).toHaveBeenCalledWith(3, 5, undefined);
+    });
+
+    it('should only update state when lazy loading is disabled', () => {
+      fixture.componentRef.setInput('lazyLoadEnabled', false);
+      fixture.detectChanges();
+      component.onPageChange({ first: 5, rows: 5 });
+      expect(component.first).toBe(5);
+      expect(component.rows).toBe(5);
+      expect(facade.applyLazyLoad).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onMobileMenuClick', () => {
+    it('should build menu items and toggle the mobile menu', () => {
+      const action = vi.fn();
+      const record = { id: 1, name: 'test' } as TestEntity;
+      component.tableMenu = [{ label: 'Edit', action }];
+      fixture.detectChanges();
+
+      const toggleSpy = vi.spyOn(component.mobileMenu, 'toggle');
+      component.onMobileMenuClick(new Event('click'), record);
+
+      expect(component.menuItems.length).toBe(1);
+      component.menuItems[0].command!({} as any);
+      expect(action).toHaveBeenCalledWith(record);
+      expect(toggleSpy).toHaveBeenCalled();
     });
   });
 });
