@@ -95,7 +95,7 @@ export class UserFormPage {
   });
   
   id: WritableSignal<number> = signal<number>(0);
-  mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.CREATE);
+  mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
   
   modeLabel: Signal<string> = computed(() => FormModeLabel[this.mode()]);
   title: Signal<string> = computed(() => this.modeLabel() + ' perfil');

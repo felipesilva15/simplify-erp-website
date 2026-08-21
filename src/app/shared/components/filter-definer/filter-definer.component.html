@@ -19,22 +19,22 @@
                 <div class="col-12 md:col-4">
                     @if (selectedField) {
                         @switch (selectedField.type) {
-                            @case (ColumnType.INTEGER) {
+                            @case (ColumnType.Integer) {
                                 <p-inputnumber inputId="value" name="value" formControlName="value" required [showButtons]="true" />
                             }
-                            @case (ColumnType.TEXT) {
+                            @case (ColumnType.Text) {
                                 <input type="text" pInputText required id="value" formControlName="value"/>
                             }
-                            @case (ColumnType.DATE) {
+                            @case (ColumnType.Date) {
                                 <p-datepicker inputId="value"  name="value" formControlName="value" [showIcon]="true" [iconDisplay]="'input'" [showClear]="true" />
                             }
-                            @case (ColumnType.DATETIME) {
+                            @case (ColumnType.Datetime) {
                                 <p-datepicker inputId="value"  name="value" formControlName="value" [showIcon]="true" [iconDisplay]="'input'" [showTime]="true" hourFormat="24" [showClear]="true" />
                             }
-                            @case (ColumnType.TEXT) {
+                            @case (ColumnType.Text) {
                                 <input type="text" pInputText required id="value" formControlName="value"/>
                             }
-                            @case (ColumnType.BOOLEAN) {
+                            @case (ColumnType.Boolean) {
                                 <p-toggleswitch name="value" formControlName="value" />
                             }
                             @default {

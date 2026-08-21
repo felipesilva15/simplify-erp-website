@@ -1,11 +1,11 @@
 export enum FormMode {
-    CREATE = 'create',
-    VIEW = 'view',
-    EDIT = 'edit'
+    Create = 'CREATE',
+    View = 'VIEW',
+    Edit = 'EDIT'
 }
 
 export const FormModeLabel: Record<FormMode, string> = {
-    [FormMode.CREATE]: 'Incluir',
-    [FormMode.EDIT]: 'Editar',
-    [FormMode.VIEW]: 'Visualizar'
+    [FormMode.Create]: 'Incluir',
+    [FormMode.Edit]: 'Editar',
+    [FormMode.View]: 'Visualizar'
 };

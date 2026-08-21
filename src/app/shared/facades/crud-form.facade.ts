@@ -20,7 +20,7 @@ export class CrudFormFacade<T extends BaseEntity> {
     private toastService: ToastService = inject(ToastService);
     private location: Location = inject(Location);
 
-    private _mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.CREATE);
+    private _mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
     private _entity: WritableSignal<T | null> = signal<T | null>(null);
     private _entityResponse: WritableSignal<ApiResponse<T> | null> = signal<ApiResponse<T> | null>(null)
     private _loading: WritableSignal<boolean> = signal<boolean>(false);
@@ -36,9 +36,9 @@ export class CrudFormFacade<T extends BaseEntity> {
     error: Signal<string | null> = this._error.asReadonly();
     serverErrors: Signal<KeyValue<string, string>[]> = this._serverErrors.asReadonly();
 
-    isCreate: Signal<boolean> = computed(() => this._mode() === FormMode.CREATE);
-    isEdit: Signal<boolean> = computed(() => this._mode() === FormMode.EDIT);
-    isView: Signal<boolean> = computed(() => this._mode() === FormMode.VIEW);
+    isCreate: Signal<boolean> = computed(() => this._mode() === FormMode.Create);
+    isEdit: Signal<boolean> = computed(() => this._mode() === FormMode.Edit);
+    isView: Signal<boolean> = computed(() => this._mode() === FormMode.View);
     hasWarnings: Signal<boolean> = computed(() => (this.entityResponse()?.warnings?.length ?? 0) > 0);
     hasServerErrors: Signal<boolean> = computed(() => this.serverErrors().length > 0);
 
@@ -60,7 +60,7 @@ export class CrudFormFacade<T extends BaseEntity> {
             }
         });
 
-        if ((mode === FormMode.EDIT || mode === FormMode.VIEW) && id) {
+        if ((mode === FormMode.Edit || mode === FormMode.View) && id) {
             this.load(id, form);
         }
     }
@@ -73,15 +73,15 @@ export class CrudFormFacade<T extends BaseEntity> {
         let permission: string = '';
 
         switch (this.mode()) {
-            case FormMode.CREATE:
+            case FormMode.Create:
                 permission = this.config?.permission?.create ?? ''
                 break;
 
-            case FormMode.EDIT:
+            case FormMode.Edit:
                 permission = this.config?.permission?.update ?? ''
                 break;
 
-            case FormMode.VIEW:
+            case FormMode.View:
                 permission = this.config?.permission?.view ?? ''
                 break;
         }

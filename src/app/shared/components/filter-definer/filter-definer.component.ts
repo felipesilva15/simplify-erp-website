@@ -121,7 +121,7 @@ export class FilterDefinerComponent implements OnInit {
       
       let value = this.filterValue;
 
-      if (this.selectedField.type == ColumnType.DATE || this.selectedField.type == ColumnType.DATETIME) {
+      if (this.selectedField.type == ColumnType.Date || this.selectedField.type == ColumnType.Datetime) {
         value = value.toISOString();
       }
 
@@ -138,7 +138,7 @@ export class FilterDefinerComponent implements OnInit {
         operator: this.operator,
         operatorLabel: this.FilterOperatorLabels[this.operator],
         value: this.filterValue,
-        type: this.selectedField?.type ?? ColumnType.TEXT
+        type: this.selectedField?.type ?? ColumnType.Text
       });
       f = this.sortAppliedFilters(f);
 
@@ -216,19 +216,19 @@ export class FilterDefinerComponent implements OnInit {
     const value = filter.value;
     
     switch (filter.type) {
-      case ColumnType.DATE:
+      case ColumnType.Date:
         return this.datePipe.transform(value, 'dd/MM/yyyy') ?? '';
 
-      case ColumnType.DATETIME:
+      case ColumnType.Datetime:
         return this.datePipe.transform(value, 'dd/MM/yyyy HH:mm') ?? '';
 
-      case ColumnType.CURRENCY:
+      case ColumnType.Currency:
         return this.currencyPipe.transform(value, 'BRL') ?? '';
 
-      case ColumnType.PERCENT:
+      case ColumnType.Percent:
         return this.percentPipe.transform(value) ?? '';
 
-      case ColumnType.BOOLEAN:
+      case ColumnType.Boolean:
         return value ? 'Sim' : 'Não';
 
       default:

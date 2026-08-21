@@ -93,7 +93,7 @@ describe('CrudFormFacade', () => {
   });
 
   it('should initialize signals with default values', () => {
-    expect(facade.mode()).toBe(FormMode.CREATE);
+    expect(facade.mode()).toBe(FormMode.Create);
     expect(facade.entity()).toBeNull();
     expect(facade.entityResponse()).toBeNull();
     expect(facade.loading()).toBe(false);
@@ -110,7 +110,7 @@ describe('CrudFormFacade', () => {
       mockPermissionService.has.mockReturnValue(false);
 
       TestBed.runInInjectionContext(() => {
-        expect(() => facade.init(FormMode.CREATE, form)).toThrow('Sem permissão para a ação.');
+        expect(() => facade.init(FormMode.Create, form)).toThrow('Sem permissão para a ação.');
       });
       expect(mockPermissionService.has).toHaveBeenCalledWith('perm-create');
     });
@@ -121,21 +121,21 @@ describe('CrudFormFacade', () => {
       });
 
       TestBed.runInInjectionContext(() => {
-        expect(() => noPermFacade.init(FormMode.CREATE, form)).not.toThrow();
+        expect(() => noPermFacade.init(FormMode.Create, form)).not.toThrow();
       });
     });
 
-    it('should set mode and not load details for FormMode.CREATE', () => {
+    it('should set mode and not load details for FormMode.Create', () => {
       TestBed.runInInjectionContext(() => {
-        facade.init(FormMode.CREATE, form);
+        facade.init(FormMode.Create, form);
       });
 
-      expect(facade.mode()).toBe(FormMode.CREATE);
+      expect(facade.mode()).toBe(FormMode.Create);
       expect(mockCrudService.edit).not.toHaveBeenCalled();
       expect(mockCrudService.get).not.toHaveBeenCalled();
     });
 
-    it('should set mode and load details for FormMode.EDIT', () => {
+    it('should set mode and load details for FormMode.Edit', () => {
       const apiResponse: ApiResponse<TestEntity> = {
         success: true,
         message: 'Success',
@@ -144,17 +144,17 @@ describe('CrudFormFacade', () => {
       mockCrudService.edit.mockReturnValue(of(apiResponse));
 
       TestBed.runInInjectionContext(() => {
-        facade.init(FormMode.EDIT, form, 1);
+        facade.init(FormMode.Edit, form, 1);
       });
 
-      expect(facade.mode()).toBe(FormMode.EDIT);
+      expect(facade.mode()).toBe(FormMode.Edit);
       expect(mockCrudService.edit).toHaveBeenCalledWith(1);
       expect(facade.entity()).toEqual(apiResponse.data);
       expect(facade.entityResponse()).toEqual(apiResponse);
       expect(form.value.name).toBe('Loaded Edit Item');
     });
 
-    it('should set mode and load details for FormMode.VIEW', () => {
+    it('should set mode and load details for FormMode.View', () => {
       const apiResponse: ApiResponse<TestEntity> = {
         success: true,
         message: 'Success',
@@ -163,10 +163,10 @@ describe('CrudFormFacade', () => {
       mockCrudService.get.mockReturnValue(of(apiResponse));
 
       TestBed.runInInjectionContext(() => {
-        facade.init(FormMode.VIEW, form, 2);
+        facade.init(FormMode.View, form, 2);
       });
 
-      expect(facade.mode()).toBe(FormMode.VIEW);
+      expect(facade.mode()).toBe(FormMode.View);
       expect(mockCrudService.get).toHaveBeenCalledWith(2);
       expect(facade.entity()).toEqual(apiResponse.data);
       expect(facade.entityResponse()).toEqual(apiResponse);
@@ -182,7 +182,7 @@ describe('CrudFormFacade', () => {
       mockCrudService.get.mockReturnValue(of(apiResponse));
 
       TestBed.runInInjectionContext(() => {
-        facade.init(FormMode.VIEW, form, 2);
+        facade.init(FormMode.View, form, 2);
       });
 
       TestBed.flushEffects();
@@ -202,7 +202,7 @@ describe('CrudFormFacade', () => {
       mockCrudService.edit.mockReturnValue(of(apiResponse));
 
       TestBed.runInInjectionContext(() => {
-        facade.init(FormMode.EDIT, form, 1);
+        facade.init(FormMode.Edit, form, 1);
       });
 
       TestBed.flushEffects();
@@ -214,7 +214,7 @@ describe('CrudFormFacade', () => {
       mockCrudService.edit.mockReturnValue(throwError(() => new Error('API Error')));
 
       TestBed.runInInjectionContext(() => {
-        facade.init(FormMode.EDIT, form, 1);
+        facade.init(FormMode.Edit, form, 1);
       });
 
       expect(facade.loading()).toBe(false);
@@ -292,7 +292,7 @@ describe('CrudFormFacade', () => {
 
     it('should call service.update in EDIT mode and navigateBack on success by default', async () => {
       TestBed.runInInjectionContext(() => {
-        facade.init(FormMode.EDIT, form);
+        facade.init(FormMode.Edit, form);
       });
 
       form.controls['name'].setValue('Updated Name');
@@ -372,7 +372,7 @@ describe('CrudFormFacade', () => {
 
     it('should go back immediately if mode is VIEW', async () => {
       TestBed.runInInjectionContext(() => {
-        facade.init(FormMode.VIEW, form);
+        facade.init(FormMode.View, form);
       });
       form.markAsDirty();
 
@@ -385,7 +385,7 @@ describe('CrudFormFacade', () => {
 
     it('should ask for confirmation if form is dirty and not navigate on reject', async () => {
       TestBed.runInInjectionContext(() => {
-        facade.init(FormMode.EDIT, form);
+        facade.init(FormMode.Edit, form);
       });
       form.markAsDirty();
       mockConfirmDialogService.confirm.mockResolvedValue(false); // Reject
@@ -403,7 +403,7 @@ describe('CrudFormFacade', () => {
 
     it('should ask for confirmation if form is dirty and navigate on accept', async () => {
       TestBed.runInInjectionContext(() => {
-        facade.init(FormMode.EDIT, form);
+        facade.init(FormMode.Edit, form);
       });
       form.markAsDirty();
       mockConfirmDialogService.confirm.mockResolvedValue(true); // Accept

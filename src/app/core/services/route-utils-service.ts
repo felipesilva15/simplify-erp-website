@@ -10,11 +10,11 @@ export class RouteUtilsService {
 
   getFormModeFromCurrentUrl(): FormMode {
     if (this.router.url.slice(-4) === '/new') {
-      return FormMode.CREATE;
+      return FormMode.Create;
     } else if (this.router.url.slice(-5) === '/edit') {
-      return FormMode.EDIT;
+      return FormMode.Edit;
     } else {
-      return FormMode.VIEW;
+      return FormMode.View;
     }
   }
 
