@@ -4,6 +4,7 @@ import { AppLoadingService } from './core/services/app-loading-service';
 import { SplashScreenComponent } from "./shared/components/splash-screen/splash-screen.component";
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DrawerHostComponent } from "./shared/components/drawer-host/drawer-host.component";
 
 @Component({
   selector: 'app-root',
@@ -11,11 +12,13 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     RouterOutlet,
     SplashScreenComponent,
     ConfirmDialogModule,
-    ToastModule
-  ],
+    ToastModule,
+    DrawerHostComponent
+],
   template: `
     <p-toast />
     <p-confirmdialog />
+    <app-drawer-host />
     @if (isLoading()) {
       <app-splash-screen [message]="loadingMessage()" />
     } @else {
