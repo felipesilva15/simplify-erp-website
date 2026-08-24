@@ -1,0 +1,38 @@
+<app-form-page
+    [title]="title()"
+    [breadcrumbItems]="breadcrumbItems"
+    [facade]="facade"
+    >
+    <ng-template appTemplate="content">
+        @if (!isLoading()) {
+            <p-treetable [value]="treeNode" [columns]="cols" selectionMode="checkbox" [(selectionKeys)]="selectionKeys" dataKey="key" [scrollable]="true" [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template #header let-columns>
+                    <tr>
+                        @for (col of columns; track col) {
+                            <th>
+                                {{ col.header }}
+                            </th>
+                        }
+                    </tr>
+                </ng-template>
+                <ng-template #body let-rowNode let-rowData="rowData" let-columns="columns">
+                    <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
+                        @for (col of columns; let first = $first; track col) {
+                            <td>
+                                @if (first) {
+                                    <div class="flex items-center gap-2">
+                                        <p-treetable-toggler [rowNode]="rowNode" />
+                                        <p-treetable-checkbox [value]="rowNode" />
+                                        <span>{{ rowData[col.field] }}</span>
+                                    </div>
+                                } @else {
+                                    {{ rowData[col.field] }}
+                                }
+                            </td>
+                        }
+                    </tr>
+                </ng-template>
+            </p-treetable>
+        }
+    </ng-template>
+</app-form-page>
