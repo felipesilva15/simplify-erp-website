@@ -5,11 +5,12 @@ import { TreeNode } from 'primeng/api';
   providedIn: 'root',
 })
 export class TreeNodeBuilder {
-  public build(data: any[], fatherKey?: string): TreeNode[] {
+  public build(data: any[], level: number = 0, fatherKey?: string): TreeNode[] {
     const treeNodes: TreeNode[] = [];
 
     for (const d of data) {
       const nodeKey: string = (fatherKey ? `${fatherKey}-` : '') + String(d?.id)
+      d.level = level;
 
       const node: TreeNode = {
         key: nodeKey,
@@ -22,7 +23,7 @@ export class TreeNodeBuilder {
         const value = d[key];
 
         if (value && value !== null && Array.isArray(value) && value.length) {
-          const children: TreeNode[] = this.build(value, nodeKey);
+          const children: TreeNode[] = this.build(value, level + 1, nodeKey);
           node.children = children;
         }
       });

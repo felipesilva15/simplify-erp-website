@@ -60,6 +60,7 @@ export class RoleDefinePermissionsPage {
   treeNode!: TreeNode[];
   selectionKeys: any = {};
   cols!: Column[];
+  colors!: Record<number, string>;
 
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
@@ -91,41 +92,16 @@ export class RoleDefinePermissionsPage {
     this.loadModules();
     
     this.cols = [
-      { field: 'name', header: 'Nome' },
-      { field: 'description', header: 'Descrição' },
+      { field: 'label', header: 'Nome' },
+      { field: 'description', header: 'Descrição' }
     ];
-    this.selectionKeys = {
-      
+    this.colors = {
+      0: 'bg-primary-300',
+      1: 'bg-primary-100',
+      2: 'bg-primary-50'
     };
-    this.selectionKeys = {
-      '2': {
-        partialChecked: false
-      },
-      '2-2': {
-        partialChecked: false,
-        checked: false
-      },
-      '2-2-1': {
-        checked: false
-      },
-      '2-2-2': {
-        checked: false
-      },
-      '2-3': {
-        partialChecked: false,
-        checked: false
-      },
-      '2-3-3': {
-        checked: false
-      },
-      '3': {
-        partialChecked: true
-      },
-      '3-3': {
-        checked: true
-      },
-    };
-    console.log(this.modules)
+
+    this.selectionKeys = {}
   }
 
   onSubmit(): void {
@@ -157,7 +133,6 @@ export class RoleDefinePermissionsPage {
         next: (res: ApiResponse<Module[]>) => {
           this.modules = res.data;
           this.treeNode = this.treeNodeBuilder.build(this.modules);
-          console.log(this.treeNode)
         }
       });
   }
