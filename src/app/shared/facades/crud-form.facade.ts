@@ -13,8 +13,9 @@ import { ConfirmDialogService } from "../services/confirm-dialog-service";
 import { KeyValue, Location } from "@angular/common";
 import { ApiMetaOption } from '../../core/enums/api-meta-option';
 import { ToastConfig } from '../../core/models/toast-config';
+import { FormPageFacade } from '../../core/contracts/form-page-facade';
 
-export class CrudFormFacade<T extends BaseEntity> {
+export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
     private permissionService: PermissionService = inject(PermissionService);
     private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
     private toastService: ToastService = inject(ToastService);

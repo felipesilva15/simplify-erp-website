@@ -5,6 +5,7 @@ import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { AppTemplate } from '../../directives/app-template';
 import { CrudFormFacade } from '../../facades/crud-form.facade';
 import { Message } from "primeng/message";
+import { FormPageFacade } from '../../../core/contracts/form-page-facade';
 
 @Component({
   selector: 'app-form-page',
@@ -22,7 +23,7 @@ export class FormPageUi implements AfterContentInit {
   breadcrumbItems: InputSignal<MenuItem[]> = input<MenuItem[]>([]);
   entity: InputSignal<any> = input<any>(null);
 
-  @Input() facade?: CrudFormFacade<any>;
+  @Input() facade?: FormPageFacade<any>;
 
   @ContentChildren(AppTemplate)
   templates!: QueryList<AppTemplate>;
