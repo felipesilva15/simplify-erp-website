@@ -1,10 +1,11 @@
 import { Component, computed, Input, Signal } from '@angular/core';
 import { LogoType } from '../../enums/logo-type';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-logo',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './logo.component.html',
   styleUrl: './logo.component.scss',
 })
