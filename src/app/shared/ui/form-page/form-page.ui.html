@@ -9,14 +9,14 @@
     <div class="bg-white border-round p-3">
         @if (facade?.hasWarnings()) {
             <div class="flex flex-column w-full mb-4">
-                @for (warning of facade.entityResponse()?.warnings; track $index) {
+                @for (warning of facade?.entityResponse()?.warnings; track $index) {
                     <p-message icon="pi pi-exclamation-triangle" severity="warn">{{ warning }}</p-message>
                 }
             </div>
         }
         @if (facade?.hasServerErrors()) {
             <div class="flex flex-column w-full mb-4">
-                @for (error of facade.serverErrors(); track $index) {
+                @for (error of facade?.serverErrors(); track $index) {
                     <p-message icon="pi pi-exclamation-triangle" severity="error">{{ error.value }}</p-message>
                 }
             </div>

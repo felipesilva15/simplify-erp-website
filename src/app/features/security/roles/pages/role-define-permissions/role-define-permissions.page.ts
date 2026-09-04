@@ -16,6 +16,8 @@ import { ApiResponse } from '../../../../../core/models/api-response';
 import { ListRequestParams } from '../../../../../core/models/list-request-params';
 import { finalize } from 'rxjs';
 import { TreeNodeBuilder } from '../../../../../core/services/tree-node-builder';
+import { Fluid } from "primeng/fluid";
+import { Button } from "primeng/button";
 
 type FormType = {
   ids: FormControl<string>;
@@ -28,8 +30,8 @@ interface Column {
 
 @Component({
   selector: 'app-role-define-permissions',
-  imports: [FormPageUi, TreeTableModule, 
-      AppTemplate],
+  imports: [FormPageUi, TreeTableModule,
+    AppTemplate, Fluid, Button],
   providers: [
     {
       provide: CrudFormFacade<Role>,
@@ -100,8 +102,6 @@ export class RoleDefinePermissionsPage {
       1: 'bg-primary-100',
       2: 'bg-primary-50'
     };
-
-    this.selectionKeys = {}
   }
 
   onSubmit(): void {
