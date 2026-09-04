@@ -22,7 +22,7 @@ export class DynamicDrawerService {
     return ref;
   }
 
-  private remove(ref: DrawerRef) {
+  private remove(ref: DrawerRef): void {
     this.stack.update(s => s.filter(i => i.ref !== ref));
   }
 }

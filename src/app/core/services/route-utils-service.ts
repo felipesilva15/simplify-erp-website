@@ -24,9 +24,9 @@ export class RouteUtilsService {
     }
 
     const escapedUrl: string = this.escapeForRegex(this.sanatizeUrl(url));
-    const viewFormPattern: RegExp = new RegExp(`${escapedUrl}\\/\\d+$`);
-    const editFormPattern: RegExp = new RegExp(`${escapedUrl}\\/\\d+\\/edit$`);
-    const createFormPattern: RegExp = new RegExp(`${escapedUrl}\\/new$`);
+    const viewFormPattern = new RegExp(`${escapedUrl}\\/\\d+$`);
+    const editFormPattern = new RegExp(`${escapedUrl}\\/\\d+\\/edit$`);
+    const createFormPattern = new RegExp(`${escapedUrl}\\/new$`);
 
     const currentUrl: string = this.sanatizeUrl(this.router.url);
 

@@ -1,4 +1,4 @@
-import { Component, ContentChildren, input, InputSignal, QueryList, TemplateRef } from '@angular/core';
+import { Component, ContentChildren, input, InputSignal, QueryList, TemplateRef, AfterContentInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { AppTemplate } from '../../directives/app-template';
 import { BreadcrumbComponent } from "../../components/breadcrumb/breadcrumb.component";
@@ -10,7 +10,7 @@ import { NgTemplateOutlet } from '@angular/common';
   templateUrl: './list-page.ui.html',
   styleUrl: './list-page.ui.scss',
 })
-export class ListPageUi {
+export class ListPageUi implements AfterContentInit {
   title: InputSignal<string> = input.required<string>();
   breadcrumbItems: InputSignal<MenuItem[]> = input<MenuItem[]>([]);
 

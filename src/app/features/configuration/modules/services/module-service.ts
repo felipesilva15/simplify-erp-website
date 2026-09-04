@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { CrudService } from '../../../../core/contracts/crud-service';
 import { Module } from '../models/module';
 import { environment } from '../../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';

@@ -5,7 +5,7 @@ import { TreeNode } from 'primeng/api';
   providedIn: 'root',
 })
 export class TreeNodeBuilder {
-  public build(data: any[], level: number = 0, fatherKey?: string): TreeNode[] {
+  public build(data: any[], level = 0, fatherKey?: string): TreeNode[] {
     const treeNodes: TreeNode[] = [];
 
     for (const d of data) {

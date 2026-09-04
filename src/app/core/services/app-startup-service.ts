@@ -14,7 +14,7 @@ export class AppStartupService {
 
   private _initalized = new ReplaySubject<boolean>(1);
   initalized$ = this._initalized.asObservable();
-  delay: number = 800;
+  delay = 800;
 
   constructor() {
     this._initalized.next(false);

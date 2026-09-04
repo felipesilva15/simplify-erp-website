@@ -1,6 +1,5 @@
 import { ConfirmDialogService } from './../../../shared/services/confirm-dialog-service';
-import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { LogoType } from '../../../shared/enums/logo-type';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { AuthService } from '../../../core/auth/services/auth-service';
@@ -50,11 +49,13 @@ export class NavbarComponent implements OnInit {
   onLogout(): void {
     this.menu.hide();
 
-    this.confirmDialogService.confirm({
+    void this.confirmDialogService.confirm({
       message: 'Deseja mesmo realizar logout do sistema?'
     })
     .then((confirmed: boolean) => {
-      confirmed && this.authService.logout().subscribe();
+      if (confirmed) {
+        this.authService.logout().subscribe();
+      }
     });
   }
 }

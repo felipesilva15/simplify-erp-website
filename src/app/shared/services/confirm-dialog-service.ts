@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ConfirmDialogConfig } from '../../core/models/confirm-dialog-config';
 import { ConfirmationService } from 'primeng/api';
-import { ButtonProps } from 'primeng/button';
 
 @Injectable({
   providedIn: 'root',

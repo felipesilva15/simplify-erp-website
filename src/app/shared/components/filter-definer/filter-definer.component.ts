@@ -13,7 +13,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
-import { CurrencyPipe, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, PercentPipe } from '@angular/common';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 interface RequestFilterViewData {

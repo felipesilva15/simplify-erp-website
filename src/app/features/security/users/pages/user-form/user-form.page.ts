@@ -25,7 +25,7 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { phoneValidator } from '../../../../../shared/validators/phone.validator';
 import { NgxMaskDirective } from 'ngx-mask';
 
-type FormType = {
+interface FormType {
   name: FormControl<string>;
   username: FormControl<string>;
   email: FormControl<string>;

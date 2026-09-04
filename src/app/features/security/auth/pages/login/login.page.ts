@@ -1,5 +1,5 @@
 import { TokenDetails } from './../../../../../core/models/token-details';
-import { AfterContentInit, AfterViewInit, Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { LogoComponent } from '../../../../../shared/components/logo/logo.component';
 import { LoginRequest } from '../../models/login-request';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -68,11 +68,11 @@ export class LoginPage implements OnInit {
     this.wrapForm();
 
     this.authService.login(this.requestData).subscribe({
-      next: (res: TokenDetails) => {
+      next: (_res: TokenDetails) => {
         if (this.redirectLink()) {
-          this.router.navigate([this.redirectLink()]);
+          void this.router.navigate([this.redirectLink()]);
         } else {
-          this.router.navigate(['/']);
+          void this.router.navigate(['/']);
         }
       },
       error: (err) => {

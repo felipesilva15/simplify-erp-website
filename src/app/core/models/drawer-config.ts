@@ -14,7 +14,7 @@ export interface DrawerConfig<D = any> {
   showCloseIcon?: boolean;    // default true
 
   styleClass?: string;
-  style?: { [key: string]: string };
+  style?: Record<string, string>;
 
   /** Sobrescreve o cálculo automático de camada feito pelo service */
   baseZIndex?: number;

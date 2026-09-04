@@ -20,7 +20,7 @@ export const permissionGuard: CanActivateFn = async (route) => {
   }
 
   if (!router.url.includes('error')) {
-    router.navigate(['/error/403'], {
+    void router.navigate(['/error/403'], {
       state: {
         username: authService.user?.username ?? ''
       }

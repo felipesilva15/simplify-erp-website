@@ -15,8 +15,6 @@ export class ErrorFooterBarComponent implements OnInit {
   username: WritableSignal<string> = signal<string>('')
   ip: WritableSignal<string> = signal<string>('192.168.0.1')
 
-  constructor() { }
-
   ngOnInit(): void {
     if (history.state?.username) {
       this.username.set(history.state?.username ?? '');

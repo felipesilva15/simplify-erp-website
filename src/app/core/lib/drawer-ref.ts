@@ -5,7 +5,7 @@ export class DrawerRef<T = any> {
 
   onClose = this._onClose.asObservable();
 
-  close(result?: T) {
+  close(result?: T): void {
     this._onClose.next(result);
     this._onClose.complete();
   }

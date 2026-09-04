@@ -3,7 +3,6 @@ import { MenuItem } from 'primeng/api';
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { AppTemplate } from '../../directives/app-template';
-import { CrudFormFacade } from '../../facades/crud-form.facade';
 import { Message } from "primeng/message";
 import { FormPageFacade } from '../../../core/contracts/form-page-facade';
 

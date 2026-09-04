@@ -62,8 +62,8 @@ export class DynamicDialogService {
   }
 
   private getBreakpointsByWidth(width: string): DialogBeakpoints {
-    const margin: string = '5vw';
-    const breakpointName: string = `calc(${width} + ${margin})`;
+    const margin = '5vw';
+    const breakpointName = `calc(${width} + ${margin})`;
 
     const breakpoints: DialogBeakpoints = {};
     breakpoints[breakpointName] = '95vw';

@@ -7,12 +7,11 @@ import { CrudService } from "../../core/contracts/crud-service";
 import { CrudFormConfig } from "../../core/models/crud-form-config";
 import { FormGroup } from "@angular/forms";
 import { PermissionService } from "../../core/auth/services/permission-service";
-import { catchError, finalize, Observable, take, tap } from "rxjs";
+import { finalize, Observable, take, tap } from "rxjs";
 import { ApiResponse } from "../../core/models/api-response";
 import { ConfirmDialogService } from "../services/confirm-dialog-service";
 import { KeyValue, Location } from "@angular/common";
 import { ApiMetaOption } from '../../core/enums/api-meta-option';
-import { ToastConfig } from '../../core/models/toast-config';
 import { FormPageFacade } from '../../core/contracts/form-page-facade';
 
 export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
@@ -71,7 +70,7 @@ export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
             return true;
         }
 
-        let permission: string = '';
+        let permission = '';
 
         switch (this.mode()) {
             case FormMode.Create:
@@ -219,7 +218,7 @@ export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
                     control.markAsTouched();
 
                     control.valueChanges.pipe(take(1)).subscribe(() => {
-                        const { server, ...rest } = control.errors ?? {};
+                        const { _server, ...rest } = control.errors ?? {};
                         control.setErrors(Object.keys(rest).length ? rest : null);
                     });
                 } else {
@@ -259,7 +258,7 @@ export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
             return;
         }
 
-        this.canDeactivate(form).then(
+        void this.canDeactivate(form).then(
             (confirmed: boolean) => confirmed && this.location.back()
         )
     }

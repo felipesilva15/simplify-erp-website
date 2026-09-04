@@ -1,4 +1,3 @@
-import { BaseEntity } from "../../../../core/models/base-entity";
 import { ModuleResourcePermission } from "./module-resource-permission";
 
 export interface ModuleResource {

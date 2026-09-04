@@ -12,7 +12,7 @@
                     </div>
                     <div class="col-12 md:col-6">
                         <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
-                        <input id="name" formControlName="name" pInputText required autofocus [invalid]="isInvalid('name')" />
+                        <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
                         <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
                     </div>
                     <div class="col-12 md:col-6">

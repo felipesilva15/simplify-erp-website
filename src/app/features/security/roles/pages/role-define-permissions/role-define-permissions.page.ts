@@ -19,7 +19,7 @@ import { TreeNodeBuilder } from '../../../../../core/services/tree-node-builder'
 import { Fluid } from "primeng/fluid";
 import { Button } from "primeng/button";
 
-type FormType = {
+interface FormType {
   ids: FormControl<string>;
 }
 

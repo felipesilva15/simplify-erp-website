@@ -17,7 +17,7 @@ import { AppTemplate } from "../../../../../shared/directives/app-template";
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
 import { FormControlErrorsComponent } from "../../../../../shared/components/form-control-errors/form-control-errors.component";
 
-type FormType = {
+interface FormType {
   name: FormControl<string>;
   description: FormControl<string>;
 }
