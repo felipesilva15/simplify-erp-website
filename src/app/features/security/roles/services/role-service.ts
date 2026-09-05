@@ -42,6 +42,10 @@ export class RoleService implements CrudService<Role>, LookupService {
     return this.http.put<ApiResponse<Role>>(`${this.baseUrl}/${id}`, data, { withCredentials: true });
   }
 
+  definePermissions(id: number, data: { ids: number[] }): Observable<ApiResponse<Role>> {
+    return this.http.patch<ApiResponse<Role>>(`${this.baseUrl}/${id}/permissions`, data, { withCredentials: true });
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }

@@ -4,8 +4,8 @@
     [facade]="facade"
     >
     <ng-template appTemplate="content">
-        @if (!isLoading()) {
-            <form class="flex flex-column gap-5 animation-duration-300 fadein" (ngSubmit)="onSubmit()">
+        @if (!this.facade.loading()) {
+            <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
                 <p-fluid class="grid">
                     <div class="col-12">
                         <p-treetable [value]="treeNode" [columns]="cols" selectionMode="checkbox" [(selectionKeys)]="selectionKeys" dataKey="key" [scrollable]="true" [tableStyle]="{ 'min-width': '50rem' }">
@@ -45,6 +45,18 @@
                     </div>
                 </p-fluid>
             </form>
+        } @else {
+            <p-fluid class="grid">
+                <div class="col-12">
+                    <p-skeleton height="10rem" width="100%" class="mb-2"></p-skeleton>
+                </div>
+                <div class="col-12">
+                    <div class="flex justify-content-end gap-2">
+                        <p-skeleton width="69px" height="39px"></p-skeleton>
+                        <p-skeleton width="93px" height="39px"></p-skeleton>
+                    </div>
+                </div>
+            </p-fluid>
         }
     </ng-template>
 </app-form-page>
