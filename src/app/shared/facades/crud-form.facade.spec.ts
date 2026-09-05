@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { CrudFormFacade } from './crud-form.facade';
+import { GenericCrudFormFacade } from './generic-crud-form.facade';
 import { PermissionService } from '../../core/auth/services/permission-service';
 import { ConfirmDialogService } from '../services/confirm-dialog-service';
 import { ToastService } from '../services/toast-service';
@@ -20,8 +20,8 @@ interface TestEntity extends BaseEntity {
   category?: any;
 }
 
-describe('CrudFormFacade', () => {
-  let facade: CrudFormFacade<TestEntity>;
+describe('GenericCrudFormFacade', () => {
+  let facade: GenericCrudFormFacade<TestEntity>;
   let mockCrudService: Mocked<CrudService<TestEntity>>;
   let mockPermissionService: Mocked<PermissionService>;
   let mockConfirmDialogService: Mocked<ConfirmDialogService>;
@@ -84,7 +84,7 @@ describe('CrudFormFacade', () => {
     });
 
     facade = TestBed.runInInjectionContext(() => {
-      return new CrudFormFacade<TestEntity>(mockCrudService, defaultConfig);
+      return new GenericCrudFormFacade<TestEntity>(mockCrudService, defaultConfig);
     });
   });
 
@@ -95,7 +95,8 @@ describe('CrudFormFacade', () => {
   it('should initialize signals with default values', () => {
     expect(facade.mode()).toBe(FormMode.Create);
     expect(facade.entity()).toBeNull();
-    expect(facade.entityResponse()).toBeNull();
+    expect(facade.meta()).toBeNull();
+    expect(facade.warnings()).toEqual([]);
     expect(facade.loading()).toBe(false);
     expect(facade.saving()).toBe(false);
     expect(facade.error()).toBeNull();
@@ -117,7 +118,7 @@ describe('CrudFormFacade', () => {
 
     it('should allow access and not throw an error if config or permission configuration is missing', () => {
       const noPermFacade = TestBed.runInInjectionContext(() => {
-        return new CrudFormFacade<TestEntity>(mockCrudService, {}); // empty config, no permissions
+        return new GenericCrudFormFacade<TestEntity>(mockCrudService, {}); // empty config, no permissions
       });
 
       TestBed.runInInjectionContext(() => {
@@ -150,7 +151,8 @@ describe('CrudFormFacade', () => {
       expect(facade.mode()).toBe(FormMode.Edit);
       expect(mockCrudService.edit).toHaveBeenCalledWith(1);
       expect(facade.entity()).toEqual(apiResponse.data);
-      expect(facade.entityResponse()).toEqual(apiResponse);
+      expect(facade.meta()).toBeNull();
+      expect(facade.warnings()).toEqual([]);
       expect(form.value.name).toBe('Loaded Edit Item');
     });
 
@@ -169,7 +171,8 @@ describe('CrudFormFacade', () => {
       expect(facade.mode()).toBe(FormMode.View);
       expect(mockCrudService.get).toHaveBeenCalledWith(2);
       expect(facade.entity()).toEqual(apiResponse.data);
-      expect(facade.entityResponse()).toEqual(apiResponse);
+      expect(facade.meta()).toBeNull();
+      expect(facade.warnings()).toEqual([]);
       expect(form.value.name).toBe('Loaded View Item');
     });
 
@@ -235,7 +238,7 @@ describe('CrudFormFacade', () => {
         validSubmit: vi.fn().mockReturnValue(false),
       };
       const customFacade = TestBed.runInInjectionContext(() => {
-        return new CrudFormFacade<TestEntity>(mockCrudService, customConfig);
+        return new GenericCrudFormFacade<TestEntity>(mockCrudService, customConfig);
       });
 
       form.controls['name'].setValue('Valid Name');
@@ -259,7 +262,7 @@ describe('CrudFormFacade', () => {
       };
 
       const customFacade = TestBed.runInInjectionContext(() => {
-        return new CrudFormFacade<TestEntity>(mockCrudService, customConfig);
+        return new GenericCrudFormFacade<TestEntity>(mockCrudService, customConfig);
       });
 
       form.controls['name'].setValue('Original Name');

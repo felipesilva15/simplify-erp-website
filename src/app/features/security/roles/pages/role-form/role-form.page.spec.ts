@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RoleFormPage } from './role-form.page';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
-import { CrudFormFacade } from '../../../../../shared/facades/crud-form.facade';
+import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
 import { RoleService } from '../../services/role-service';
 import { PermissionService } from '../../../../../core/auth/services/permission-service';
@@ -23,7 +23,9 @@ describe('RoleFormPage', () => {
     loading: ReturnType<typeof vi.fn>;
     saving: ReturnType<typeof vi.fn>;
     hasWarnings: ReturnType<typeof vi.fn>;
-    entityResponse: ReturnType<typeof vi.fn>;
+    hasServerErrors: ReturnType<typeof vi.fn>;
+    warnings: ReturnType<typeof vi.fn>;
+    serverErrors: ReturnType<typeof vi.fn>;
     entity: ReturnType<typeof vi.fn>;
   };
 
@@ -38,7 +40,7 @@ describe('RoleFormPage', () => {
       imports: [RoleFormPage],
       providers: [
         provideRouter([{ path: '**', component: RoleFormPage }]),
-        { provide: CrudFormFacade, useValue: facadeMock },
+        { provide: GenericCrudFormFacade, useValue: facadeMock },
         { provide: RouteUtilsService, useValue: routeUtilsMock },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: RoleService, useValue: {} },
@@ -49,10 +51,10 @@ describe('RoleFormPage', () => {
     })
       .overrideComponent(RoleFormPage, {
         remove: {
-          providers: [{ provide: CrudFormFacade }],
+          providers: [{ provide: GenericCrudFormFacade }],
         },
         add: {
-          providers: [{ provide: CrudFormFacade, useValue: facadeMock }],
+          providers: [{ provide: GenericCrudFormFacade, useValue: facadeMock }],
         },
       })
       .compileComponents();
@@ -74,7 +76,9 @@ describe('RoleFormPage', () => {
       loading: vi.fn().mockReturnValue(false),
       saving: vi.fn().mockReturnValue(false),
       hasWarnings: vi.fn().mockReturnValue(false),
-      entityResponse: vi.fn().mockReturnValue(null),
+      hasServerErrors: vi.fn().mockReturnValue(false),
+      warnings: vi.fn().mockReturnValue([]),
+      serverErrors: vi.fn().mockReturnValue([]),
       entity: vi.fn().mockReturnValue(null),
     };
 
@@ -314,7 +318,7 @@ describe('RoleFormPage', () => {
   });
 
   describe('component provider factory', () => {
-    it('should create CrudFormFacade via useFactory when not overridden', () => {
+    it('should create GenericCrudFormFacade via useFactory when not overridden', () => {
       activatedRouteMock.snapshot.paramMap.get.mockReturnValue(null);
       routeUtilsMock.getFormModeFromCurrentUrl.mockReturnValue(FormMode.Create);
 
@@ -336,7 +340,7 @@ describe('RoleFormPage', () => {
       router.navigateByUrl('/security/roles/new');
 
       const fixture = TestBed.createComponent(RoleFormPage);
-      expect(fixture.componentInstance.facade).toBeInstanceOf(CrudFormFacade);
+      expect(fixture.componentInstance.facade).toBeInstanceOf(GenericCrudFormFacade);
     });
   });
 
@@ -386,9 +390,7 @@ describe('RoleFormPage', () => {
 
     it('should show warnings when facade has warnings', () => {
       facadeMock.hasWarnings = vi.fn().mockReturnValue(true);
-      facadeMock.entityResponse = vi.fn().mockReturnValue({
-        warnings: ['Warning 1', 'Warning 2']
-      });
+      facadeMock.warnings = vi.fn().mockReturnValue(['Warning 1', 'Warning 2']);
       setupComponent(null, '/security/roles/new', FormMode.Create);
       const native = fixture.nativeElement as HTMLElement;
       const messages = native.querySelectorAll('p-message[severity="warn"]');

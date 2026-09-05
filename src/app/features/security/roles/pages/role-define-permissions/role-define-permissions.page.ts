@@ -2,7 +2,7 @@ import { Component, computed, inject, Signal, signal, WritableSignal } from '@an
 import { FormPageUi } from "../../../../../shared/ui/form-page/form-page.ui";
 import { FormMode, FormModeLabel } from '../../../../../core/enums/form-mode';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { CrudFormFacade } from '../../../../../shared/facades/crud-form.facade';
+import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { Role } from '../../models/role';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
@@ -34,9 +34,9 @@ interface Column {
     AppTemplate, Fluid, Button],
   providers: [
     {
-      provide: CrudFormFacade<Role>,
+      provide: GenericCrudFormFacade<Role>,
       useFactory: (service: RoleService) =>
-        new CrudFormFacade<Role>(service, {
+        new GenericCrudFormFacade<Role>(service, {
           successMessage: 'Registro salvo!',
           permission: {
             create: 'roles.create',
@@ -54,7 +54,7 @@ export class RoleDefinePermissionsPage {
   private fb: FormBuilder = inject(FormBuilder)
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
-  public facade: CrudFormFacade<Role> = inject(CrudFormFacade<Role>);
+  public facade: GenericCrudFormFacade<Role> = inject(GenericCrudFormFacade<Role>);
   private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
   private moduleService: ModuleService = inject(ModuleService);
   private treeNodeBuilder: TreeNodeBuilder = inject(TreeNodeBuilder)

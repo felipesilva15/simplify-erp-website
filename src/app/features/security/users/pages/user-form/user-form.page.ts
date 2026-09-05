@@ -7,7 +7,7 @@ import { MessageModule } from 'primeng/message';
 import { SkeletonModule } from 'primeng/skeleton';
 import { FormPageUi } from '../../../../../shared/ui/form-page/form-page.ui';
 import { AppTemplate } from '../../../../../shared/directives/app-template';
-import { CrudFormFacade } from '../../../../../shared/facades/crud-form.facade';
+import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { User } from '../../models/user';
 import { UserService } from '../../services/user-service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -57,9 +57,9 @@ interface FormType {
   ],
   providers: [
     {
-      provide: CrudFormFacade<User>,
+      provide: GenericCrudFormFacade<User>,
       useFactory: (service: UserService) =>
-        new CrudFormFacade<User>(service, {
+        new GenericCrudFormFacade<User>(service, {
           successMessage: 'Registro salvo!',
           permission: {
             create: 'users.create',
@@ -77,7 +77,7 @@ export class UserFormPage {
   private fb: FormBuilder = inject(FormBuilder)
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
-  public facade: CrudFormFacade<User> = inject(CrudFormFacade<User>);
+  public facade: GenericCrudFormFacade<User> = inject(GenericCrudFormFacade<User>);
   private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
   private roleService: RoleService = inject(RoleService);
 

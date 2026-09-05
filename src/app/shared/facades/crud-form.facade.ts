@@ -12,25 +12,28 @@ import { ApiResponse } from "../../core/models/api-response";
 import { ConfirmDialogService } from "../services/confirm-dialog-service";
 import { KeyValue, Location } from "@angular/common";
 import { ApiMetaOption } from '../../core/enums/api-meta-option';
+import { ApiMetaType } from '../../core/types/api-meta-type';
 import { FormPageFacade } from '../../core/contracts/form-page-facade';
 
-export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
-    private permissionService: PermissionService = inject(PermissionService);
-    private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
-    private toastService: ToastService = inject(ToastService);
-    private location: Location = inject(Location);
+export abstract class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
+    protected permissionService: PermissionService = inject(PermissionService);
+    protected confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
+    protected toastService: ToastService = inject(ToastService);
+    protected location: Location = inject(Location);
 
-    private _mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
-    private _entity: WritableSignal<T | null> = signal<T | null>(null);
-    private _entityResponse: WritableSignal<ApiResponse<T> | null> = signal<ApiResponse<T> | null>(null)
-    private _loading: WritableSignal<boolean> = signal<boolean>(false);
-    private _saving: WritableSignal<boolean> = signal<boolean>(false);
-    private _error: WritableSignal<string | null> = signal<string | null>(null);
-    private _serverErrors: WritableSignal<KeyValue<string, string>[]> = signal<KeyValue<string, string>[]>([])
+    protected _mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
+    protected _entity: WritableSignal<T | null> = signal<T | null>(null);
+    protected _meta: WritableSignal<ApiMetaType | null> = signal<ApiMetaType | null>(null);
+    protected _warnings: WritableSignal<string[]> = signal<string[]>([]);
+    protected _loading: WritableSignal<boolean> = signal<boolean>(false);
+    protected _saving: WritableSignal<boolean> = signal<boolean>(false);
+    protected _error: WritableSignal<string | null> = signal<string | null>(null);
+    protected _serverErrors: WritableSignal<KeyValue<string, string>[]> = signal<KeyValue<string, string>[]>([])
 
     mode: Signal<FormMode> = this._mode.asReadonly();
     entity: Signal<T | null> = this._entity.asReadonly();
-    entityResponse: Signal<ApiResponse<T> | null> = this._entityResponse.asReadonly();
+    meta: Signal<ApiMetaType | null> = this._meta.asReadonly();
+    warnings: Signal<string[]> = this._warnings.asReadonly();
     loading: Signal<boolean> = this._loading.asReadonly();
     saving: Signal<boolean> = this._saving.asReadonly();
     error: Signal<string | null> = this._error.asReadonly();
@@ -39,12 +42,12 @@ export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
     isCreate: Signal<boolean> = computed(() => this._mode() === FormMode.Create);
     isEdit: Signal<boolean> = computed(() => this._mode() === FormMode.Edit);
     isView: Signal<boolean> = computed(() => this._mode() === FormMode.View);
-    hasWarnings: Signal<boolean> = computed(() => (this.entityResponse()?.warnings?.length ?? 0) > 0);
+    hasWarnings: Signal<boolean> = computed(() => this.warnings().length > 0);
     hasServerErrors: Signal<boolean> = computed(() => this.serverErrors().length > 0);
 
     constructor(
-        private service: CrudService<T>,
-        private config?: CrudFormConfig<T>
+        protected service: CrudService<T>,
+        protected config?: CrudFormConfig<T>
     ) {}
 
     init(mode: FormMode, form: FormGroup, id?: number): void {
@@ -55,7 +58,7 @@ export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
         }
 
         effect(() => {
-            if (this.isView() || (this.isEdit() && this.entityResponse()?.meta && !this.entityResponse()?.meta?.[ApiMetaOption.Editable] )) {
+            if (this.isView() || (this.isEdit() && this.meta() && !this.meta()?.[ApiMetaOption.Editable] )) {
                 form.disable();
             }
         });
@@ -64,6 +67,86 @@ export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
             this.load(id, form);
         }
     }
+
+    protected load(id: number, form: FormGroup): void {
+        this._loading.set(true);
+
+        this.fetchData(id)
+            .pipe(
+                finalize(() => this._loading.set(false))
+            )
+            .subscribe({
+                next: (res: ApiResponse<T>) => {
+                    this._meta.set(res.meta ?? null);
+                    this._warnings.set(res.warnings ?? []);
+                    this._entity.set(res.data);
+
+                    this.applyLoadedData(res.data, form);
+                },
+                error: () => this._error.set('Erro ao carregar registro')
+            });
+    }
+
+    submit(form: FormGroup, id?: number): Observable<ApiResponse<T>> {
+        form.markAllAsTouched();
+        
+        this.unsetServerErrors(form);
+
+        if (form.invalid) {
+            this.scrollTop();
+            throw new Error('Formulário inválido!');
+        };
+
+        if (this.config?.validSubmit && !this.config.validSubmit()) {
+            throw new Error('Envio não é válido!');
+        }
+
+        this._saving.set(true);
+
+        const payload = this.buildPayload(form);
+
+        return this.persist(id, payload).pipe(
+            tap({
+                next: (res: ApiResponse<T>) => {
+                    this._meta.set(res.meta ?? null);
+                    this._warnings.set(res.warnings ?? []);
+                    this._entity.set(res.data);
+
+                    this.config?.afterSubmit?.(res.data);
+
+                    if (this.config?.successMessage) {
+                        this.toastService.show({
+                            title: 'Sucesso',
+                            message: this.config.successMessage,
+                            severity: 'success'
+                        })
+                    }
+
+                    if (this.config?.navigateAfterSave) {
+                        this.config.navigateAfterSave(res.data);
+                    }
+                    else {
+                        this.navigateBack();
+                    }
+
+                    form.markAsPristine();
+                },
+                error: (err: { error?: unknown }) => {
+                    if (err.error) {
+                        this.applyServerErrors(form, err.error as ApiResponse<undefined>);
+                        this.scrollTop();
+                    }
+                }
+            }),
+            finalize(() => this._saving.set(false))
+        );
+    }
+
+    // hooks
+    protected abstract fetchData(id: number): Observable<ApiResponse<T>>;
+    protected abstract applyLoadedData(data: T, form: FormGroup): void;
+    protected abstract buildPayload(form: FormGroup): Partial<T>;
+    protected abstract persist(id: number | undefined, payload: Partial<T>): Observable<ApiResponse<T>>;
 
     private hasPermission(): boolean {
         if (!this.config?.permission) {
@@ -89,86 +172,6 @@ export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
         return this.permissionService.has(permission);
     }
 
-    private load(id: number, form: FormGroup): void {
-        this._loading.set(true);
-
-        const request$: Observable<ApiResponse<T>> = this.isView() ? this.service.get(id) : this.service.edit(id);
-
-        request$
-            .pipe(
-                finalize(() => this._loading.set(false))
-            )
-            .subscribe({
-                next: (res: ApiResponse<T>) => {
-                    this._entityResponse.set(res);
-                    this._entity.set(res.data);
-
-                    form.patchValue(res.data);
-                },
-                error: () => this._error.set('Erro ao carregar registro')
-            });
-    }
-
-    submit(form: FormGroup, id?: number): Observable<ApiResponse<T>> {
-        form.markAllAsTouched();
-        
-        this.unsetServerErrors(form);
-
-        if (form.invalid) {
-            this.scrollTop();
-            throw new Error('Formulário inválido!');
-        };
-
-        if (this.config?.validSubmit && !this.config.validSubmit()) {
-            throw new Error('Envio não é válido!');
-        }
-
-        this._saving.set(true);
-
-        let payload = form.getRawValue();
-        payload = this.unwrapLookups(payload);
-
-        if (this.config?.beforeSubmit) {
-            payload = this.config.beforeSubmit(payload);
-        }
-
-        const request$ = this.isCreate() ? this.service.create(payload) : this.service.update(id!, payload);
-
-        return request$.pipe(
-            tap({
-                next: (res: ApiResponse<T>) => {
-                    this._entity.set(res.data);
-
-                    this.config?.afterSubmit?.(res.data);
-
-                    if (this.config?.successMessage) {
-                        this.toastService.show({
-                            title: 'Sucesso',
-                            message: this.config.successMessage,
-                            severity: 'success'
-                        })
-                    }
-
-                    if (this.config?.navigateAfterSave) {
-                        this.config.navigateAfterSave(res.data);
-                    }
-                    else {
-                        this.navigateBack();
-                    }
-
-                    form.markAsPristine();
-                },
-                error: (err: any) => {
-                    if (err.error) {
-                        this.applyServerErrors(form, err.error);
-                        this.scrollTop();
-                    }
-                }
-            }),
-            finalize(() => this._saving.set(false))
-        );
-    }
-
     scrollTop(): void {
         window.scroll({ 
             top: 0, 
@@ -177,7 +180,7 @@ export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
         });
     }
 
-    private unwrapLookups(payload: Record<string, unknown>): Record<string, unknown> {
+    protected unwrapLookups(payload: Record<string, unknown>): Record<string, unknown> {
         return Object.fromEntries(
             Object.entries(payload).map(([key, value]) => {
                 if (this.isLookupItem(value)) {
@@ -197,7 +200,7 @@ export class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
         );
     }
 
-    private isLookupItem(value: unknown): boolean {
+    protected isLookupItem(value: unknown): boolean {
         return (
             typeof value === 'object' &&
             value !== null &&

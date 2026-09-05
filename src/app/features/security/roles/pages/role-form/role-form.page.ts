@@ -1,5 +1,5 @@
 import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
-import { CrudFormFacade } from '../../../../../shared/facades/crud-form.facade';
+import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { Role } from '../../models/role';
 import { RoleService } from '../../services/role-service';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -39,9 +39,9 @@ interface FormType {
 ],
   providers: [
     {
-      provide: CrudFormFacade<Role>,
+      provide: GenericCrudFormFacade<Role>,
       useFactory: (service: RoleService) =>
-        new CrudFormFacade<Role>(service, {
+        new GenericCrudFormFacade<Role>(service, {
           successMessage: 'Registro salvo!',
           permission: {
             create: 'roles.create',
@@ -59,7 +59,7 @@ export class RoleFormPage {
   private fb: FormBuilder = inject(FormBuilder)
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
-  public facade: CrudFormFacade<Role> = inject(CrudFormFacade<Role>);
+  public facade: GenericCrudFormFacade<Role> = inject(GenericCrudFormFacade<Role>);
   private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
 
   breadcrumbItems!: MenuItem[];

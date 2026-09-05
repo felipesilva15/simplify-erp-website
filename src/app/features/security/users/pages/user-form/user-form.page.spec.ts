@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserFormPage } from './user-form.page';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
-import { CrudFormFacade } from '../../../../../shared/facades/crud-form.facade';
+import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
 import { UserService } from '../../services/user-service';
 import { RoleService } from '../../../roles/services/role-service';
@@ -12,6 +12,7 @@ import { Location } from '@angular/common';
 import { FormMode } from '../../../../../core/enums/form-mode';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
+import { provideNgxMask } from 'ngx-mask';
 
 describe('UserFormPage', () => {
   let component: UserFormPage;
@@ -24,7 +25,9 @@ describe('UserFormPage', () => {
     loading: ReturnType<typeof vi.fn>;
     saving: ReturnType<typeof vi.fn>;
     hasWarnings: ReturnType<typeof vi.fn>;
-    entityResponse: ReturnType<typeof vi.fn>;
+    hasServerErrors: ReturnType<typeof vi.fn>;
+    warnings: ReturnType<typeof vi.fn>;
+    serverErrors: ReturnType<typeof vi.fn>;
     entity: ReturnType<typeof vi.fn>;
     isCreate: ReturnType<typeof vi.fn>;
   };
@@ -41,21 +44,22 @@ describe('UserFormPage', () => {
       imports: [UserFormPage],
       providers: [
         provideRouter([{ path: '**', component: UserFormPage }]),
-        { provide: CrudFormFacade, useValue: facadeMock },
+        { provide: GenericCrudFormFacade, useValue: facadeMock },
         { provide: RouteUtilsService, useValue: routeUtilsMock },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: UserService, useValue: {} },
         { provide: RoleService, useValue: {} },
         { provide: ConfirmDialogService, useValue: { confirm: vi.fn().mockResolvedValue(true) } },
         { provide: ToastService, useValue: { show: vi.fn(), clear: vi.fn() } },
+        provideNgxMask(),
       ],
     })
       .overrideComponent(UserFormPage, {
         remove: {
-          providers: [{ provide: CrudFormFacade }],
+          providers: [{ provide: GenericCrudFormFacade }],
         },
         add: {
-          providers: [{ provide: CrudFormFacade, useValue: facadeMock }],
+          providers: [{ provide: GenericCrudFormFacade, useValue: facadeMock }],
         },
       })
       .compileComponents();
@@ -77,7 +81,9 @@ describe('UserFormPage', () => {
       loading: vi.fn().mockReturnValue(false),
       saving: vi.fn().mockReturnValue(false),
       hasWarnings: vi.fn().mockReturnValue(false),
-      entityResponse: vi.fn().mockReturnValue(null),
+      hasServerErrors: vi.fn().mockReturnValue(false),
+      warnings: vi.fn().mockReturnValue([]),
+      serverErrors: vi.fn().mockReturnValue([]),
       entity: vi.fn().mockReturnValue(null),
       isCreate: vi.fn().mockReturnValue(true),
     };
@@ -416,7 +422,7 @@ describe('UserFormPage', () => {
   });
 
   describe('component provider factory', () => {
-    it('should create CrudFormFacade via useFactory when not overridden', () => {
+    it('should create GenericCrudFormFacade via useFactory when not overridden', () => {
       activatedRouteMock.snapshot.paramMap.get.mockReturnValue(null);
       routeUtilsMock.getFormModeFromCurrentUrl.mockReturnValue(FormMode.Create);
 
@@ -439,7 +445,7 @@ describe('UserFormPage', () => {
       router.navigateByUrl('/security/users/new');
 
       const fixture = TestBed.createComponent(UserFormPage);
-      expect(fixture.componentInstance.facade).toBeInstanceOf(CrudFormFacade);
+      expect(fixture.componentInstance.facade).toBeInstanceOf(GenericCrudFormFacade);
     });
   });
 
@@ -472,9 +478,7 @@ describe('UserFormPage', () => {
 
     it('should show warnings when facade has warnings', () => {
       facadeMock.hasWarnings = vi.fn().mockReturnValue(true);
-      facadeMock.entityResponse = vi.fn().mockReturnValue({
-        warnings: ['Warning 1', 'Warning 2']
-      });
+      facadeMock.warnings = vi.fn().mockReturnValue(['Warning 1', 'Warning 2']);
       setupComponent(null, '/security/users/new', FormMode.Create);
       const native = fixture.nativeElement as HTMLElement;
       const messages = native.querySelectorAll('p-message[severity="warn"]');
