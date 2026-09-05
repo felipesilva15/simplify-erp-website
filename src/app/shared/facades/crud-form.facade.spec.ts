@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { CrudFormFacade } from './crud-form.facade';
 import { GenericCrudFormFacade } from './generic-crud-form.facade';
 import { PermissionService } from '../../core/auth/services/permission-service';
 import { ConfirmDialogService } from '../services/confirm-dialog-service';
@@ -11,7 +12,7 @@ import { FormMode } from '../../core/enums/form-mode';
 import { ApiMetaOption } from '../../core/enums/api-meta-option';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Mocked } from 'vitest';
-import { of, throwError } from 'rxjs';
+import { of, Observable, throwError } from 'rxjs';
 import { ApiResponse } from '../../core/models/api-response';
 import { LookupItem } from '../../core/models/lookup-item';
 
@@ -116,6 +117,24 @@ describe('GenericCrudFormFacade', () => {
       expect(mockPermissionService.has).toHaveBeenCalledWith('perm-create');
     });
 
+    it('should resolve the action permission for custom form modes', () => {
+      const customConfig: CrudFormConfig<TestEntity> = {
+        permission: { action: 'perm-action' },
+      };
+      const customFacade = TestBed.runInInjectionContext(() => {
+        return new GenericCrudFormFacade<TestEntity>(mockCrudService, customConfig);
+      });
+      mockPermissionService.has.mockReturnValue(false);
+
+      expect(() => {
+        TestBed.runInInjectionContext(() => {
+          customFacade.init('CUSTOM' as FormMode, form);
+        });
+      }).toThrow('Sem permissão para a ação.');
+
+      expect(mockPermissionService.has).toHaveBeenCalledWith('perm-action');
+    });
+
     it('should allow access and not throw an error if config or permission configuration is missing', () => {
       const noPermFacade = TestBed.runInInjectionContext(() => {
         return new GenericCrudFormFacade<TestEntity>(mockCrudService, {}); // empty config, no permissions
@@ -210,6 +229,21 @@ describe('GenericCrudFormFacade', () => {
 
       TestBed.flushEffects();
 
+      expect(form.disabled).toBe(true);
+    });
+
+    it('should initialize outside an injection context using the captured injector', async () => {
+      const apiResponse: ApiResponse<TestEntity> = {
+        success: true,
+        message: 'Success',
+        data: { id: 2, name: 'Loaded View Item' },
+      };
+      mockCrudService.get.mockReturnValue(of(apiResponse));
+      mockPermissionService.has.mockReturnValue(true);
+
+      await facade.init(FormMode.View, form, 2);
+
+      expect(() => TestBed.flushEffects()).not.toThrow();
       expect(form.disabled).toBe(true);
     });
 
@@ -423,5 +457,115 @@ describe('GenericCrudFormFacade', () => {
       facade.navigateBack();
       expect(mockLocation.back).toHaveBeenCalled();
     });
+  });
+});
+
+describe('CrudFormFacade state support', () => {
+  interface TestState {
+    entity: TestEntity;
+    extra: { label: string };
+  }
+
+  class StateAwareCrudFormFacade extends CrudFormFacade<TestEntity, TestState> {
+    constructor(service: CrudService<TestEntity>) {
+      super(service);
+    }
+
+    protected override fetchData(id: number): Observable<ApiResponse<TestState>> {
+      return of({
+        success: true,
+        message: '',
+        data: { entity: { id, name: 'State Name' }, extra: { label: 'Extra' } },
+      });
+    }
+
+    protected override toEntity(state: TestState): TestEntity {
+      return state.entity;
+    }
+
+    protected override applyLoadedData(data: TestState, form: FormGroup): void {
+      form.patchValue(data.entity);
+    }
+
+    protected override buildPayload(form: FormGroup): Partial<TestEntity> {
+      return form.getRawValue();
+    }
+
+    protected override persist(
+      _id: number | undefined,
+      payload: Partial<TestEntity>
+    ): Observable<ApiResponse<TestEntity>> {
+      return of({
+        success: true,
+        message: '',
+        data: { id: payload.id ?? 1, name: payload.name ?? '', category: payload.category ?? null },
+      });
+    }
+  }
+
+  let facade: StateAwareCrudFormFacade;
+
+  beforeEach(() => {
+    vi.spyOn(window, 'scroll').mockImplementation(() => {});
+
+    const mockCrudService = {
+      list: vi.fn(),
+      get: vi.fn(),
+      edit: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    } as unknown as Mocked<CrudService<TestEntity>>;
+
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: PermissionService,
+          useValue: { has: vi.fn().mockReturnValue(true), hasAny: vi.fn() },
+        },
+        {
+          provide: ConfirmDialogService,
+          useValue: { confirm: vi.fn().mockResolvedValue(true) },
+        },
+        {
+          provide: ToastService,
+          useValue: { show: vi.fn(), clear: vi.fn() },
+        },
+        {
+          provide: Location,
+          useValue: { back: vi.fn() },
+        },
+      ],
+    });
+
+    facade = TestBed.runInInjectionContext(() => new StateAwareCrudFormFacade(mockCrudService));
+  });
+
+  it('should keep full state and expose the mapped entity after load', () => {
+    const form = new FormGroup({
+      id: new FormControl(null),
+      name: new FormControl(''),
+    });
+
+    TestBed.runInInjectionContext(() => {
+      facade.init(FormMode.Edit, form, 1);
+    });
+
+    expect(facade.state()).toEqual({ entity: { id: 1, name: 'State Name' }, extra: { label: 'Extra' } });
+    expect(facade.entity()).toEqual({ id: 1, name: 'State Name' });
+    expect(form.value.name).toBe('State Name');
+  });
+
+  it('should submit with the state facade and persist the mapped entity', async () => {
+    const form = new FormGroup({
+      id: new FormControl(null),
+      name: new FormControl('State Name'),
+    });
+
+    const result$ = facade.submit(form, 1);
+    const res = await new Promise<ApiResponse<TestEntity>>(resolve => result$.subscribe(resolve));
+
+    expect(res.data).toEqual({ id: 1, name: 'State Name', category: null });
+    expect(facade.entity()).toEqual({ id: 1, name: 'State Name', category: null });
   });
 });

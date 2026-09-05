@@ -1,4 +1,4 @@
-import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { Role } from '../../models/role';
 import { RoleService } from '../../services/role-service';
@@ -55,7 +55,7 @@ interface FormType {
   templateUrl: './role-form.page.html',
   styleUrl: './role-form.page.scss',
 })
-export class RoleFormPage {
+export class RoleFormPage implements OnInit {
   private fb: FormBuilder = inject(FormBuilder)
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
@@ -85,8 +85,10 @@ export class RoleFormPage {
       { label: 'Listar', routerLink: '/security/roles'},
       { label: this.activeBreadcrumbItemLabel(), routerLink: this.router.url }
     ];
+  }
 
-    this.facade.init(this.mode(), this.form, this.id());
+  async ngOnInit(): Promise<void> {
+    await this.facade.init(this.mode(), this.form, this.id());
   }
 
   onSubmit(): void {

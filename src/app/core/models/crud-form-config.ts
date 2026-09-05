@@ -5,6 +5,7 @@ export interface CrudFormConfig<T> {
         create?: string;
         update?: string;
         view?: string;
+        action?: string;
     };
     validSubmit?: () => boolean; 
     beforeSubmit?: (payload: Partial<T>) => Partial<T>;

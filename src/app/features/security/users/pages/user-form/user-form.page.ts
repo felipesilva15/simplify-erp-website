@@ -1,4 +1,4 @@
-import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { FluidModule } from 'primeng/fluid';
@@ -73,7 +73,7 @@ interface FormType {
   templateUrl: './user-form.page.html',
   styleUrl: './user-form.page.scss',
 })
-export class UserFormPage {
+export class UserFormPage implements OnInit {
   private fb: FormBuilder = inject(FormBuilder)
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
@@ -112,8 +112,11 @@ export class UserFormPage {
       { label: this.activeBreadcrumbItemLabel(), routerLink: this.router.url }
     ];
 
-    this.facade.init(this.mode(), this.form, this.id());
     this.configureFormValidators();
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.facade.init(this.mode(), this.form, this.id());
   }
 
   private configureFormValidators(): void {

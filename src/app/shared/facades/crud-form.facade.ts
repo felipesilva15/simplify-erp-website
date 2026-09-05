@@ -1,6 +1,6 @@
 import { LookupItem } from './../../core/models/lookup-item';
 import { ToastService } from './../services/toast-service';
-import { computed, effect, inject, Signal, signal, WritableSignal } from "@angular/core";
+import { computed, effect, inject, Injector, Signal, signal, WritableSignal } from "@angular/core";
 import { BaseEntity } from "../../core/models/base-entity";
 import { FormMode } from "../../core/enums/form-mode";
 import { CrudService } from "../../core/contracts/crud-service";
@@ -15,14 +15,20 @@ import { ApiMetaOption } from '../../core/enums/api-meta-option';
 import { ApiMetaType } from '../../core/types/api-meta-type';
 import { FormPageFacade } from '../../core/contracts/form-page-facade';
 
-export abstract class CrudFormFacade<T extends BaseEntity> implements FormPageFacade<T> {
+export abstract class CrudFormFacade<
+    T extends BaseEntity,
+    TState = T,
+    TPayload = Partial<T>
+> implements FormPageFacade<T> {
     protected permissionService: PermissionService = inject(PermissionService);
     protected confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
     protected toastService: ToastService = inject(ToastService);
     protected location: Location = inject(Location);
+    protected injector: Injector = inject(Injector);
 
     protected _mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
     protected _entity: WritableSignal<T | null> = signal<T | null>(null);
+    protected _state: WritableSignal<TState | null> = signal<TState | null>(null);
     protected _meta: WritableSignal<ApiMetaType | null> = signal<ApiMetaType | null>(null);
     protected _warnings: WritableSignal<string[]> = signal<string[]>([]);
     protected _loading: WritableSignal<boolean> = signal<boolean>(false);
@@ -32,6 +38,7 @@ export abstract class CrudFormFacade<T extends BaseEntity> implements FormPageFa
 
     mode: Signal<FormMode> = this._mode.asReadonly();
     entity: Signal<T | null> = this._entity.asReadonly();
+    state: Signal<TState | null> = this._state.asReadonly();
     meta: Signal<ApiMetaType | null> = this._meta.asReadonly();
     warnings: Signal<string[]> = this._warnings.asReadonly();
     loading: Signal<boolean> = this._loading.asReadonly();
@@ -50,7 +57,7 @@ export abstract class CrudFormFacade<T extends BaseEntity> implements FormPageFa
         protected config?: CrudFormConfig<T>
     ) {}
 
-    init(mode: FormMode, form: FormGroup, id?: number): void {
+    init(mode: FormMode, form: FormGroup, id?: number): Promise<void> {
         this._mode.set(mode);
 
         if (!this.hasPermission()) {
@@ -61,30 +68,43 @@ export abstract class CrudFormFacade<T extends BaseEntity> implements FormPageFa
             if (this.isView() || (this.isEdit() && this.meta() && !this.meta()?.[ApiMetaOption.Editable] )) {
                 form.disable();
             }
-        });
+        }, { injector: this.injector });
 
-        if ((mode === FormMode.Edit || mode === FormMode.View) && id) {
-            this.load(id, form);
+        if (this.loadsOnInit(mode, id)) {
+            return this.load(id as number, form);
         }
+
+        return Promise.resolve();
     }
 
-    protected load(id: number, form: FormGroup): void {
+    protected loadsOnInit(mode: FormMode, id?: number): boolean {
+        return (mode === FormMode.Edit || mode === FormMode.View) && id != null;
+    }
+
+    protected load(id: number, form: FormGroup): Promise<void> {
         this._loading.set(true);
 
-        this.fetchData(id)
-            .pipe(
-                finalize(() => this._loading.set(false))
-            )
-            .subscribe({
-                next: (res: ApiResponse<T>) => {
-                    this._meta.set(res.meta ?? null);
-                    this._warnings.set(res.warnings ?? []);
-                    this._entity.set(res.data);
+        return new Promise<void>((resolve) => {
+            this.fetchData(id)
+                .pipe(
+                    finalize(() => this._loading.set(false))
+                )
+                .subscribe({
+                    next: (res: ApiResponse<TState>) => {
+                        this._meta.set(res.meta ?? null);
+                        this._warnings.set(res.warnings ?? []);
+                        this._state.set(res.data);
+                        this._entity.set(this.toEntity(res.data));
 
-                    this.applyLoadedData(res.data, form);
-                },
-                error: () => this._error.set('Erro ao carregar registro')
-            });
+                        this.applyLoadedData(res.data, form);
+                        resolve();
+                    },
+                    error: () => {
+                        this._error.set('Erro ao carregar registro');
+                        resolve();
+                    }
+                });
+        });
     }
 
     submit(form: FormGroup, id?: number): Observable<ApiResponse<T>> {
@@ -143,33 +163,37 @@ export abstract class CrudFormFacade<T extends BaseEntity> implements FormPageFa
     }
 
     // hooks
-    protected abstract fetchData(id: number): Observable<ApiResponse<T>>;
-    protected abstract applyLoadedData(data: T, form: FormGroup): void;
-    protected abstract buildPayload(form: FormGroup): Partial<T>;
-    protected abstract persist(id: number | undefined, payload: Partial<T>): Observable<ApiResponse<T>>;
+    protected abstract fetchData(id: number): Observable<ApiResponse<TState>>;
+    protected abstract applyLoadedData(data: TState, form: FormGroup): void;
+    protected abstract buildPayload(form: FormGroup): TPayload;
+    protected abstract persist(id: number | undefined, payload: TPayload): Observable<ApiResponse<T>>;
 
-    private hasPermission(): boolean {
+    protected toEntity(data: TState): T {
+        return data as unknown as T;
+    }
+
+    protected hasPermission(): boolean {
         if (!this.config?.permission) {
             return true;
         }
 
-        let permission = '';
+        return this.permissionService.has(this.permission());
+    }
 
+    protected permission(): string {
         switch (this.mode()) {
             case FormMode.Create:
-                permission = this.config?.permission?.create ?? ''
-                break;
+                return this.config?.permission?.create ?? ''
 
             case FormMode.Edit:
-                permission = this.config?.permission?.update ?? ''
-                break;
+                return this.config?.permission?.update ?? ''
 
             case FormMode.View:
-                permission = this.config?.permission?.view ?? ''
-                break;
-        }
+                return this.config?.permission?.view ?? ''
 
-        return this.permissionService.has(permission);
+            default:
+                return this.config?.permission?.action ?? ''
+        }
     }
 
     scrollTop(): void {
