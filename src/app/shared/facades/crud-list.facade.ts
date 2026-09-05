@@ -1,6 +1,6 @@
 import { CrudPermissionDefinition } from './../../core/models/crud-permission-definition';
-import { signal, computed, inject, WritableSignal } from '@angular/core';
-import { filter, finalize } from 'rxjs';
+import { signal, inject, WritableSignal } from '@angular/core';
+import { finalize } from 'rxjs';
 import { CrudService } from '../../core/contracts/crud-service';
 import { PermissionService } from '../../core/auth/services/permission-service';
 import { ConfirmDialogService } from '../services/confirm-dialog-service';
@@ -35,7 +35,7 @@ export class CrudListFacade<T extends BaseEntity> {
         private crudPermissionDefinition: CrudPermissionDefinition
     ) {}
 
-    load() {
+    load(): void {
         this._loading.set(true);
         this._data.set([]);
         this._response.set(null);
@@ -62,7 +62,7 @@ export class CrudListFacade<T extends BaseEntity> {
         this._filterDefinitionVisible.set(visible);
     }
 
-    applyFilters(filters: RequestFiltersType | undefined) {
+    applyFilters(filters: RequestFiltersType | undefined): void {
         this._requestParams.update((p: ListRequestParams | undefined) => {
             if (!p) {
                 p = {};
@@ -91,7 +91,7 @@ export class CrudListFacade<T extends BaseEntity> {
         this.load();
     }
 
-    async delete(entity: T) {
+    async delete(entity: T): Promise<void> {
         if (!this.canDelete()) {
             return;
         }

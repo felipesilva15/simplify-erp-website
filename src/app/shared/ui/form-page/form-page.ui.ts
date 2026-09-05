@@ -1,15 +1,18 @@
-import { AfterContentInit, Component, ContentChildren, input, InputSignal, QueryList, TemplateRef } from '@angular/core';
+import { AfterContentInit, Component, ContentChildren, Input, input, InputSignal, QueryList, TemplateRef } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { AppTemplate } from '../../directives/app-template';
+import { Message } from "primeng/message";
+import { FormPageFacade } from '../../../core/contracts/form-page-facade';
 
 @Component({
   selector: 'app-form-page',
   imports: [
     BreadcrumbComponent,
     DatePipe,
-    NgTemplateOutlet
+    NgTemplateOutlet,
+    Message
 ],
   templateUrl: './form-page.ui.html',
   styleUrl: './form-page.ui.scss',
@@ -18,6 +21,8 @@ export class FormPageUi implements AfterContentInit {
   title: InputSignal<string> = input.required<string>();
   breadcrumbItems: InputSignal<MenuItem[]> = input<MenuItem[]>([]);
   entity: InputSignal<any> = input<any>(null);
+
+  @Input() facade?: FormPageFacade<any>;
 
   @ContentChildren(AppTemplate)
   templates!: QueryList<AppTemplate>;

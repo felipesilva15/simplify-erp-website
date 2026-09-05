@@ -1,0 +1,6 @@
+@for (item of dynamicDrawerService.drawers(); track item.ref) {
+  <p-drawer [visible]="true" [style]="{ zIndex: item.zIndex }"
+            (onHide)="item.ref.close()">
+    <ng-container *drawerOutlet="item"></ng-container>
+  </p-drawer>
+}

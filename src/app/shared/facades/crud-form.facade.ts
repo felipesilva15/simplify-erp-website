@@ -1,49 +1,63 @@
 import { LookupItem } from './../../core/models/lookup-item';
 import { ToastService } from './../services/toast-service';
-import { computed, effect, inject, Signal, signal, WritableSignal } from "@angular/core";
+import { computed, effect, inject, Injector, Signal, signal, WritableSignal } from "@angular/core";
 import { BaseEntity } from "../../core/models/base-entity";
 import { FormMode } from "../../core/enums/form-mode";
 import { CrudService } from "../../core/contracts/crud-service";
 import { CrudFormConfig } from "../../core/models/crud-form-config";
 import { FormGroup } from "@angular/forms";
 import { PermissionService } from "../../core/auth/services/permission-service";
-import { finalize, Observable, tap } from "rxjs";
+import { finalize, Observable, take, tap } from "rxjs";
 import { ApiResponse } from "../../core/models/api-response";
 import { ConfirmDialogService } from "../services/confirm-dialog-service";
-import { Location } from "@angular/common";
+import { KeyValue, Location } from "@angular/common";
 import { ApiMetaOption } from '../../core/enums/api-meta-option';
+import { ApiMetaType } from '../../core/types/api-meta-type';
+import { FormPageFacade } from '../../core/contracts/form-page-facade';
 
-export class CrudFormFacade<T extends BaseEntity> {
-    private permissionService: PermissionService = inject(PermissionService);
-    private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
-    private toastService: ToastService = inject(ToastService);
-    private location: Location = inject(Location);
+export abstract class CrudFormFacade<
+    T extends BaseEntity,
+    TState = T,
+    TPayload = Partial<T>
+> implements FormPageFacade<T> {
+    protected permissionService: PermissionService = inject(PermissionService);
+    protected confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
+    protected toastService: ToastService = inject(ToastService);
+    protected location: Location = inject(Location);
+    protected injector: Injector = inject(Injector);
 
-    private _mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.CREATE);
-    private _entity: WritableSignal<T | null> = signal<T | null>(null);
-    private _entityResponse: WritableSignal<ApiResponse<T> | null> = signal<ApiResponse<T> | null>(null)
-    private _loading: WritableSignal<boolean> = signal<boolean>(false);
-    private _saving: WritableSignal<boolean> = signal<boolean>(false);
-    private _error: WritableSignal<string | null> = signal<string | null>(null);
+    protected _mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
+    protected _entity: WritableSignal<T | null> = signal<T | null>(null);
+    protected _state: WritableSignal<TState | null> = signal<TState | null>(null);
+    protected _meta: WritableSignal<ApiMetaType | null> = signal<ApiMetaType | null>(null);
+    protected _warnings: WritableSignal<string[]> = signal<string[]>([]);
+    protected _loading: WritableSignal<boolean> = signal<boolean>(false);
+    protected _saving: WritableSignal<boolean> = signal<boolean>(false);
+    protected _error: WritableSignal<string | null> = signal<string | null>(null);
+    protected _serverErrors: WritableSignal<KeyValue<string, string>[]> = signal<KeyValue<string, string>[]>([])
 
     mode: Signal<FormMode> = this._mode.asReadonly();
     entity: Signal<T | null> = this._entity.asReadonly();
-    entityResponse: Signal<ApiResponse<T> | null> = this._entityResponse.asReadonly();
+    state: Signal<TState | null> = this._state.asReadonly();
+    meta: Signal<ApiMetaType | null> = this._meta.asReadonly();
+    warnings: Signal<string[]> = this._warnings.asReadonly();
     loading: Signal<boolean> = this._loading.asReadonly();
     saving: Signal<boolean> = this._saving.asReadonly();
     error: Signal<string | null> = this._error.asReadonly();
+    serverErrors: Signal<KeyValue<string, string>[]> = this._serverErrors.asReadonly();
 
-    isCreate: Signal<boolean> = computed(() => this._mode() === FormMode.CREATE);
-    isEdit: Signal<boolean> = computed(() => this._mode() === FormMode.EDIT);
-    isView: Signal<boolean> = computed(() => this._mode() === FormMode.VIEW);
-    hasWarnings: Signal<boolean> = computed(() => (this.entityResponse()?.warnings?.length ?? 0) > 0);
+    isCreate: Signal<boolean> = computed(() => this._mode() === FormMode.Create);
+    isEdit: Signal<boolean> = computed(() => this._mode() === FormMode.Edit);
+    isView: Signal<boolean> = computed(() => this._mode() === FormMode.View);
+    hasWarnings: Signal<boolean> = computed(() => this.warnings().length > 0);
+    hasServerErrors: Signal<boolean> = computed(() => this.serverErrors().length > 0);
 
     constructor(
-        private service: CrudService<T>,
-        private config?: CrudFormConfig<T>
+        protected service: CrudService<T>,
+        protected config?: CrudFormConfig<T>
     ) {}
 
-    init(mode: FormMode, form: FormGroup, id?: number): void {
+    init(mode: FormMode, form: FormGroup, id?: number): Promise<void> {
         this._mode.set(mode);
 
         if (!this.hasPermission()) {
@@ -51,62 +65,52 @@ export class CrudFormFacade<T extends BaseEntity> {
         }
 
         effect(() => {
-            if (this.isView() || (this.isEdit() && this.entityResponse()?.meta && !this.entityResponse()?.meta?.[ApiMetaOption.Editable] )) {
+            if (this.isView() || (this.isEdit() && this.meta() && !this.meta()?.[ApiMetaOption.Editable] )) {
                 form.disable();
             }
-        });
+        }, { injector: this.injector });
 
-        if ((mode === FormMode.EDIT || mode === FormMode.VIEW) && id) {
-            this.load(id, form);
+        if (this.loadsOnInit(mode, id)) {
+            return this.load(id as number, form);
         }
+
+        return Promise.resolve();
     }
 
-    private hasPermission(): boolean {
-        if (!this.config?.permission) {
-            return true;
-        }
-
-        let permission: string = '';
-
-        switch (this.mode()) {
-            case FormMode.CREATE:
-                permission = this.config?.permission?.create ?? ''
-                break;
-
-            case FormMode.EDIT:
-                permission = this.config?.permission?.update ?? ''
-                break;
-
-            case FormMode.VIEW:
-                permission = this.config?.permission?.view ?? ''
-                break;
-        }
-
-        return this.permissionService.has(permission);
+    protected loadsOnInit(mode: FormMode, id?: number): boolean {
+        return (mode === FormMode.Edit || mode === FormMode.View) && id != null;
     }
 
-    private load(id: number, form: FormGroup): void {
+    protected load(id: number, form: FormGroup): Promise<void> {
         this._loading.set(true);
 
-        const request$: Observable<ApiResponse<T>> = this.isView() ? this.service.get(id) : this.service.edit(id);
+        return new Promise<void>((resolve) => {
+            this.fetchData(id)
+                .pipe(
+                    finalize(() => this._loading.set(false))
+                )
+                .subscribe({
+                    next: (res: ApiResponse<TState>) => {
+                        this._meta.set(res.meta ?? null);
+                        this._warnings.set(res.warnings ?? []);
+                        this._state.set(res.data);
+                        this._entity.set(this.toEntity(res.data));
 
-        request$
-            .pipe(
-                finalize(() => this._loading.set(false))
-            )
-            .subscribe({
-                next: (res: ApiResponse<T>) => {
-                    this._entityResponse.set(res);
-                    this._entity.set(res.data);
-
-                    form.patchValue(res.data);
-                },
-                error: () => this._error.set('Erro ao carregar registro')
-            });
+                        this.applyLoadedData(res.data, form);
+                        resolve();
+                    },
+                    error: () => {
+                        this._error.set('Erro ao carregar registro');
+                        resolve();
+                    }
+                });
+        });
     }
 
     submit(form: FormGroup, id?: number): Observable<ApiResponse<T>> {
         form.markAllAsTouched();
+        
+        this.unsetServerErrors(form);
 
         if (form.invalid) {
             this.scrollTop();
@@ -119,40 +123,77 @@ export class CrudFormFacade<T extends BaseEntity> {
 
         this._saving.set(true);
 
-        let payload = form.getRawValue();
-        payload = this.unwrapLookups(payload);
+        const payload = this.buildPayload(form);
 
-        if (this.config?.beforeSubmit) {
-            payload = this.config.beforeSubmit(payload);
-        }
+        return this.persist(id, payload).pipe(
+            tap({
+                next: (res: ApiResponse<T>) => {
+                    this._meta.set(res.meta ?? null);
+                    this._warnings.set(res.warnings ?? []);
+                    this._entity.set(res.data);
 
-        const request$ = this.isCreate() ? this.service.create(payload) : this.service.update(id!, payload);
+                    this.config?.afterSubmit?.(res.data);
 
-        return request$.pipe(
-            tap((res: ApiResponse<T>) => {
-                this._entity.set(res.data);
+                    if (this.config?.successMessage) {
+                        this.toastService.show({
+                            title: 'Sucesso',
+                            message: this.config.successMessage,
+                            severity: 'success'
+                        })
+                    }
 
-                this.config?.afterSubmit?.(res.data);
+                    if (this.config?.navigateAfterSave) {
+                        this.config.navigateAfterSave(res.data);
+                    }
+                    else {
+                        this.navigateBack();
+                    }
 
-                if (this.config?.successMessage) {
-                    this.toastService.show({
-                        title: 'Sucesso',
-                        message: this.config.successMessage,
-                        severity: 'success'
-                    })
+                    form.markAsPristine();
+                },
+                error: (err: { error?: unknown }) => {
+                    if (err.error) {
+                        this.applyServerErrors(form, err.error as ApiResponse<undefined>);
+                        this.scrollTop();
+                    }
                 }
-
-                if (this.config?.navigateAfterSave) {
-                    this.config.navigateAfterSave(res.data);
-                }
-                else {
-                    this.navigateBack();
-                }
-
-                form.markAsPristine();
             }),
             finalize(() => this._saving.set(false))
         );
+    }
+
+    // hooks
+    protected abstract fetchData(id: number): Observable<ApiResponse<TState>>;
+    protected abstract applyLoadedData(data: TState, form: FormGroup): void;
+    protected abstract buildPayload(form: FormGroup): TPayload;
+    protected abstract persist(id: number | undefined, payload: TPayload): Observable<ApiResponse<T>>;
+
+    protected toEntity(data: TState): T {
+        return data as unknown as T;
+    }
+
+    protected hasPermission(): boolean {
+        if (!this.config?.permission) {
+            return true;
+        }
+
+        return this.permissionService.has(this.permission());
+    }
+
+    protected permission(): string {
+        switch (this.mode()) {
+            case FormMode.Create:
+                return this.config?.permission?.create ?? ''
+
+            case FormMode.Edit:
+                return this.config?.permission?.update ?? ''
+
+            case FormMode.View:
+                return this.config?.permission?.view ?? ''
+
+            default:
+                return this.config?.permission?.action ?? ''
+        }
     }
 
     scrollTop(): void {
@@ -163,7 +204,7 @@ export class CrudFormFacade<T extends BaseEntity> {
         });
     }
 
-    private unwrapLookups(payload: Record<string, unknown>): Record<string, unknown> {
+    protected unwrapLookups(payload: Record<string, unknown>): Record<string, unknown> {
         return Object.fromEntries(
             Object.entries(payload).map(([key, value]) => {
                 if (this.isLookupItem(value)) {
@@ -183,7 +224,7 @@ export class CrudFormFacade<T extends BaseEntity> {
         );
     }
 
-    private isLookupItem(value: unknown): boolean {
+    protected isLookupItem(value: unknown): boolean {
         return (
             typeof value === 'object' &&
             value !== null &&
@@ -193,13 +234,58 @@ export class CrudFormFacade<T extends BaseEntity> {
         );
     }
 
+    applyServerErrors(form: FormGroup, response: ApiResponse<undefined>): void {
+        const serverErrors: KeyValue<string, string>[] = [];
+
+        if (response.errors) {
+            Object.entries(response.errors).forEach(([path, messages]) => {
+                const control = form.get(this.toControlPath(path));
+                if (control) {
+                    control.setErrors({ ...control.errors, server: messages });
+                    control.markAsTouched();
+
+                    control.valueChanges.pipe(take(1)).subscribe(() => {
+                        const { _server, ...rest } = control.errors ?? {};
+                        control.setErrors(Object.keys(rest).length ? rest : null);
+                    });
+                } else {
+                   serverErrors.push({key: path, value: messages[0]});
+                }
+            });
+        }
+
+        if (!response.success && response.message && !response.errors) {
+            serverErrors.push({key: 'server', value: response.message});
+        }
+
+        this._serverErrors.set(serverErrors);
+    }
+
+    private toControlPath(path: string): string {
+        return path;
+    }
+
+    unsetServerErrors(form: FormGroup): void {
+        this._serverErrors.set([]);
+        Object.keys(form.controls).forEach(key => {
+            const control = form.get(key);
+
+            if (control) {
+                const currentErrors = { ...control?.errors };
+                delete currentErrors['server'];
+
+                control.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+            }
+        });
+    }
+
     navigateBack(form?: FormGroup): void {
         if (!form) {
             this.location.back();
             return;
         }
 
-        this.canDeactivate(form).then(
+        void this.canDeactivate(form).then(
             (confirmed: boolean) => confirmed && this.location.back()
         )
     }

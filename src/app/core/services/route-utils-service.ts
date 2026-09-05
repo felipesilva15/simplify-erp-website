@@ -9,13 +9,21 @@ export class RouteUtilsService {
   private router: Router = inject(Router);
 
   getFormModeFromCurrentUrl(): FormMode {
-    if (this.router.url.slice(-4) === '/new') {
-      return FormMode.CREATE;
-    } else if (this.router.url.slice(-5) === '/edit') {
-      return FormMode.EDIT;
-    } else {
-      return FormMode.VIEW;
+    const url: string = this.sanatizeUrl(this.router.url);
+
+    if (url.endsWith('/new')) {
+      return FormMode.Create;
     }
+
+    if (url.endsWith('/edit')) {
+      return FormMode.Edit;
+    }
+
+    if (/\/\d+\//.test(url)) {
+      return FormMode.Custom;
+    }
+
+    return FormMode.View;
   }
 
   isRouteActive(url: string): boolean {
@@ -23,14 +31,10 @@ export class RouteUtilsService {
       return false;
     }
 
-    const escapedUrl: string = this.escapeForRegex(this.sanatizeUrl(url));
-    const viewFormPattern: RegExp = new RegExp(`${escapedUrl}\\/\\d+$`);
-    const editFormPattern: RegExp = new RegExp(`${escapedUrl}\\/\\d+\\/edit$`);
-    const createFormPattern: RegExp = new RegExp(`${escapedUrl}\\/new$`);
-
+    const normalizedUrl: string = this.sanatizeUrl(url);
     const currentUrl: string = this.sanatizeUrl(this.router.url);
 
-    return currentUrl == url || viewFormPattern.test(currentUrl) || editFormPattern.test(currentUrl) || createFormPattern.test(currentUrl);
+    return currentUrl === normalizedUrl || currentUrl.startsWith(`${normalizedUrl}/`);
   }
 
   private sanatizeUrl(url: string): string {
@@ -39,9 +43,5 @@ export class RouteUtilsService {
       .replace(/^\/?/, '/')
       .trim()
       .toLowerCase();
-  }
-
-  private escapeForRegex(value: string): string {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 }

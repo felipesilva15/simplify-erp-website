@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ForbiddenComponent } from './forbidden.component';
+import { DrawerHostComponent } from './drawer-host.component';
 
-describe('ForbiddenComponent', () => {
-  let component: ForbiddenComponent;
-  let fixture: ComponentFixture<ForbiddenComponent>;
+describe('DrawerHostComponent', () => {
+  let component: DrawerHostComponent;
+  let fixture: ComponentFixture<DrawerHostComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ForbiddenComponent]
+      imports: [DrawerHostComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ForbiddenComponent);
+    fixture = TestBed.createComponent(DrawerHostComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

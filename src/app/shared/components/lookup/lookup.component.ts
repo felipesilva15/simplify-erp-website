@@ -8,7 +8,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   signal,
-  WritableSignal,
+  WritableSignal, OnInit, OnDestroy,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
@@ -44,15 +44,15 @@ import { LookupResult } from '../../../core/models/lookup-result';
   templateUrl: './lookup.component.html',
   styleUrl: './lookup.component.scss',
 })
-export class LookupComponent {
+export class LookupComponent implements OnInit, OnDestroy {
   @Input({ required: true }) facade!: LookupFacade;
-  @Input() multiple: boolean = false;
-  @Input() placeholder: string = 'Buscar...';
-  @Input() emptyMessage: string = 'Nenhum resultado encontrado';
-  @Input() debounce: number = 300;
-  @Input() minChars: number = 1;
-  @Input() pageSize: number = 10;
-  @Input() invalid: boolean = false;
+  @Input() multiple = false;
+  @Input() placeholder = 'Buscar...';
+  @Input() emptyMessage = 'Nenhum resultado encontrado';
+  @Input() debounce = 300;
+  @Input() minChars = 1;
+  @Input() pageSize = 10;
+  @Input() invalid = false;
 
   @Output() selected = new EventEmitter<LookupItem | LookupItem[]>();
 
@@ -61,7 +61,7 @@ export class LookupComponent {
   protected total: WritableSignal<number | null> = signal<number | null>(null);
  
   protected internalControl: FormControl<LookupItem | LookupItem[] | null> = new FormControl<LookupItem | LookupItem[] | null>(null);
-  protected isDisabled: boolean = false;
+  protected isDisabled = false;
  
   private destroy$: Subject<void> = new Subject<void>();
   
@@ -114,7 +114,7 @@ export class LookupComponent {
     this.selected.emit(this.selectedValue);
   }
  
-  onUnselect(item: LookupItem): void {
+  onUnselect(_item: LookupItem): void {
     this.selected.emit(this.selectedValue);
   }
  
@@ -124,7 +124,7 @@ export class LookupComponent {
     this.selected.emit(this.multiple ? [] : (null as any));
   }
 
-  onFocus(autoComplete: AutoComplete, event: Event) {
+  onFocus(autoComplete: AutoComplete, event: Event): void {
     if (this.isEmpty() && this.minChars == 0) {
       autoComplete.handleDropdownClick(event)
     }
@@ -163,7 +163,7 @@ export class LookupComponent {
         return item?.id ?? null
       }).filter(
         (value: any) => value != null && value != undefined
-      ) as Array<string | number>;
+      ) as (string | number)[];
 
       const filter: LookupFilter = {
         q: '',
@@ -228,8 +228,10 @@ export class LookupComponent {
  
   setDisabledState(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
-    isDisabled
-      ? this.internalControl.disable({ emitEvent: false })
-      : this.internalControl.enable({ emitEvent: false });
+    if (isDisabled) {
+      this.internalControl.disable({ emitEvent: false });
+    } else {
+      this.internalControl.enable({ emitEvent: false });
+    }
   }
 }

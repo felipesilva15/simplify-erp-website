@@ -19,7 +19,7 @@ class MockBreadcrumbComponent { }
 describe('FormPageUi', () => {
   let component: FormPageUi;
   let fixture: ComponentFixture<FormPageUi>;
-  let pageTitle: string = 'Test Page Title';
+  const pageTitle = 'Test Page Title';
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

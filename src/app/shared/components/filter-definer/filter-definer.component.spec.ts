@@ -14,14 +14,14 @@ import { FilterFieldDefinition } from './../../../core/models/filter-field-defin
 class TestHostComponent {
   @ViewChild(FilterDefinerComponent) child!: FilterDefinerComponent;
   fields: FilterFieldDefinition[] = [
-    { name: 'name', label: 'Nome', type: ColumnType.TEXT },
-    { name: 'age', label: 'Idade', type: ColumnType.INTEGER },
-    { name: 'birthDate', label: 'Data de Nascimento', type: ColumnType.DATE },
-    { name: 'createdAt', label: 'Data de Criação', type: ColumnType.DATETIME },
-    { name: 'salary', label: 'Salário', type: ColumnType.CURRENCY },
-    { name: 'active', label: 'Ativo', type: ColumnType.BOOLEAN },
-    { name: 'discount', label: 'Desconto', type: ColumnType.PERCENT },
-    { name: 'value', label: 'Valor', type: ColumnType.DECIMAL },
+    { name: 'name', label: 'Nome', type: ColumnType.Text },
+    { name: 'age', label: 'Idade', type: ColumnType.Integer },
+    { name: 'birthDate', label: 'Data de Nascimento', type: ColumnType.Date },
+    { name: 'createdAt', label: 'Data de Criação', type: ColumnType.Datetime },
+    { name: 'salary', label: 'Salário', type: ColumnType.Currency },
+    { name: 'active', label: 'Ativo', type: ColumnType.Boolean },
+    { name: 'discount', label: 'Desconto', type: ColumnType.Percent },
+    { name: 'value', label: 'Valor', type: ColumnType.Decimal },
   ];
 }
 
@@ -34,14 +34,14 @@ describe('FilterDefinerComponent', () => {
   let percentPipeSpy: PercentPipe;
 
   const mockFields: FilterFieldDefinition[] = [
-    { name: 'name', label: 'Nome', type: ColumnType.TEXT },
-    { name: 'age', label: 'Idade', type: ColumnType.INTEGER },
-    { name: 'birthDate', label: 'Data de Nascimento', type: ColumnType.DATE },
-    { name: 'createdAt', label: 'Data de Criação', type: ColumnType.DATETIME },
-    { name: 'salary', label: 'Salário', type: ColumnType.CURRENCY },
-    { name: 'active', label: 'Ativo', type: ColumnType.BOOLEAN },
-    { name: 'discount', label: 'Desconto', type: ColumnType.PERCENT },
-    { name: 'value', label: 'Valor', type: ColumnType.DECIMAL },
+    { name: 'name', label: 'Nome', type: ColumnType.Text },
+    { name: 'age', label: 'Idade', type: ColumnType.Integer },
+    { name: 'birthDate', label: 'Data de Nascimento', type: ColumnType.Date },
+    { name: 'createdAt', label: 'Data de Criação', type: ColumnType.Datetime },
+    { name: 'salary', label: 'Salário', type: ColumnType.Currency },
+    { name: 'active', label: 'Ativo', type: ColumnType.Boolean },
+    { name: 'discount', label: 'Desconto', type: ColumnType.Percent },
+    { name: 'value', label: 'Valor', type: ColumnType.Decimal },
   ];
 
   const makeFilterViewData = (
@@ -226,7 +226,7 @@ describe('FilterDefinerComponent', () => {
       component.applyFilter();
 
       expect(component.appliedFilters()).toEqual([
-        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.TEXT),
+        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.Text),
       ]);
     });
 
@@ -353,7 +353,7 @@ describe('FilterDefinerComponent', () => {
 
     it('should return early when selectedField has no name', () => {
       component.form.patchValue({
-        field: { name: '', label: '', type: ColumnType.TEXT },
+        field: { name: '', label: '', type: ColumnType.Text },
         operator: FilterOperator.Equal,
         value: 'test',
       });
@@ -619,8 +619,8 @@ describe('FilterDefinerComponent', () => {
   describe('removeFromAppliedFilters', () => {
     it('should remove matching filter by name and operator', () => {
       const filters = [
-        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.TEXT),
-        makeFilterViewData('age', 'Idade', FilterOperator.Equal, 25, ColumnType.INTEGER),
+        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.Text),
+        makeFilterViewData('age', 'Idade', FilterOperator.Equal, 25, ColumnType.Integer),
       ];
 
       const result = component.removeFromAppliedFilters(filters, 'name', FilterOperator.Equal);
@@ -631,7 +631,7 @@ describe('FilterDefinerComponent', () => {
 
     it('should not remove filter when operator does not match', () => {
       const filters = [
-        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.TEXT),
+        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.Text),
       ];
 
       const result = component.removeFromAppliedFilters(filters, 'name', FilterOperator.NotEqual);
@@ -641,7 +641,7 @@ describe('FilterDefinerComponent', () => {
 
     it('should not remove filter when name does not match', () => {
       const filters = [
-        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.TEXT),
+        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.Text),
       ];
 
       const result = component.removeFromAppliedFilters(filters, 'age', FilterOperator.Equal);
@@ -651,7 +651,7 @@ describe('FilterDefinerComponent', () => {
 
     it('should return empty array when all filters are removed', () => {
       const filters = [
-        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.TEXT),
+        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.Text),
       ];
 
       const result = component.removeFromAppliedFilters(filters, 'name', FilterOperator.Equal);
@@ -661,8 +661,8 @@ describe('FilterDefinerComponent', () => {
 
     it('should return original array when no filters match', () => {
       const filters = [
-        makeFilterViewData('age', 'Idade', FilterOperator.Equal, 25, ColumnType.INTEGER),
-        makeFilterViewData('salary', 'Salário', FilterOperator.GreaterThan, 5000, ColumnType.CURRENCY),
+        makeFilterViewData('age', 'Idade', FilterOperator.Equal, 25, ColumnType.Integer),
+        makeFilterViewData('salary', 'Salário', FilterOperator.GreaterThan, 5000, ColumnType.Currency),
       ];
 
       const result = component.removeFromAppliedFilters(filters, 'name', FilterOperator.Equal);
@@ -676,9 +676,9 @@ describe('FilterDefinerComponent', () => {
   describe('sortAppliedFilters', () => {
     it('should sort filters by name', () => {
       const filters = [
-        makeFilterViewData('salary', 'Salário', FilterOperator.Equal, 5000, ColumnType.CURRENCY),
-        makeFilterViewData('age', 'Idade', FilterOperator.Equal, 25, ColumnType.INTEGER),
-        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.TEXT),
+        makeFilterViewData('salary', 'Salário', FilterOperator.Equal, 5000, ColumnType.Currency),
+        makeFilterViewData('age', 'Idade', FilterOperator.Equal, 25, ColumnType.Integer),
+        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.Text),
       ];
 
       const result = component.sortAppliedFilters(filters);
@@ -690,9 +690,9 @@ describe('FilterDefinerComponent', () => {
 
     it('should sort filters by operatorLabel when names are equal', () => {
       const filters = [
-        makeFilterViewData('name', 'Nome', FilterOperator.GreaterThan, 'b', ColumnType.TEXT),
-        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'a', ColumnType.TEXT),
-        makeFilterViewData('name', 'Nome', FilterOperator.Like, 'c', ColumnType.TEXT),
+        makeFilterViewData('name', 'Nome', FilterOperator.GreaterThan, 'b', ColumnType.Text),
+        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'a', ColumnType.Text),
+        makeFilterViewData('name', 'Nome', FilterOperator.Like, 'c', ColumnType.Text),
       ];
 
       const result = component.sortAppliedFilters(filters);
@@ -709,8 +709,8 @@ describe('FilterDefinerComponent', () => {
 
     it('should return same array reference', () => {
       const filters = [
-        makeFilterViewData('salary', 'Salário', FilterOperator.Equal, 5000, ColumnType.CURRENCY),
-        makeFilterViewData('age', 'Idade', FilterOperator.Equal, 25, ColumnType.INTEGER),
+        makeFilterViewData('salary', 'Salário', FilterOperator.Equal, 5000, ColumnType.Currency),
+        makeFilterViewData('age', 'Idade', FilterOperator.Equal, 25, ColumnType.Integer),
       ];
 
       const result = component.sortAppliedFilters(filters);
@@ -821,7 +821,7 @@ describe('FilterDefinerComponent', () => {
       vi.spyOn(datePipeSpy, 'transform').mockReturnValue('15/01/2025');
 
       const result = component.formatFilterValue(
-        makeFilterViewData('birthDate', 'Data de Nascimento', FilterOperator.Equal, date, ColumnType.DATE)
+        makeFilterViewData('birthDate', 'Data de Nascimento', FilterOperator.Equal, date, ColumnType.Date)
       );
 
       expect(datePipeSpy.transform).toHaveBeenCalledWith(date, 'dd/MM/yyyy');
@@ -832,7 +832,7 @@ describe('FilterDefinerComponent', () => {
       vi.spyOn(datePipeSpy, 'transform').mockReturnValue(null);
 
       const result = component.formatFilterValue(
-        makeFilterViewData('birthDate', 'Data de Nascimento', FilterOperator.Equal, null, ColumnType.DATE)
+        makeFilterViewData('birthDate', 'Data de Nascimento', FilterOperator.Equal, null, ColumnType.Date)
       );
 
       expect(result).toBe('');
@@ -843,7 +843,7 @@ describe('FilterDefinerComponent', () => {
       vi.spyOn(datePipeSpy, 'transform').mockReturnValue('20/06/2025 14:30');
 
       const result = component.formatFilterValue(
-        makeFilterViewData('createdAt', 'Data de Criação', FilterOperator.Equal, date, ColumnType.DATETIME)
+        makeFilterViewData('createdAt', 'Data de Criação', FilterOperator.Equal, date, ColumnType.Datetime)
       );
 
       expect(datePipeSpy.transform).toHaveBeenCalledWith(date, 'dd/MM/yyyy HH:mm');
@@ -854,7 +854,7 @@ describe('FilterDefinerComponent', () => {
       vi.spyOn(datePipeSpy, 'transform').mockReturnValue(null);
 
       const result = component.formatFilterValue(
-        makeFilterViewData('createdAt', 'Data de Criação', FilterOperator.Equal, null, ColumnType.DATETIME)
+        makeFilterViewData('createdAt', 'Data de Criação', FilterOperator.Equal, null, ColumnType.Datetime)
       );
 
       expect(result).toBe('');
@@ -864,7 +864,7 @@ describe('FilterDefinerComponent', () => {
       vi.spyOn(currencyPipeSpy, 'transform').mockReturnValue('R$ 5.000,00');
 
       const result = component.formatFilterValue(
-        makeFilterViewData('salary', 'Salário', FilterOperator.Equal, 5000, ColumnType.CURRENCY)
+        makeFilterViewData('salary', 'Salário', FilterOperator.Equal, 5000, ColumnType.Currency)
       );
 
       expect(currencyPipeSpy.transform).toHaveBeenCalledWith(5000, 'BRL');
@@ -875,7 +875,7 @@ describe('FilterDefinerComponent', () => {
       vi.spyOn(currencyPipeSpy, 'transform').mockReturnValue(null);
 
       const result = component.formatFilterValue(
-        makeFilterViewData('salary', 'Salário', FilterOperator.Equal, null, ColumnType.CURRENCY)
+        makeFilterViewData('salary', 'Salário', FilterOperator.Equal, null, ColumnType.Currency)
       );
 
       expect(result).toBe('');
@@ -885,7 +885,7 @@ describe('FilterDefinerComponent', () => {
       vi.spyOn(percentPipeSpy, 'transform').mockReturnValue('25%');
 
       const result = component.formatFilterValue(
-        makeFilterViewData('discount', 'Desconto', FilterOperator.Equal, 0.25, ColumnType.PERCENT)
+        makeFilterViewData('discount', 'Desconto', FilterOperator.Equal, 0.25, ColumnType.Percent)
       );
 
       expect(percentPipeSpy.transform).toHaveBeenCalledWith(0.25);
@@ -896,7 +896,7 @@ describe('FilterDefinerComponent', () => {
       vi.spyOn(percentPipeSpy, 'transform').mockReturnValue(null);
 
       const result = component.formatFilterValue(
-        makeFilterViewData('discount', 'Desconto', FilterOperator.Equal, null, ColumnType.PERCENT)
+        makeFilterViewData('discount', 'Desconto', FilterOperator.Equal, null, ColumnType.Percent)
       );
 
       expect(result).toBe('');
@@ -904,35 +904,35 @@ describe('FilterDefinerComponent', () => {
 
     it('should return "Sim" for BOOLEAN true', () => {
       const result = component.formatFilterValue(
-        makeFilterViewData('active', 'Ativo', FilterOperator.Equal, true, ColumnType.BOOLEAN)
+        makeFilterViewData('active', 'Ativo', FilterOperator.Equal, true, ColumnType.Boolean)
       );
       expect(result).toBe('Sim');
     });
 
     it('should return "Não" for BOOLEAN false', () => {
       const result = component.formatFilterValue(
-        makeFilterViewData('active', 'Ativo', FilterOperator.Equal, false, ColumnType.BOOLEAN)
+        makeFilterViewData('active', 'Ativo', FilterOperator.Equal, false, ColumnType.Boolean)
       );
       expect(result).toBe('Não');
     });
 
     it('should return raw value for TEXT type (default case)', () => {
       const result = component.formatFilterValue(
-        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'John', ColumnType.TEXT)
+        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'John', ColumnType.Text)
       );
       expect(result).toBe('John');
     });
 
     it('should return raw value for INTEGER type (default case)', () => {
       const result = component.formatFilterValue(
-        makeFilterViewData('age', 'Idade', FilterOperator.Equal, 25, ColumnType.INTEGER)
+        makeFilterViewData('age', 'Idade', FilterOperator.Equal, 25, ColumnType.Integer)
       );
       expect(result).toBe(25);
     });
 
     it('should return raw value for DECIMAL type (default case)', () => {
       const result = component.formatFilterValue(
-        makeFilterViewData('value', 'Valor', FilterOperator.Equal, 19.99, ColumnType.DECIMAL)
+        makeFilterViewData('value', 'Valor', FilterOperator.Equal, 19.99, ColumnType.Decimal)
       );
       expect(result).toBe(19.99);
     });

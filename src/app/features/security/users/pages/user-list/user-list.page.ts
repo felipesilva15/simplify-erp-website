@@ -54,12 +54,12 @@ export class UserListPage implements AfterViewInit {
   ];
   cols: TableColumn<User>[] = [];
   filterDefinition: FilterFieldDefinition[] = [
-    { name: 'id', label: 'ID', type: ColumnType.INTEGER },
-    { name: 'name', label: 'Nome', type: ColumnType.TEXT },
-    { name: 'email', label: 'E-mail', type: ColumnType.TEXT },
-    { name: 'username', label: 'Usuário', type: ColumnType.TEXT },
-    { name: 'phone_number', label: 'Telefone', type: ColumnType.TEXT },
-    { name: 'is_admin', label: 'Admin', type: ColumnType.BOOLEAN },
+    { name: 'id', label: 'ID', type: ColumnType.Integer },
+    { name: 'name', label: 'Nome', type: ColumnType.Text },
+    { name: 'email', label: 'E-mail', type: ColumnType.Text },
+    { name: 'username', label: 'Usuário', type: ColumnType.Text },
+    { name: 'phone_number', label: 'Telefone', type: ColumnType.Text },
+    { name: 'is_admin', label: 'Admin', type: ColumnType.Boolean },
   ]
   tableMenu: TableMenuItem<User>[] = [
     { 
@@ -84,12 +84,12 @@ export class UserListPage implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.cols = [
-      { field: 'id', header: 'ID', sortable: true, type: ColumnType.INTEGER },
-      { field: 'name', header: 'Nome', sortable: true, type: ColumnType.TEXT },
-      { field: 'email', header: 'E-mail', sortable: true, type: ColumnType.TEXT },
-      { field: 'username', header: 'Usuário', sortable: true, type: ColumnType.TEXT },
-      { field: 'phone_number', header: 'Telefone', sortable: true, type: ColumnType.TEXT, pipe: new PhonePipe() },
-      { field: 'is_admin', header: 'Admin', sortable: true, type: ColumnType.BOOLEAN },
+      { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },
+      { field: 'name', header: 'Nome', sortable: true, type: ColumnType.Text },
+      { field: 'email', header: 'E-mail', sortable: true, type: ColumnType.Text },
+      { field: 'username', header: 'Usuário', sortable: true, type: ColumnType.Text },
+      { field: 'phone_number', header: 'Telefone', sortable: true, type: ColumnType.Text, pipe: new PhonePipe() },
+      { field: 'is_admin', header: 'Admin', sortable: true, type: ColumnType.Boolean },
       { field: 'roles', header: 'Perfis', sortable: false, template: this.rolesTemplate }
     ]
   }

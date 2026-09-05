@@ -1,5 +1,5 @@
 import { AppLoadingService } from './../services/app-loading-service';
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
@@ -25,12 +25,12 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
                   life: 7000
                 });
 
-                router.navigate(['/security/auth/login']);
+                void router.navigate(['/security/auth/login']);
               }
               break;
 
             case 403:
-              router.navigate(['/error/403'], {
+              void router.navigate(['/error', 403], {
                 state: {
                   username: authService.user?.username ?? ''
                 }
@@ -38,14 +38,45 @@ export const errorResponseInterceptor: HttpInterceptorFn = (req, next) => {
               break;
 
             case 404:
-              router.navigate(['/error/404'], {
+              void router.navigate(['/error', 404], {
                 state: {
                   username: authService.user?.username ?? ''
                 }
               });
               break;
-          
+
+            case 500:
+              void router.navigate(['/error', 500], {
+                state: {
+                  username: authService.user?.username ?? ''
+                }
+              });
+              break;
+
+            case 502:
+              void router.navigate(['/error', 502], {
+                state: {
+                  username: authService.user?.username ?? ''
+                }
+              });
+              break;
+
+            case 503:
+              void router.navigate(['/error', 503], {
+                state: {
+                  username: authService.user?.username ?? ''
+                }
+              });
+              break;
+
             default:
+              if (err.statusText === 'Unknown Error') {
+                void router.navigate(['/error', 503], {
+                  state: {
+                    username: authService.user?.username ?? ''
+                  }
+                });
+              }
               break;
           }
 

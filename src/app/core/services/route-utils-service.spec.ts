@@ -28,27 +28,47 @@ describe('RouteUtilsService', () => {
   describe('getFormModeFromCurrentUrl', () => {
     it('should return CREATE form mode when the url ends with /new', () => {
       router.url = '/test/new';
-      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.CREATE);
+      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.Create);
     });
 
     it('should return EDIT form mode when the url ends with /edit', () => {
       router.url = '/test/123/edit';
-      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.EDIT);
+      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.Edit);
     });
 
     it('should return VIEW form mode when the url does not end with /new or /edit', () => {
       router.url = '/test';
-      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.VIEW);
+      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.View);
     });
 
     it('should return VIEW form mode when the url contains "new" but does not end with /new', () => {
       router.url = '/test/newUser';
-      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.VIEW);
+      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.View);
     });
 
     it('should return VIEW form mode when the url contains "edit" but does not end with /edit', () => {
       router.url = '/test/editUser';
-      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.VIEW);
+      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.View);
+    });
+
+    it('should return VIEW form mode when the url ends with an id', () => {
+      router.url = '/test/123';
+      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.View);
+    });
+
+    it('should return CUSTOM form mode when the url has an id followed by child segments', () => {
+      router.url = '/security/roles/3/permissions';
+      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.Custom);
+    });
+
+    it('should return CUSTOM form mode when the url has an id followed by multiple child segments', () => {
+      router.url = '/security/roles/3/permissions/5';
+      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.Custom);
+    });
+
+    it('should return CUSTOM form mode ignoring query parameters', () => {
+      router.url = '/security/roles/3/permissions?param=value';
+      expect(service.getFormModeFromCurrentUrl()).toBe(FormMode.Custom);
     });
   });
 
@@ -75,6 +95,21 @@ describe('RouteUtilsService', () => {
 
     it('should return true when currentUrl matches create pattern (url/new)', () => {
       router.url = '/test/new';
+      expect(service.isRouteActive('/test')).toBe(true);
+    });
+
+    it('should return true when currentUrl is a child route of url', () => {
+      router.url = '/test/123/permissions';
+      expect(service.isRouteActive('/test')).toBe(true);
+    });
+
+    it('should return true when currentUrl is a deeply nested child route of url', () => {
+      router.url = '/test/123/permissions/5';
+      expect(service.isRouteActive('/test')).toBe(true);
+    });
+
+    it('should return true when currentUrl is a child route without an id segment', () => {
+      router.url = '/test/options';
       expect(service.isRouteActive('/test')).toBe(true);
     });
 

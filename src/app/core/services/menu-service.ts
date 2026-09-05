@@ -1,10 +1,10 @@
 import { RouteUtilsService } from './route-utils-service';
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { PermissionService } from '../auth/services/permission-service';
 import { MenuItem } from 'primeng/api';
 import { MENU } from '../config/menu';
 import { AppMenuItem } from '../models/app-menu-item';
-import { isActive, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -48,9 +48,8 @@ export class MenuService {
       return;
     }
 
-    for (let i = 0; i < menu.length; i++) {
-      const item: any = menu[i];
-      let hasActiveChild: boolean = false;
+    for (const item of menu) {
+      let hasActiveChild = false;
 
       if (item.items && item.items.length) {
         hasActiveChild = item.items.some((subItem: MenuItem) => subItem['link'] && this.routeUtilsService.isRouteActive(subItem['link']));

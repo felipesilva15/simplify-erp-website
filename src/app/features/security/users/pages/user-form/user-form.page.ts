@@ -1,4 +1,4 @@
-import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { FluidModule } from 'primeng/fluid';
@@ -7,7 +7,7 @@ import { MessageModule } from 'primeng/message';
 import { SkeletonModule } from 'primeng/skeleton';
 import { FormPageUi } from '../../../../../shared/ui/form-page/form-page.ui';
 import { AppTemplate } from '../../../../../shared/directives/app-template';
-import { CrudFormFacade } from '../../../../../shared/facades/crud-form.facade';
+import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { User } from '../../models/user';
 import { UserService } from '../../services/user-service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,8 +23,9 @@ import { LookupItem } from '../../../../../core/models/lookup-item';
 import { FormControlErrorsComponent } from '../../../../../shared/components/form-control-errors/form-control-errors.component';
 import { InputMaskModule } from 'primeng/inputmask';
 import { phoneValidator } from '../../../../../shared/validators/phone.validator';
+import { NgxMaskDirective } from 'ngx-mask';
 
-type FormType = {
+interface FormType {
   name: FormControl<string>;
   username: FormControl<string>;
   email: FormControl<string>;
@@ -51,13 +52,14 @@ type FormType = {
     ToggleSwitchModule,
     PasswordModule,
     InputMaskModule,
-    FormControlErrorsComponent
+    FormControlErrorsComponent,
+    NgxMaskDirective
   ],
   providers: [
     {
-      provide: CrudFormFacade<User>,
+      provide: GenericCrudFormFacade<User>,
       useFactory: (service: UserService) =>
-        new CrudFormFacade<User>(service, {
+        new GenericCrudFormFacade<User>(service, {
           successMessage: 'Registro salvo!',
           permission: {
             create: 'users.create',
@@ -71,11 +73,11 @@ type FormType = {
   templateUrl: './user-form.page.html',
   styleUrl: './user-form.page.scss',
 })
-export class UserFormPage {
+export class UserFormPage implements OnInit {
   private fb: FormBuilder = inject(FormBuilder)
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
-  public facade: CrudFormFacade<User> = inject(CrudFormFacade<User>);
+  public facade: GenericCrudFormFacade<User> = inject(GenericCrudFormFacade<User>);
   private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
   private roleService: RoleService = inject(RoleService);
 
@@ -93,7 +95,7 @@ export class UserFormPage {
   });
   
   id: WritableSignal<number> = signal<number>(0);
-  mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.CREATE);
+  mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
   
   modeLabel: Signal<string> = computed(() => FormModeLabel[this.mode()]);
   title: Signal<string> = computed(() => this.modeLabel() + ' perfil');
@@ -110,8 +112,11 @@ export class UserFormPage {
       { label: this.activeBreadcrumbItemLabel(), routerLink: this.router.url }
     ];
 
-    this.facade.init(this.mode(), this.form, this.id());
     this.configureFormValidators();
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.facade.init(this.mode(), this.form, this.id());
   }
 
   private configureFormValidators(): void {

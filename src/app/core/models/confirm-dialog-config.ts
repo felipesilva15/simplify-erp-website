@@ -1,5 +1,3 @@
-import { ButtonProps } from "primeng/button";
-
 export interface ConfirmDialogConfig {
     header?: string;
     message: string;

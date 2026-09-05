@@ -1,8 +1,7 @@
-import { ApiResponse } from './../../models/api-response';
 import { LoginRequest } from './../../../features/security/auth/models/login-request';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable } from 'rxjs';
 import { TokenDetails } from '../../models/token-details';
 import { environment } from '../../../../environments/environment';
 import { User } from '../../../features/security/users/models/user';
@@ -58,7 +57,7 @@ export class AuthService {
     .pipe(
       finalize(() => {
         this.user$ = new BehaviorSubject(null);
-        this.router.navigate(['/security/auth/login']);
+        void this.router.navigate(['/security/auth/login']);
       })
     );
   }

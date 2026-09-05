@@ -1,18 +1,19 @@
 import { Component, computed, Input, Signal } from '@angular/core';
 import { LogoType } from '../../enums/logo-type';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-logo',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './logo.component.html',
   styleUrl: './logo.component.scss',
 })
 export class LogoComponent {
   @Input() type: LogoType = LogoType.Extended;
-  @Input({required: false}) height: string = '42px';
-  @Input() link: string = '';
-  fileBasePath: string = 'images';
+  @Input({required: false}) height = '42px';
+  @Input() link = '';
+  fileBasePath = 'images';
 
   source: Signal<string> = computed(() => {
     return this.type == LogoType.Extended ? `${this.fileBasePath}/logo-extended.png` : `${this.fileBasePath}/logo-mini.png`

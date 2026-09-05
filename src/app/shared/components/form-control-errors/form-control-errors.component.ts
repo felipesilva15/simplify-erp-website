@@ -1,5 +1,5 @@
-import { CommonModule, JsonPipe } from '@angular/common';
-import { Component, computed, effect, input, InputSignal, OnDestroy, signal, Signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, computed, effect, input, OnDestroy, signal } from '@angular/core';
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { MessageModule } from 'primeng/message';
 import { Subscription } from 'rxjs';
@@ -106,6 +106,10 @@ export class FormControlErrorsComponent implements OnDestroy {
 
     if (errors['cnpj']) {
       messages.push({ key: 'cnpj', message: `Informe um CNPJ válido.` });
+    }
+
+    if (errors['server']) {
+      messages.push({ key: 'server', message: errors['server'] });
     }
 
     return messages;

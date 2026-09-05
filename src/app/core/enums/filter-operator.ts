@@ -18,7 +18,7 @@ export const FilterOperatorLabels: Record<FilterOperator, string> = {
     [FilterOperator.NotEqual]: 'Diferente'
 };
   
-export const FilterOperatorOptions: Array<{ code: FilterOperator, name: string }> = (Object.keys(FilterOperator) as Array<keyof typeof FilterOperator>)
+export const FilterOperatorOptions: { code: FilterOperator, name: string }[] = (Object.keys(FilterOperator) as (keyof typeof FilterOperator)[])
 .map(key => ({
     code: FilterOperator[key] as FilterOperator,
     name: FilterOperatorLabels[FilterOperator[key] as FilterOperator],

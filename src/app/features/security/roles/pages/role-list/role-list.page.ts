@@ -49,14 +49,14 @@ export class RoleListPage {
     { label: 'Listar', routerLink: '/security/roles' }
   ];
   cols: TableColumn<Role>[] = [
-    { field: 'id', header: 'ID', sortable: true, type: ColumnType.INTEGER },
-    { field: 'name', header: 'Nome', sortable: true, type: ColumnType.TEXT },
-    { field: 'description', header: 'Descrição', sortable: false, type: ColumnType.TEXT }
+    { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },
+    { field: 'name', header: 'Nome', sortable: true, type: ColumnType.Text },
+    { field: 'description', header: 'Descrição', sortable: false, type: ColumnType.Text }
   ];
   filterDefinition: FilterFieldDefinition[] = [
-    { name: 'id', label: 'ID', type: ColumnType.INTEGER },
-    { name: 'name', label: 'Nome', type: ColumnType.TEXT },
-    { name: 'description', label: 'Descrição', type: ColumnType.TEXT }
+    { name: 'id', label: 'ID', type: ColumnType.Integer },
+    { name: 'name', label: 'Nome', type: ColumnType.Text },
+    { name: 'description', label: 'Descrição', type: ColumnType.Text }
   ]
   tableMenu: TableMenuItem<Role>[] = [
     { 

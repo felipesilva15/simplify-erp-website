@@ -3,9 +3,7 @@ import { environment } from '../../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../models/user';
-import { CreateUserRequestData } from '../models/create-user-request-data';
 import { ApiResponse } from '../../../../core/models/api-response';
-import { UpdateUserRequestData } from '../models/update-user-request-data';
 import { CrudService } from '../../../../core/contracts/crud-service';
 import { LookupService } from '../../../../core/contracts/lookup-service';
 import { LookupFilter } from '../../../../core/models/lookup-filter';
@@ -47,7 +45,7 @@ export class UserService implements CrudService<User>, LookupService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
-  search(filter: LookupFilter): Observable<ApiResponse<LookupItem[]>> | Promise<ApiResponse<LookupItem[]>> {
+  search(_filter: LookupFilter): Observable<ApiResponse<LookupItem[]>> | Promise<ApiResponse<LookupItem[]>> {
     throw new Error('Method not implemented.');
   }
 }

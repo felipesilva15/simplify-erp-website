@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserFormPage } from './user-form.page';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
-import { CrudFormFacade } from '../../../../../shared/facades/crud-form.facade';
+import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
 import { UserService } from '../../services/user-service';
 import { RoleService } from '../../../roles/services/role-service';
@@ -12,6 +12,7 @@ import { Location } from '@angular/common';
 import { FormMode } from '../../../../../core/enums/form-mode';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
+import { provideNgxMask } from 'ngx-mask';
 
 describe('UserFormPage', () => {
   let component: UserFormPage;
@@ -24,7 +25,9 @@ describe('UserFormPage', () => {
     loading: ReturnType<typeof vi.fn>;
     saving: ReturnType<typeof vi.fn>;
     hasWarnings: ReturnType<typeof vi.fn>;
-    entityResponse: ReturnType<typeof vi.fn>;
+    hasServerErrors: ReturnType<typeof vi.fn>;
+    warnings: ReturnType<typeof vi.fn>;
+    serverErrors: ReturnType<typeof vi.fn>;
     entity: ReturnType<typeof vi.fn>;
     isCreate: ReturnType<typeof vi.fn>;
   };
@@ -35,27 +38,28 @@ describe('UserFormPage', () => {
   function setupComponent(idParam: string | null, url: string, mode: FormMode) {
     activatedRouteMock.snapshot.paramMap.get.mockReturnValue(idParam);
     routeUtilsMock.getFormModeFromCurrentUrl.mockReturnValue(mode);
-    facadeMock.isCreate.mockReturnValue(mode === FormMode.CREATE);
+    facadeMock.isCreate.mockReturnValue(mode === FormMode.Create);
 
     TestBed.configureTestingModule({
       imports: [UserFormPage],
       providers: [
         provideRouter([{ path: '**', component: UserFormPage }]),
-        { provide: CrudFormFacade, useValue: facadeMock },
+        { provide: GenericCrudFormFacade, useValue: facadeMock },
         { provide: RouteUtilsService, useValue: routeUtilsMock },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: UserService, useValue: {} },
         { provide: RoleService, useValue: {} },
         { provide: ConfirmDialogService, useValue: { confirm: vi.fn().mockResolvedValue(true) } },
         { provide: ToastService, useValue: { show: vi.fn(), clear: vi.fn() } },
+        provideNgxMask(),
       ],
     })
       .overrideComponent(UserFormPage, {
         remove: {
-          providers: [{ provide: CrudFormFacade }],
+          providers: [{ provide: GenericCrudFormFacade }],
         },
         add: {
-          providers: [{ provide: CrudFormFacade, useValue: facadeMock }],
+          providers: [{ provide: GenericCrudFormFacade, useValue: facadeMock }],
         },
       })
       .compileComponents();
@@ -77,7 +81,9 @@ describe('UserFormPage', () => {
       loading: vi.fn().mockReturnValue(false),
       saving: vi.fn().mockReturnValue(false),
       hasWarnings: vi.fn().mockReturnValue(false),
-      entityResponse: vi.fn().mockReturnValue(null),
+      hasServerErrors: vi.fn().mockReturnValue(false),
+      warnings: vi.fn().mockReturnValue([]),
+      serverErrors: vi.fn().mockReturnValue([]),
       entity: vi.fn().mockReturnValue(null),
       isCreate: vi.fn().mockReturnValue(true),
     };
@@ -95,42 +101,42 @@ describe('UserFormPage', () => {
 
   describe('creation', () => {
     it('should create in CREATE mode', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       expect(component).toBeTruthy();
     });
 
     it('should create in EDIT mode', () => {
-      setupComponent('1', '/security/users/1/edit', FormMode.EDIT);
+      setupComponent('1', '/security/users/1/edit', FormMode.Edit);
       expect(component).toBeTruthy();
     });
 
     it('should create in VIEW mode', () => {
-      setupComponent('2', '/security/users/2', FormMode.VIEW);
+      setupComponent('2', '/security/users/2', FormMode.View);
       expect(component).toBeTruthy();
     });
   });
 
   describe('constructor', () => {
     it('should set id from route params', () => {
-      setupComponent('5', '/security/users/5/edit', FormMode.EDIT);
+      setupComponent('5', '/security/users/5/edit', FormMode.Edit);
       expect(component.id()).toBe(5);
     });
 
     it('should set id to 0 when no id param', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       expect(component.id()).toBe(0);
     });
 
     it('should set mode from routeUtilsService', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       expect(routeUtilsMock.getFormModeFromCurrentUrl).toHaveBeenCalled();
-      expect(component.mode()).toBe(FormMode.CREATE);
+      expect(component.mode()).toBe(FormMode.Create);
     });
 
     it('should call facade.init with correct arguments', () => {
-      setupComponent('3', '/security/users/3/edit', FormMode.EDIT);
+      setupComponent('3', '/security/users/3/edit', FormMode.Edit);
       expect(facadeMock.init).toHaveBeenCalledWith(
-        FormMode.EDIT,
+        FormMode.Edit,
         component.form,
         3
       );
@@ -139,49 +145,49 @@ describe('UserFormPage', () => {
 
   describe('configureFormValidators', () => {
     it('should have required validator on password in CREATE mode', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       component.form.get('password')!.setValue('');
       expect(component.form.get('password')!.hasError('required')).toBe(true);
     });
 
     it('should have maxLength validator on password in CREATE mode', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       component.form.get('password')!.setValue('a'.repeat(256));
       expect(component.form.get('password')!.hasError('maxlength')).toBe(true);
     });
 
     it('should have required validator on password_confirmation in CREATE mode', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       component.form.get('password_confirmation')!.setValue('');
       expect(component.form.get('password_confirmation')!.hasError('required')).toBe(true);
     });
 
     it('should have maxLength validator on password_confirmation in CREATE mode', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       component.form.get('password_confirmation')!.setValue('a'.repeat(256));
       expect(component.form.get('password_confirmation')!.hasError('maxlength')).toBe(true);
     });
 
     it('should clear validators on password in EDIT mode', () => {
-      setupComponent('1', '/security/users/1/edit', FormMode.EDIT);
+      setupComponent('1', '/security/users/1/edit', FormMode.Edit);
       component.form.get('password')!.setValue('');
       expect(component.form.get('password')!.valid).toBe(true);
     });
 
     it('should clear validators on password_confirmation in EDIT mode', () => {
-      setupComponent('1', '/security/users/1/edit', FormMode.EDIT);
+      setupComponent('1', '/security/users/1/edit', FormMode.Edit);
       component.form.get('password_confirmation')!.setValue('');
       expect(component.form.get('password_confirmation')!.valid).toBe(true);
     });
 
     it('should clear validators on password in VIEW mode', () => {
-      setupComponent('1', '/security/users/1', FormMode.VIEW);
+      setupComponent('1', '/security/users/1', FormMode.View);
       component.form.get('password')!.setValue('');
       expect(component.form.get('password')!.valid).toBe(true);
     });
 
     it('should clear validators on password_confirmation in VIEW mode', () => {
-      setupComponent('1', '/security/users/1', FormMode.VIEW);
+      setupComponent('1', '/security/users/1', FormMode.View);
       component.form.get('password_confirmation')!.setValue('');
       expect(component.form.get('password_confirmation')!.valid).toBe(true);
     });
@@ -189,7 +195,7 @@ describe('UserFormPage', () => {
 
   describe('breadcrumbItems', () => {
     it('should initialize breadcrumb items in CREATE mode', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       expect(component.breadcrumbItems.length).toBe(4);
       expect(component.breadcrumbItems[0]).toEqual({ label: 'Segurança' });
       expect(component.breadcrumbItems[1]).toEqual({ label: 'Perfis' });
@@ -199,7 +205,7 @@ describe('UserFormPage', () => {
     });
 
     it('should initialize breadcrumb items in EDIT mode with id', () => {
-      setupComponent('4', '/security/users/4/edit', FormMode.EDIT);
+      setupComponent('4', '/security/users/4/edit', FormMode.Edit);
       expect(component.breadcrumbItems.length).toBe(4);
       expect(component.breadcrumbItems[0]).toEqual({ label: 'Segurança' });
       expect(component.breadcrumbItems[1]).toEqual({ label: 'Perfis' });
@@ -209,7 +215,7 @@ describe('UserFormPage', () => {
     });
 
     it('should initialize breadcrumb items in VIEW mode with id', () => {
-      setupComponent('7', '/security/users/7', FormMode.VIEW);
+      setupComponent('7', '/security/users/7', FormMode.View);
       expect(component.breadcrumbItems.length).toBe(4);
       expect(component.breadcrumbItems[0]).toEqual({ label: 'Segurança' });
       expect(component.breadcrumbItems[1]).toEqual({ label: 'Perfis' });
@@ -221,49 +227,49 @@ describe('UserFormPage', () => {
 
   describe('signals and computed', () => {
     it('should compute modeLabel for CREATE mode', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       expect(component.modeLabel()).toBe('Incluir');
     });
 
     it('should compute modeLabel for EDIT mode', () => {
-      setupComponent('1', '/security/users/1/edit', FormMode.EDIT);
+      setupComponent('1', '/security/users/1/edit', FormMode.Edit);
       expect(component.modeLabel()).toBe('Editar');
     });
 
     it('should compute modeLabel for VIEW mode', () => {
-      setupComponent('1', '/security/users/1', FormMode.VIEW);
+      setupComponent('1', '/security/users/1', FormMode.View);
       expect(component.modeLabel()).toBe('Visualizar');
     });
 
     it('should compute title for CREATE mode', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       expect(component.title()).toBe('Incluir perfil');
     });
 
     it('should compute title for EDIT mode', () => {
-      setupComponent('1', '/security/users/1/edit', FormMode.EDIT);
+      setupComponent('1', '/security/users/1/edit', FormMode.Edit);
       expect(component.title()).toBe('Editar perfil');
     });
 
     it('should compute title for VIEW mode', () => {
-      setupComponent('1', '/security/users/1', FormMode.VIEW);
+      setupComponent('1', '/security/users/1', FormMode.View);
       expect(component.title()).toBe('Visualizar perfil');
     });
 
     it('should compute activeBreadcrumbItemLabel with id', () => {
-      setupComponent('3', '/security/users/3/edit', FormMode.EDIT);
+      setupComponent('3', '/security/users/3/edit', FormMode.Edit);
       expect(component.activeBreadcrumbItemLabel()).toBe('Editar (ID: 3)');
     });
 
     it('should compute activeBreadcrumbItemLabel without id', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       expect(component.activeBreadcrumbItemLabel()).toBe('Incluir');
     });
   });
 
   describe('form', () => {
     beforeEach(() => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
     });
 
     it('should have all form controls', () => {
@@ -341,13 +347,13 @@ describe('UserFormPage', () => {
 
   describe('onSubmit', () => {
     it('should call facade.submit with form and id', () => {
-      setupComponent('2', '/security/users/2/edit', FormMode.EDIT);
+      setupComponent('2', '/security/users/2/edit', FormMode.Edit);
       component.onSubmit();
       expect(facadeMock.submit).toHaveBeenCalledWith(component.form, 2);
     });
 
     it('should call facade.submit with form and 0 when no id', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       component.onSubmit();
       expect(facadeMock.submit).toHaveBeenCalledWith(component.form, 0);
     });
@@ -355,7 +361,7 @@ describe('UserFormPage', () => {
 
   describe('isInvalid', () => {
     beforeEach(() => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
     });
 
     it('should return false when control is pristine and valid', () => {
@@ -416,9 +422,9 @@ describe('UserFormPage', () => {
   });
 
   describe('component provider factory', () => {
-    it('should create CrudFormFacade via useFactory when not overridden', () => {
+    it('should create GenericCrudFormFacade via useFactory when not overridden', () => {
       activatedRouteMock.snapshot.paramMap.get.mockReturnValue(null);
-      routeUtilsMock.getFormModeFromCurrentUrl.mockReturnValue(FormMode.CREATE);
+      routeUtilsMock.getFormModeFromCurrentUrl.mockReturnValue(FormMode.Create);
 
       TestBed.configureTestingModule({
         imports: [UserFormPage],
@@ -439,13 +445,13 @@ describe('UserFormPage', () => {
       router.navigateByUrl('/security/users/new');
 
       const fixture = TestBed.createComponent(UserFormPage);
-      expect(fixture.componentInstance.facade).toBeInstanceOf(CrudFormFacade);
+      expect(fixture.componentInstance.facade).toBeInstanceOf(GenericCrudFormFacade);
     });
   });
 
   describe('template rendering', () => {
     it('should show form when not loading', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       const native = fixture.nativeElement as HTMLElement;
       expect(native.querySelector('form')).toBeTruthy();
       expect(native.querySelector('#name')).toBeTruthy();
@@ -455,14 +461,14 @@ describe('UserFormPage', () => {
 
     it('should show skeleton when loading', () => {
       facadeMock.loading = vi.fn().mockReturnValue(true);
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       const native = fixture.nativeElement as HTMLElement;
       expect(native.querySelector('p-skeleton')).toBeTruthy();
       expect(native.querySelector('form')).toBeFalsy();
     });
 
     it('should show required validation message for name', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       component.form.get('name')!.setValue('');
       component.form.get('name')!.markAsDirty();
       fixture.detectChanges();
@@ -472,17 +478,15 @@ describe('UserFormPage', () => {
 
     it('should show warnings when facade has warnings', () => {
       facadeMock.hasWarnings = vi.fn().mockReturnValue(true);
-      facadeMock.entityResponse = vi.fn().mockReturnValue({
-        warnings: ['Warning 1', 'Warning 2']
-      });
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      facadeMock.warnings = vi.fn().mockReturnValue(['Warning 1', 'Warning 2']);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       const native = fixture.nativeElement as HTMLElement;
       const messages = native.querySelectorAll('p-message[severity="warn"]');
       expect(messages.length).toBe(2);
     });
 
     it('should show save and back buttons', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       const native = fixture.nativeElement as HTMLElement;
       const buttons = native.querySelectorAll('p-button');
       const labels = Array.from(buttons).map(b => b.getAttribute('label'));
@@ -491,7 +495,7 @@ describe('UserFormPage', () => {
     });
 
     it('should trigger onSubmit when form is submitted', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       const native = fixture.nativeElement as HTMLElement;
       const form = native.querySelector('form')!;
       form.dispatchEvent(new Event('submit'));
@@ -499,20 +503,20 @@ describe('UserFormPage', () => {
     });
 
     it('should render title from component', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       const native = fixture.nativeElement as HTMLElement;
       expect(native.querySelector('h2')?.textContent).toContain('Incluir perfil');
     });
 
     it('should show password fields in CREATE mode', () => {
-      setupComponent(null, '/security/users/new', FormMode.CREATE);
+      setupComponent(null, '/security/users/new', FormMode.Create);
       const native = fixture.nativeElement as HTMLElement;
       expect(native.querySelector('label[htmlFor="password"]')).toBeTruthy();
       expect(native.querySelector('label[htmlFor="password_confirmation"]')).toBeTruthy();
     });
 
     it('should hide password fields in EDIT mode', () => {
-      setupComponent('1', '/security/users/1/edit', FormMode.EDIT);
+      setupComponent('1', '/security/users/1/edit', FormMode.Edit);
       const native = fixture.nativeElement as HTMLElement;
       expect(native.querySelector('label[htmlFor="password"]')).toBeFalsy();
       expect(native.querySelector('label[htmlFor="password_confirmation"]')).toBeFalsy();

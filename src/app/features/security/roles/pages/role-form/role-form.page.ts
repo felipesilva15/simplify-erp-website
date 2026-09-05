@@ -1,5 +1,5 @@
-import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
-import { CrudFormFacade } from '../../../../../shared/facades/crud-form.facade';
+import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
+import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { Role } from '../../models/role';
 import { RoleService } from '../../services/role-service';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,8 +15,9 @@ import { ButtonModule } from 'primeng/button';
 import { FormPageUi } from "../../../../../shared/ui/form-page/form-page.ui";
 import { AppTemplate } from "../../../../../shared/directives/app-template";
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
+import { FormControlErrorsComponent } from "../../../../../shared/components/form-control-errors/form-control-errors.component";
 
-type FormType = {
+interface FormType {
   name: FormControl<string>;
   description: FormControl<string>;
 }
@@ -33,13 +34,14 @@ type FormType = {
     ButtonModule,
     FluidModule,
     FormPageUi,
-    AppTemplate
+    AppTemplate,
+    FormControlErrorsComponent
 ],
   providers: [
     {
-      provide: CrudFormFacade<Role>,
+      provide: GenericCrudFormFacade<Role>,
       useFactory: (service: RoleService) =>
-        new CrudFormFacade<Role>(service, {
+        new GenericCrudFormFacade<Role>(service, {
           successMessage: 'Registro salvo!',
           permission: {
             create: 'roles.create',
@@ -53,11 +55,11 @@ type FormType = {
   templateUrl: './role-form.page.html',
   styleUrl: './role-form.page.scss',
 })
-export class RoleFormPage {
+export class RoleFormPage implements OnInit {
   private fb: FormBuilder = inject(FormBuilder)
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
-  public facade: CrudFormFacade<Role> = inject(CrudFormFacade<Role>);
+  public facade: GenericCrudFormFacade<Role> = inject(GenericCrudFormFacade<Role>);
   private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
 
   breadcrumbItems!: MenuItem[];
@@ -67,7 +69,7 @@ export class RoleFormPage {
   });
   
   id: WritableSignal<number> = signal<number>(0);
-  mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.CREATE);
+  mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
   
   modeLabel: Signal<string> = computed(() => FormModeLabel[this.mode()]);
   title: Signal<string> = computed(() => this.modeLabel() + ' perfil');
@@ -83,8 +85,10 @@ export class RoleFormPage {
       { label: 'Listar', routerLink: '/security/roles'},
       { label: this.activeBreadcrumbItemLabel(), routerLink: this.router.url }
     ];
+  }
 
-    this.facade.init(this.mode(), this.form, this.id());
+  async ngOnInit(): Promise<void> {
+    await this.facade.init(this.mode(), this.form, this.id());
   }
 
   onSubmit(): void {
