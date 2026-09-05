@@ -60,3 +60,19 @@ textarea {
 .bg-primary-950 {
     background: var(--p-primary-950);
 }
+
+html.dark-mode {
+    background-color: #09090b;
+
+    .bg-white {
+        background-color: #18181b !important;
+    }
+
+    .bg-gray-50 {
+        background-color: #27272a !important;
+    }
+
+    .bg-gray-100 {
+        background-color: #09090b !important;
+    }
+}

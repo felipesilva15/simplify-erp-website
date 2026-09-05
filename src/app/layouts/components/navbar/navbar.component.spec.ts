@@ -1,10 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { signal, WritableSignal } from '@angular/core';
 import { Mocked } from 'vitest';
 import { of } from 'rxjs';
 
 import { NavbarComponent } from './navbar.component';
 import { AuthService } from '../../../core/auth/services/auth-service';
+import { ThemeService } from '../../../core/services/theme-service';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog-service';
 import { User } from '../../../features/security/users/models/user';
 
@@ -14,6 +16,7 @@ describe('NavbarComponent', () => {
 
   let authService: Mocked<AuthService>;
   let confirmDialogService: Mocked<ConfirmDialogService>;
+  let themeService: Mocked<ThemeService>;
   let menuHideSpy: ReturnType<typeof vi.fn>;
 
   const mockUser: User = {
@@ -40,6 +43,11 @@ describe('NavbarComponent', () => {
       confirm: vi.fn(),
     } as unknown as Mocked<ConfirmDialogService>;
 
+    themeService = {
+      theme: signal<'light' | 'dark'>('light'),
+      toggleTheme: vi.fn(),
+    } as unknown as Mocked<ThemeService>;
+
     menuHideSpy = vi.fn();
 
     await TestBed.configureTestingModule({
@@ -48,6 +56,7 @@ describe('NavbarComponent', () => {
         provideRouter([]),
         { provide: AuthService, useValue: authService },
         { provide: ConfirmDialogService, useValue: confirmDialogService },
+        { provide: ThemeService, useValue: themeService },
       ],
     }).compileComponents();
 
@@ -59,6 +68,42 @@ describe('NavbarComponent', () => {
   it('should create', () => {
     fixture.detectChanges();
     expect(component).toBeTruthy();
+  });
+
+  describe('theme', () => {
+    const getThemeButton = (): HTMLButtonElement =>
+      fixture.nativeElement.querySelectorAll('button')[0] as HTMLButtonElement;
+
+    const getThemeButtonIcon = (): HTMLElement =>
+      getThemeButton().querySelector('.p-button-icon') as HTMLElement;
+
+    it('should expose the sun icon when the theme is light', () => {
+      themeService.theme.set('light');
+      expect(component.themeIcon()).toBe('pi pi-sun');
+    });
+
+    it('should expose the moon icon when the theme is dark', () => {
+      themeService.theme.set('dark');
+      expect(component.themeIcon()).toBe('pi pi-moon');
+    });
+
+    it('should render the sun icon when the theme is light', () => {
+      themeService.theme.set('light');
+      fixture.detectChanges();
+      expect(getThemeButtonIcon().classList.contains('pi-sun')).toBe(true);
+    });
+
+    it('should render the moon icon when the theme is dark', () => {
+      themeService.theme.set('dark');
+      fixture.detectChanges();
+      expect(getThemeButtonIcon().classList.contains('pi-moon')).toBe(true);
+    });
+
+    it('should toggle the theme when the theme button is clicked', () => {
+      fixture.detectChanges();
+      getThemeButton().click();
+      expect(themeService.toggleTheme).toHaveBeenCalledOnce();
+    });
   });
 
   describe('ngOnInit', () => {

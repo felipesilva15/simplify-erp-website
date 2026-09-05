@@ -1,11 +1,12 @@
-import { ConfirmDialogService } from './../../../shared/services/confirm-dialog-service';
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
-import { AvatarModule } from 'primeng/avatar';
-import { AuthService } from '../../../core/auth/services/auth-service';
-import { User } from '../../../features/security/users/models/user';
-import { Menu, MenuModule } from 'primeng/menu';
+import { Component, computed, inject, OnInit, Signal, ViewChild } from '@angular/core';
 import { MenuItem } from 'primeng/api';
+import { AvatarModule } from 'primeng/avatar';
+import { ButtonModule } from 'primeng/button';
+import { Menu, MenuModule } from 'primeng/menu';
+import { AuthService } from '../../../core/auth/services/auth-service';
+import { ThemeService } from '../../../core/services/theme-service';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog-service';
+import { User } from '../../../features/security/users/models/user';
 
 @Component({
   selector: 'app-navbar',
@@ -20,7 +21,11 @@ import { MenuItem } from 'primeng/api';
 export class NavbarComponent implements OnInit {
   private authService: AuthService = inject(AuthService);
   private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
-  
+  private themeService: ThemeService = inject(ThemeService);
+
+  themeIcon: Signal<string> = computed(() =>
+    this.themeService.theme() === 'dark' ? 'pi pi-moon' : 'pi pi-sun'
+  );
   menuItems: MenuItem[] = [
     {
       label: 'Meu perfil',
@@ -44,6 +49,10 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = this.authService.user;
+  }
+
+  onToggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   onLogout(): void {
