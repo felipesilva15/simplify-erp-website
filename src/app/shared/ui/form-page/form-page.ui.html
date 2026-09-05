@@ -2,21 +2,21 @@
     <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
     <div class="flex flex-row flex-wrap justify-content-between align-items-end gap-1 mt-5 mb-3">
         <h2 class="text-3xl m-0">{{ title() }}</h2>
-        @if (facade?.entity()?.updated_at) {
-            <span id="last-updated-date" class="text-color-secondary animation-duration-300 fadein">Última alteração em: {{ facade?.entity()?.updated_at | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+        @if (facade && facade.entity()?.updated_at) {
+            <span id="last-updated-date" class="text-color-secondary animation-duration-300 fadein">Última alteração em: {{ facade.entity()?.updated_at | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
         }
     </div>
     <div class="bg-white border-round p-3">
-        @if (facade?.hasWarnings()) {
+        @if (facade && facade.hasWarnings()) {
             <div class="flex flex-column w-full mb-4">
-                @for (warning of facade?.entityResponse()?.warnings; track $index) {
+                @for (warning of facade.warnings(); track $index) {
                     <p-message icon="pi pi-exclamation-triangle" severity="warn">{{ warning }}</p-message>
                 }
             </div>
         }
-        @if (facade?.hasServerErrors()) {
+        @if (facade && facade.hasServerErrors()) {
             <div class="flex flex-column w-full mb-4">
-                @for (error of facade?.serverErrors(); track $index) {
+                @for (error of facade.serverErrors(); track $index) {
                     <p-message icon="pi pi-exclamation-triangle" severity="error">{{ error.value }}</p-message>
                 }
             </div>
