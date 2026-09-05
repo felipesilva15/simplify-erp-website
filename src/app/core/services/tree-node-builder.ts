@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TreeNode } from 'primeng/api';
+import { TreeTableSelecionKey } from '../models/tree-table-selection-key';
 
 @Injectable({
   providedIn: 'root',
@@ -35,16 +36,16 @@ export class TreeNodeBuilder {
     return treeNodes;
   }
 
-  public flattenTreeWithSelection(tree: TreeNode[], selectedKeys: string[]): Record<string, { checked: boolean; partialChecked: boolean }> {
+  public flattenTreeWithSelection(tree: TreeNode[], selectedKeys: string[]): Record<string, TreeTableSelecionKey> {
     if (!tree || !selectedKeys || selectedKeys.length === 0)
       return {};
 
-    const result: Record<string, { checked: boolean; partialChecked: boolean }> = {};
+    const result: Record<string, TreeTableSelecionKey> = {};
     this.processNode(tree, selectedKeys, result);
     return result;
   }
 
-  private processNode(nodes: TreeNode[], selectedKeys: string[], result: Record<string, { checked: boolean; partialChecked: boolean }>): void {
+  private processNode(nodes: TreeNode[], selectedKeys: string[], result: Record<string, TreeTableSelecionKey>): void {
     for (const node of nodes) {
       const hasChildren = node.children && node.children.length > 0;
 
@@ -60,12 +61,14 @@ export class TreeNodeBuilder {
 
         result[node.key!] = {
           checked: allChecked,
-          partialChecked: !allChecked && (checkedCount > 0 || hasPartial)
+          partialChecked: !allChecked && (checkedCount > 0 || hasPartial),
+          level: node.data.level
         };
       } else {
         result[node.key!] = {
           checked: selectedKeys.includes(node.key!),
-          partialChecked: false
+          partialChecked: false,
+          level: node.data.level
         };
       }
     }
