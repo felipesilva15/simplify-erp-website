@@ -13,6 +13,12 @@ export class DynamicDialogService {
   
   constructor(private dialogService: DialogService) {}
 
+  /** Fecha o dialog atualmente aberto, resolvendo a Promise retornada por `open()`. */
+  close(result?: any): void {
+    this.ref?.close(result);
+    this.ref = null;
+  }
+
   open<T>(componentType: Type<any>, config: DynamicDialogConfig): Promise<T> {
     const width: string = this.getWidthBySize(config.size);
 
@@ -21,7 +27,7 @@ export class DynamicDialogService {
       modal: true, 
       data: config.data,
       width: width,
-      closable: config.closeable,
+      closable: config.closeable ?? true,
       styleClass: config.styleClass,
       contentStyle: { 
         overflow: 'auto' 
