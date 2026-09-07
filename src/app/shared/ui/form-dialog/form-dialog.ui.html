@@ -1,0 +1,27 @@
+<div class="flex flex-column gap-4 animation-duration-300 fadein form-dialog">
+    <div class="flex flex-column">
+        @if (facade && facade.hasWarnings()) {
+            <div class="flex flex-column w-full mb-3">
+                @for (warning of facade.warnings(); track $index) {
+                    <p-message icon="pi pi-exclamation-triangle" severity="warn">{{ warning }}</p-message>
+                }
+            </div>
+        }
+        @if (facade && facade.hasServerErrors()) {
+            <div class="flex flex-column w-full mb-3">
+                @for (error of facade.serverErrors(); track $index) {
+                    <p-message icon="pi pi-exclamation-triangle" severity="error">{{ error.value }}</p-message>
+                }
+            </div>
+        }
+        @if(contentTemplate) {
+            <ng-container [ngTemplateOutlet]="contentTemplate"></ng-container>
+        }
+    </div>
+
+    @if (footerTemplate) {
+        <div class="flex justify-content-end gap-2 form-dialog-footer">
+            <ng-container [ngTemplateOutlet]="footerTemplate"></ng-container>
+        </div>
+    }
+</div>
