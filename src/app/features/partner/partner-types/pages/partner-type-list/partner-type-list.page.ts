@@ -1,23 +1,26 @@
-import { Component, inject, signal, WritableSignal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ListPageUi } from "../../../../../shared/ui/list-page/list-page.ui";
 import { CrudListComponent } from "../../../../../shared/components/crud-list/crud-list.component";
 import { CrudListFacade } from '../../../../../shared/facades/crud-list.facade';
 import { PartnerTypeService } from '../../services/partner-type-service';
 import { PartnerType } from '../../models/partner-type';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { ColumnType } from '../../../../../core/enums/column-type';
 import { TableColumn } from '../../../../../core/models/table-column';
 import { MenuItem } from 'primeng/api';
 import { FilterFieldDefinition } from '../../../../../core/models/filter-field-definition';
 import { TableMenuItem } from '../../../../../core/models/table-menu-item';
 import { AppTemplate } from '../../../../../shared/directives/app-template';
+import { DialogRefreshService } from '../../../../../shared/services/dialog-refresh.service';
 
 @Component({
   selector: 'app-partner-type-list',
   imports: [
     ListPageUi,
     CrudListComponent,
-    AppTemplate
+    AppTemplate,
+    RouterOutlet
   ],
   providers: [
     {
@@ -36,9 +39,11 @@ import { AppTemplate } from '../../../../../shared/directives/app-template';
   templateUrl: './partner-type-list.page.html',
   styleUrl: './partner-type-list.page.scss',
 })
-export class PartnerTypeListPage {
+export class PartnerTypeListPage implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private router = inject(Router);
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private dialogRefreshService: DialogRefreshService = inject(DialogRefreshService);
   public facade: CrudListFacade<PartnerType> = inject(CrudListFacade<PartnerType>);
 
   title: WritableSignal<string> = signal<string>('Listar perfis')
@@ -77,4 +82,10 @@ export class PartnerTypeListPage {
       action: (record?: PartnerType) => record && this.facade.delete(record)
     }
   ];
+
+  ngOnInit(): void {
+    this.dialogRefreshService.saved$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.facade.load());
+  }
 }
