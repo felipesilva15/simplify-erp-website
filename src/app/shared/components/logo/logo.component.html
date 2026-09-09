@@ -1,7 +1,7 @@
 @if (link) {
     <a [routerLink]="link">
-        <img [src]="source()" [style.height]="height" [class]="styleClass()">
+        <img [src]="source()" [style.height]="height" [class]="styleClass()" alt="Logo"/>
     </a>
 } @else {
-    <img [src]="source()" [style.height]="height" [class]="styleClass()">
+    <img [src]="source()" [style.height]="height" [class]="styleClass()"  alt="Logo"/>
 }
