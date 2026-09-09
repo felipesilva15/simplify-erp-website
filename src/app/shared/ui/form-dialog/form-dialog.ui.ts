@@ -1,14 +1,15 @@
 import { AfterContentInit, Component, ContentChildren, Input, QueryList, TemplateRef } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { AppTemplate } from '../../directives/app-template';
-import { Message } from "primeng/message";
+import { MessageModule } from "primeng/message";
 import { FormPageFacade } from '../../../core/contracts/form-page-facade';
 
 @Component({
   selector: 'app-form-dialog',
   imports: [
     NgTemplateOutlet,
-    Message
+    MessageModule,
+    DatePipe
   ],
   templateUrl: './form-dialog.ui.html',
   styleUrl: './form-dialog.ui.scss',

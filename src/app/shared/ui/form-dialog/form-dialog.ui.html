@@ -20,8 +20,15 @@
     </div>
 
     @if (footerTemplate) {
-        <div class="flex justify-content-end gap-2 form-dialog-footer">
-            <ng-container [ngTemplateOutlet]="footerTemplate"></ng-container>
+        <div class="flex justify-content-between align-items-end">
+            <div>
+                @if (facade && facade.entity()?.updated_at) {
+                    <span id="last-updated-date" class="text-color-secondary animation-duration-300 fadein">Últ. Alteração: {{ facade.entity()?.updated_at | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+                }
+            </div>
+            <div class="flex justify-content-end gap-2">
+                <ng-container [ngTemplateOutlet]="footerTemplate"></ng-container>
+            </div>
         </div>
     }
 </div>
