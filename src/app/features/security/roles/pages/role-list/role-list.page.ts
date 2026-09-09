@@ -1,16 +1,18 @@
 import { CrudListFacade } from './../../../../../shared/facades/crud-list.facade';
 import { Role } from './../../models/role';
 import { CrudListComponent } from './../../../../../shared/components/crud-list/crud-list.component';
-import { Component, inject, signal, WritableSignal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { RoleService } from '../../services/role-service';
 import { TableMenuItem } from '../../../../../core/models/table-menu-item';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { TableColumn } from '../../../../../core/models/table-column';
 import { ColumnType } from '../../../../../core/enums/column-type';
 import { ListPageUi } from "../../../../../shared/ui/list-page/list-page.ui";
 import { AppTemplate } from "../../../../../shared/directives/app-template";
 import { FilterFieldDefinition } from '../../../../../core/models/filter-field-definition';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DialogRefreshService } from '../../../../../shared/services/dialog-refresh.service';
 
 @Component({
   selector: 'app-role-list',
@@ -18,7 +20,8 @@ import { FilterFieldDefinition } from '../../../../../core/models/filter-field-d
   imports: [
     CrudListComponent,
     ListPageUi,
-    AppTemplate
+    AppTemplate,
+    RouterOutlet
 ],
   providers: [
     {
@@ -37,9 +40,11 @@ import { FilterFieldDefinition } from '../../../../../core/models/filter-field-d
   templateUrl: './role-list.page.html',
   styleUrl: './role-list.page.scss',
 })
-export class RoleListPage {
+export class RoleListPage implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private router = inject(Router);
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private dialogRefreshService: DialogRefreshService = inject(DialogRefreshService);
   public facade: CrudListFacade<Role> = inject(CrudListFacade<Role>);
 
   title: WritableSignal<string> = signal<string>('Listar perfis')
@@ -87,4 +92,10 @@ export class RoleListPage {
       action: (record?: Role) => this.router.navigate([record?.id, 'permissions'], { relativeTo: this.activatedRoute }) 
     }
   ];
+
+  ngOnInit(): void {
+    this.dialogRefreshService.saved$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.facade.load());
+  }
 }

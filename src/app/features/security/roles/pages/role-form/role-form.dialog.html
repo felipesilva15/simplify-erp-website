@@ -1,0 +1,34 @@
+<app-form-dialog [facade]="facade">
+  <ng-template appTemplate="content">
+    @if (!facade.loading()) {
+      <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <p-fluid class="grid">
+          <div class="col-12">
+            <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
+            <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+            <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
+          </div>
+          <div class="col-12">
+            <label htmlFor="description">Descrição</label>
+            <textarea rows="5" cols="30" id="description" pTextarea formControlName="description" [invalid]="isInvalid('description')"></textarea>
+            <app-form-control-errors [control]="form.get('description')"></app-form-control-errors>
+          </div>
+        </p-fluid>
+      </form>
+    } @else {
+      <p-fluid class="grid">
+        <div class="col-12">
+          <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+          <p-skeleton width="100%" height="39px"></p-skeleton>
+        </div>
+        <div class="col-12">
+          <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+          <p-skeleton width="100%" height="123px"></p-skeleton>
+        </div>
+      </p-fluid>
+    }
+  </ng-template>
+  <ng-template appTemplate="footer">
+    <p-button label="Salvar" icon="pi pi-save" [disabled]="form.disabled || facade.loading()" [loading]="facade.saving()" (onClick)="onSubmit()" />
+  </ng-template>
+</app-form-dialog>

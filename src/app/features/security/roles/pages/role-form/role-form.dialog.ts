@@ -1,10 +1,10 @@
-import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { Role } from '../../models/role';
 import { RoleService } from '../../services/role-service';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormMode, FormModeLabel } from '../../../../../core/enums/form-mode';
+import { ActivatedRoute } from '@angular/router';
+import { FormMode } from '../../../../../core/enums/form-mode';
 import { MenuItem } from 'primeng/api';
 import { MessageModule } from "primeng/message";
 import { SkeletonModule } from 'primeng/skeleton';
@@ -12,10 +12,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FluidModule } from 'primeng/fluid';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { FormPageUi } from "../../../../../shared/ui/form-page/form-page.ui";
+import { FormDialogUi } from "../../../../../shared/ui/form-dialog/form-dialog.ui";
 import { AppTemplate } from "../../../../../shared/directives/app-template";
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
 import { FormControlErrorsComponent } from "../../../../../shared/components/form-control-errors/form-control-errors.component";
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { DynamicDialogService } from '../../../../../shared/services/dynamic-dialog-service';
+import { DialogRefreshService } from '../../../../../shared/services/dialog-refresh.service';
 
 interface FormType {
   name: FormControl<string>;
@@ -33,7 +36,7 @@ interface FormType {
     TextareaModule,
     ButtonModule,
     FluidModule,
-    FormPageUi,
+    FormDialogUi,
     AppTemplate,
     FormControlErrorsComponent
 ],
@@ -52,15 +55,17 @@ interface FormType {
       deps: [RoleService]
     }
   ],
-  templateUrl: './role-form.page.html',
-  styleUrl: './role-form.page.scss',
+  templateUrl: './role-form.dialog.html',
+  styleUrl: './role-form.dialog.scss',
 })
-export class RoleFormPage implements OnInit {
+export class RoleFormDialog implements OnInit {
   private fb: FormBuilder = inject(FormBuilder)
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-  private router: Router = inject(Router);
   public facade: GenericCrudFormFacade<Role> = inject(GenericCrudFormFacade<Role>);
   private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
+  private dialogConfig: DynamicDialogConfig = inject(DynamicDialogConfig);
+  private dynamicDialogService: DynamicDialogService = inject(DynamicDialogService);
+  private dialogRefreshService: DialogRefreshService = inject(DialogRefreshService);
 
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
@@ -71,28 +76,27 @@ export class RoleFormPage implements OnInit {
   id: WritableSignal<number> = signal<number>(0);
   mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
   
-  modeLabel: Signal<string> = computed(() => FormModeLabel[this.mode()]);
-  title: Signal<string> = computed(() => this.modeLabel() + ' perfil');
-  activeBreadcrumbItemLabel: Signal<string> = computed(() => this.modeLabel() + (this.id() ? ` (ID: ${this.id()})`: ''))
-
   constructor() {
-    this.id.set(Number(this.activatedRoute.snapshot.paramMap.get('id')));
-    this.mode.set(this.routeUtilsService.getFormModeFromCurrentUrl());
+    const routeParam: string | null = this.activatedRoute.snapshot.paramMap.get('id');
+    const routeId = routeParam === null ? Number.NaN : Number(routeParam);
+    const dialogId = Number((this.dialogConfig?.data as any)?.id);
 
-    this.breadcrumbItems = [
-      { label: 'Segurança' },
-      { label: 'Perfis' },
-      { label: 'Listar', routerLink: '/security/roles'},
-      { label: this.activeBreadcrumbItemLabel(), routerLink: this.router.url }
-    ];
+    this.id.set(Number.isNaN(routeId) ? (Number.isNaN(dialogId) ? 0 : dialogId) : routeId);
+    this.mode.set(this.routeUtilsService.getFormModeFromCurrentUrl());
   }
 
   async ngOnInit(): Promise<void> {
     await this.facade.init(this.mode(), this.form, this.id());
   }
 
+  close(): void {
+    this.dynamicDialogService.close();
+  }
+
   onSubmit(): void {
-    this.facade.submit(this.form, this.id()).subscribe();
+    this.facade.submit(this.form, this.id()).subscribe({
+      next: () => this.dialogRefreshService.notifySaved(),
+    });
   }
 
   isInvalid(controlName: keyof FormType): boolean {
