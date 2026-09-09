@@ -111,12 +111,11 @@ export class UserFormPage implements OnInit {
       { label: 'Listar', routerLink: '/security/roles'},
       { label: this.activeBreadcrumbItemLabel(), routerLink: this.router.url }
     ];
-
-    this.configureFormValidators();
   }
 
   async ngOnInit(): Promise<void> {
     await this.facade.init(this.mode(), this.form, this.id());
+    this.configureFormValidators();
   }
 
   private configureFormValidators(): void {
