@@ -6,7 +6,7 @@ import { FilterFieldDefinition } from '../../../core/models/filter-field-definit
 import { DrawerModule } from 'primeng/drawer';
 import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { Select } from "primeng/select";
+import { Select, SelectModule } from "primeng/select";
 import { InputTextModule } from 'primeng/inputtext';
 import { FluidModule } from "primeng/fluid";
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -39,7 +39,8 @@ interface RequestFilterViewData {
     FluidModule,
     TagModule,
     DividerModule,
-    ToggleSwitchModule
+    ToggleSwitchModule,
+    SelectModule
   ],
   providers: [
     DatePipe,
@@ -123,6 +124,10 @@ export class FilterDefinerComponent implements OnInit {
 
       if (this.selectedField.type == ColumnType.Date || this.selectedField.type == ColumnType.Datetime) {
         value = value.toISOString();
+      }
+
+      if (this.selectedField.type == ColumnType.Enum) {
+        value = value.code;
       }
 
       f[this.selectedField.name][this.operator] = value;
@@ -230,6 +235,9 @@ export class FilterDefinerComponent implements OnInit {
 
       case ColumnType.Boolean:
         return value ? 'Sim' : 'Não';
+
+      case ColumnType.Enum:
+        return value.name;
 
       default:
         return value;

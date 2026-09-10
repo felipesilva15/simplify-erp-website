@@ -37,6 +37,9 @@
                             @case (ColumnType.Boolean) {
                                 <p-toggleswitch name="value" formControlName="value" />
                             }
+                            @case (ColumnType.Enum) {
+                                <p-select [options]="selectedField.options" name="value" formControlName="value" optionLabel="name" />
+                            }
                             @default {
                                 <input type="text" pInputText required id="value" formControlName="value"/>
                             }
@@ -81,8 +84,8 @@
 
     <ng-template #footer>
         <div class="flex justify-content-end gap-2">
-            <button pButton label="Limpar" (click)="clearFilters()" [text]="true" severity="secondary"></button>
-            <button pButton label="Aplicar" (click)="applyFilters()"></button>
+            <button pButton (click)="clearFilters()" [text]="true" severity="secondary">Limpar</button>
+            <button pButton (click)="applyFilters()">Aplicar</button>
         </div>
     </ng-template>
 </p-drawer>

@@ -6,5 +6,6 @@ export enum ColumnType {
   Decimal = 'decimal',
   Currency = 'currency',
   Boolean = 'boolean',
-  Percent = 'percent'
+  Percent = 'percent',
+  Enum = 'enum'
 }
