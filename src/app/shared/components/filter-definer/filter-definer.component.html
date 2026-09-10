@@ -23,7 +23,7 @@
                                 <p-inputnumber inputId="value" name="value" formControlName="value" required [showButtons]="true" />
                             }
                             @case (ColumnType.Text) {
-                                <input type="text" pInputText required id="value" formControlName="value"/>
+                                <input type="text" pInputText required id="value" [mask]="selectedField.mask" [dropSpecialCharacters]="true" [validation]="false" formControlName="value"/>
                             }
                             @case (ColumnType.Date) {
                                 <p-datepicker inputId="value"  name="value" formControlName="value" [showIcon]="true" [iconDisplay]="'input'" [showClear]="true" />
@@ -62,7 +62,7 @@
                     <div class="flex flex-row gap-2 align-items-center">
                         <span>{{ filter.label }}</span>
                         <span>{{ filter.operatorLabel }}</span>
-                        <p-tag [value]="formatFilterValue(filter)" />
+                        <p-tag [value]="filter.formattedValue" />
                     </div>
                     <div>
                         <button

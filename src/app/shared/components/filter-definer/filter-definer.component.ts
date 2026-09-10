@@ -15,6 +15,7 @@ import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { CurrencyPipe, DatePipe, PercentPipe } from '@angular/common';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 
 interface RequestFilterViewData {
   name: string,
@@ -22,6 +23,7 @@ interface RequestFilterViewData {
   operator: FilterOperator,
   operatorLabel: string,
   value: any,
+  formattedValue?: any,
   type: ColumnType
 }
 
@@ -40,12 +42,14 @@ interface RequestFilterViewData {
     TagModule,
     DividerModule,
     ToggleSwitchModule,
-    SelectModule
+    SelectModule,
+    NgxMaskDirective
   ],
   providers: [
     DatePipe,
     CurrencyPipe,
-    PercentPipe
+    PercentPipe,
+    NgxMaskPipe
   ],
   templateUrl: './filter-definer.component.html',
   styleUrl: './filter-definer.component.scss',
@@ -56,6 +60,7 @@ export class FilterDefinerComponent implements OnInit {
   private datePipe = inject(DatePipe);
   private currencyPipe = inject(CurrencyPipe);
   private percentPipe = inject(PercentPipe);
+  private ngxMaskPipe = inject(NgxMaskPipe);
 
   filters: WritableSignal<RequestFiltersType | undefined> = signal<RequestFiltersType | undefined>(undefined);
   appliedFilters: WritableSignal<RequestFilterViewData[]> = signal<RequestFilterViewData[]>([]);
@@ -136,15 +141,18 @@ export class FilterDefinerComponent implements OnInit {
     });
 
     this.appliedFilters.update((f: RequestFilterViewData[]) => {
-      f = this.removeFromAppliedFilters(f, this.selectedField?.name ?? '', this.operator);
-      f.push({
+      const filter: RequestFilterViewData = {
         name: this.selectedField?.name ?? '',
         label: this.selectedField?.label ?? '',
         operator: this.operator,
         operatorLabel: this.FilterOperatorLabels[this.operator],
         value: this.filterValue,
         type: this.selectedField?.type ?? ColumnType.Text
-      });
+      };
+      filter.formattedValue = this.formatFilterValue(filter);
+
+      f = this.removeFromAppliedFilters(f, this.selectedField?.name ?? '', this.operator);
+      f.push(filter);
       f = this.sortAppliedFilters(f);
 
       return f;
@@ -238,6 +246,9 @@ export class FilterDefinerComponent implements OnInit {
 
       case ColumnType.Enum:
         return value.name;
+
+      case ColumnType.Text:
+        return this.selectedField?.mask ? this.ngxMaskPipe.transform(value, this.selectedField.mask) : value;
 
       default:
         return value;
