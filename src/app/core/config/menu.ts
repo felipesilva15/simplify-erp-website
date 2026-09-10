@@ -16,6 +16,13 @@ export const MENU: AppMenuItem[] = [
     active: false,
     items: [
       {
+        label: 'Parceiros',
+        icon: 'pi pi-user',
+        active: false,
+        link: '/partner/partners',
+        permission: 'partners.viewAny'
+      },
+      {
         label: 'Tipos de parceiro',
         icon: 'pi pi-star',
         active: false,
