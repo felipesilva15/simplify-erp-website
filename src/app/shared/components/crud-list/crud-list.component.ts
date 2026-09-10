@@ -132,6 +132,9 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
       case ColumnType.Boolean:
         return value ? 'Sim' : 'Não';
 
+      case ColumnType.Enum:
+        return column.enumOptionLabels ? column.enumOptionLabels[value] : value;
+
       default:
         return String(value);
     }

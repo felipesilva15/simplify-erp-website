@@ -8,5 +8,6 @@ export interface TableColumn<T> {
     type?: ColumnType;
     pipe?: PipeTransform;
     pipeArgs?: any[];
+    enumOptionLabels?: Record<any, string>;
     template?: TemplateRef<any>;
 }
