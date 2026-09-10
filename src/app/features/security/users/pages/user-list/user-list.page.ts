@@ -13,6 +13,7 @@ import { FilterFieldDefinition } from '../../../../../core/models/filter-field-d
 import { TableMenuItem } from '../../../../../core/models/table-menu-item';
 import { TagModule } from 'primeng/tag';
 import { PhonePipe } from '../../../../../shared/pipes/phone-pipe';
+import { RoleLookupComponent } from '../../../../../features/security/roles/components/role-lookup/role-lookup.component';
 
 @Component({
   selector: 'app-user-list',
@@ -60,6 +61,7 @@ export class UserListPage implements AfterViewInit {
     { name: 'username', label: 'Usuário', type: ColumnType.Text },
     { name: 'phone_number', label: 'Telefone', type: ColumnType.Text, mask: 'PHONE_BR' },
     { name: 'is_admin', label: 'Admin', type: ColumnType.Boolean },
+    { name: 'role_id', label: 'Perfil', type: ColumnType.Lookup, component: RoleLookupComponent },
   ]
   tableMenu: TableMenuItem<User>[] = [
     { 

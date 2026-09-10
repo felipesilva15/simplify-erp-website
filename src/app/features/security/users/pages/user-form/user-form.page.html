@@ -49,16 +49,7 @@
                     </div>
                     <div class="col-12">
                         <label htmlFor="roles">Perfis</label>
-                        <app-lookup
-                            id="roles"
-                            formControlName="roles"
-                            [facade]="roleLookupFacade"
-                            placeholder="Buscar por nome ou código..."
-                            [multiple]="true"
-                            [debounce]="400"
-                            [minChars]="0"
-                            [pageSize]="20"
-                        />
+                        <app-role-lookup formControlName="roles" [multiple]="true"></app-role-lookup>
                     </div>
                     <div class="col-12">
                         <div class="flex align-items-center gap-1">

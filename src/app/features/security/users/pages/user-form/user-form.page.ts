@@ -24,6 +24,7 @@ import { FormControlErrorsComponent } from '../../../../../shared/components/for
 import { InputMaskModule } from 'primeng/inputmask';
 import { phoneValidator } from '../../../../../shared/validators/phone.validator';
 import { NgxMaskDirective } from 'ngx-mask';
+import { RoleLookupComponent } from "../../../roles/components/role-lookup/role-lookup.component";
 
 interface FormType {
   name: FormControl<string>;
@@ -48,13 +49,13 @@ interface FormType {
     FluidModule,
     FormPageUi,
     AppTemplate,
-    LookupComponent,
     ToggleSwitchModule,
     PasswordModule,
     InputMaskModule,
     FormControlErrorsComponent,
-    NgxMaskDirective
-  ],
+    NgxMaskDirective,
+    RoleLookupComponent
+],
   providers: [
     {
       provide: GenericCrudFormFacade<User>,
