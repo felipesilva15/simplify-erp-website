@@ -10,6 +10,7 @@ import { THEME } from './core/config/theme';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { TRANSLATION } from './core/config/translation';
 import { DialogService } from 'primeng/dynamicdialog';
+import { MASK_ALIASES } from './core/config/masks-aliases';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,9 +28,7 @@ export const appConfig: ApplicationConfig = {
     }),
     provideEnvironmentNgxMask({
       validation: true,
-      maskAliases: {
-        TELEFONE_CELULAR_BR: '(00) 0000-0000||(00) 00000-0000' 
-      }
+      maskAliases: MASK_ALIASES
     })
   ]
 };
