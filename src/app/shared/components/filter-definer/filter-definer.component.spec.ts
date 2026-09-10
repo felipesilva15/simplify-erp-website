@@ -6,6 +6,7 @@ import { FilterDefinerComponent } from './filter-definer.component';
 import { ColumnType } from './../../../core/enums/column-type';
 import { FilterOperator, FilterOperatorLabels, FilterOperatorOptions } from './../../../core/enums/filter-operator';
 import { FilterFieldDefinition } from './../../../core/models/filter-field-definition';
+import { provideNgxMask } from 'ngx-mask';
 
 @Component({
   template: '<app-filter-definer [fields]="fields" />',
@@ -62,7 +63,7 @@ describe('FilterDefinerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TestHostComponent],
-      providers: [DatePipe, CurrencyPipe, PercentPipe],
+      providers: [DatePipe, CurrencyPipe, PercentPipe, provideNgxMask()],
     })
       .overrideComponent(FilterDefinerComponent, {
         remove: { providers: [DatePipe, CurrencyPipe, PercentPipe] },
@@ -226,7 +227,10 @@ describe('FilterDefinerComponent', () => {
       component.applyFilter();
 
       expect(component.appliedFilters()).toEqual([
-        makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.Text),
+        {
+          ...makeFilterViewData('name', 'Nome', FilterOperator.Equal, 'test', ColumnType.Text),
+          formattedValue: 'test',
+        },
       ]);
     });
 
@@ -349,6 +353,22 @@ describe('FilterDefinerComponent', () => {
       expect(component.filters()).toEqual({
         name: { [FilterOperator.Like]: 'test' },
       });
+    });
+
+    it('should extract the key from a LookupItem for LOOKUP type', () => {
+      class MockLookupComponent {}
+      component.form.patchValue({
+        field: { name: 'role_id', label: 'Perfil', type: ColumnType.Lookup, component: MockLookupComponent },
+        operator: FilterOperator.Equal,
+        value: { key: 5, label: 'Admin' },
+      });
+
+      component.applyFilter();
+
+      expect(component.filters()).toEqual({
+        role_id: { [FilterOperator.Equal]: 5 },
+      });
+      expect(component.appliedFilters()[0].formattedValue).toBe('Admin');
     });
 
     it('should return early when selectedField has no name', () => {
@@ -935,6 +955,20 @@ describe('FilterDefinerComponent', () => {
         makeFilterViewData('value', 'Valor', FilterOperator.Equal, 19.99, ColumnType.Decimal)
       );
       expect(result).toBe(19.99);
+    });
+
+    it('should return the label for LOOKUP type', () => {
+      const result = component.formatFilterValue(
+        makeFilterViewData('role_id', 'Perfil', FilterOperator.Equal, { key: 5, label: 'Admin' }, ColumnType.Lookup)
+      );
+      expect(result).toBe('Admin');
+    });
+
+    it('should return the key when LOOKUP item has no label', () => {
+      const result = component.formatFilterValue(
+        makeFilterViewData('role_id', 'Perfil', FilterOperator.Equal, { key: 5 }, ColumnType.Lookup)
+      );
+      expect(result).toBe(5);
     });
   });
 

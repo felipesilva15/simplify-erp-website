@@ -40,6 +40,13 @@
                             @case (ColumnType.Enum) {
                                 <p-select [options]="selectedField.options" name="value" formControlName="value" optionLabel="name" />
                             }
+                            @case (ColumnType.Lookup) {
+                                @if (selectedField.component) {
+                                    <app-filter-component-host formControlName="value" [component]="selectedField.component" />
+                                } @else {
+                                    <input type="text" pInputText required id="value" formControlName="value"/>
+                                }
+                            }
                             @default {
                                 <input type="text" pInputText required id="value" formControlName="value"/>
                             }

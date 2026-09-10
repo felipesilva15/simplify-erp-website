@@ -16,6 +16,8 @@ import { DividerModule } from 'primeng/divider';
 import { CurrencyPipe, DatePipe, PercentPipe } from '@angular/common';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
+import { FilterComponentHostComponent } from './filter-component-host.component';
+import { LookupItem } from '../../../core/models/lookup-item';
 
 interface RequestFilterViewData {
   name: string,
@@ -43,7 +45,8 @@ interface RequestFilterViewData {
     DividerModule,
     ToggleSwitchModule,
     SelectModule,
-    NgxMaskDirective
+    NgxMaskDirective,
+    FilterComponentHostComponent
   ],
   providers: [
     DatePipe,
@@ -133,6 +136,10 @@ export class FilterDefinerComponent implements OnInit {
 
       if (this.selectedField.type == ColumnType.Enum) {
         value = value.code;
+      }
+
+      if (this.selectedField.type == ColumnType.Lookup) {
+        value = (value as LookupItem | null)?.key ?? null;
       }
 
       f[this.selectedField.name][this.operator] = value;
@@ -246,6 +253,9 @@ export class FilterDefinerComponent implements OnInit {
 
       case ColumnType.Enum:
         return value.name;
+
+      case ColumnType.Lookup:
+        return (value as LookupItem | null)?.label ?? (value as LookupItem | null)?.key ?? '';
 
       case ColumnType.Text:
         return this.selectedField?.mask ? this.ngxMaskPipe.transform(value, this.selectedField.mask) : value;
