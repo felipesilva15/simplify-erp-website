@@ -58,7 +58,7 @@ export class PartnerListPage implements AfterViewInit {
     { name: 'trade_name', label: 'Apelido', type: ColumnType.Text },
     { name: 'partner_type_code', label: 'Tipo de parceiro', type: ColumnType.Text },
     { name: 'person_type', label: 'Tipo de pessoa', type: ColumnType.Enum, options: PersonTypeOptions },
-    { name: 'document_number', label: 'Documento', type: ColumnType.Text },
+    { name: 'document_number', label: 'Documento', type: ColumnType.Text, mask: 'DOCUMENT' },
     { name: 'taxpayer_type', label: 'Contribuinte', type: ColumnType.Enum, options: TaxpayerTypeOptions },
     { name: 'pix_type', label: 'Tipo chave PIX', type: ColumnType.Enum, options: PixTypeOptions },
     { name: 'pix_key', label: 'Chave PIX', type: ColumnType.Text },

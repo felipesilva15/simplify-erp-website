@@ -58,7 +58,7 @@ export class UserListPage implements AfterViewInit {
     { name: 'name', label: 'Nome', type: ColumnType.Text },
     { name: 'email', label: 'E-mail', type: ColumnType.Text },
     { name: 'username', label: 'Usuário', type: ColumnType.Text },
-    { name: 'phone_number', label: 'Telefone', type: ColumnType.Text },
+    { name: 'phone_number', label: 'Telefone', type: ColumnType.Text, mask: 'PHONE_BR' },
     { name: 'is_admin', label: 'Admin', type: ColumnType.Boolean },
   ]
   tableMenu: TableMenuItem<User>[] = [

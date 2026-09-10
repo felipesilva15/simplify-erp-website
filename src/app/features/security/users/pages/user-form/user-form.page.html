@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-12 md:col-6">
                         <label htmlFor="phone_number">Telefone<span class="text-red-500 font-bold">*</span></label>
-                        <input id="phone_number" mask="TELEFONE_CELULAR_BR" [dropSpecialCharacters]="true" formControlName="phone_number" pInputText required [invalid]="isInvalid('phone_number')" />
+                        <input id="phone_number" mask="PHONE_BR" [dropSpecialCharacters]="true" formControlName="phone_number" pInputText required [invalid]="isInvalid('phone_number')" />
                         <app-form-control-errors [control]="form.get('phone_number')"></app-form-control-errors>
                     </div>
                     @if (facade.isCreate()) {
