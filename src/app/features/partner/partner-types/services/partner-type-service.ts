@@ -9,11 +9,13 @@ import { PartnerType } from '../models/partner-type';
 import { PartnerTypeRequestData } from '../models/partner-type-request-data';
 import { LookupFilter } from '../../../../core/models/lookup-filter';
 import { LookupItem } from '../../../../core/models/lookup-item';
+import { CrudService } from '../../../../core/contracts/crud-service';
+import { LookupService } from '../../../../core/contracts/lookup-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class PartnerTypeService {
+export class PartnerTypeService implements CrudService<PartnerType>, LookupService {
   private readonly baseUrl: string = environment.baseUrlApi + '/partner/partner-types';
   
   private http: HttpClient = inject(HttpClient)

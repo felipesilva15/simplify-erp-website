@@ -15,6 +15,7 @@ import { TaxpayerTypeLabels, TaxpayerTypeOptions } from '../../enums/taxpayer-ty
 import { PixTypeLabels, PixTypeOptions } from '../../enums/pix-type';
 import { PersonTypeLabels, PersonTypeOptions } from '../../enums/person-type';
 import { DocumentPipe } from '../../../../../shared/pipes/document-pipe';
+import { PartnerTypeLookupComponent } from '../../../partner-types/components/partner-type-lookup/partner-type-lookup.component';
 
 @Component({
   selector: 'app-partner-list',
@@ -56,7 +57,7 @@ export class PartnerListPage implements AfterViewInit {
     { name: 'id', label: 'ID', type: ColumnType.Integer },
     { name: 'name', label: 'Nome', type: ColumnType.Text },
     { name: 'trade_name', label: 'Apelido', type: ColumnType.Text },
-    { name: 'partner_type_code', label: 'Tipo de parceiro', type: ColumnType.Text },
+    { name: 'partner_type_code', label: 'Tipo de parceiro', type: ColumnType.Lookup, component: PartnerTypeLookupComponent },
     { name: 'person_type', label: 'Tipo de pessoa', type: ColumnType.Enum, options: PersonTypeOptions },
     { name: 'document_number', label: 'Documento', type: ColumnType.Text, mask: 'DOCUMENT' },
     { name: 'taxpayer_type', label: 'Contribuinte', type: ColumnType.Enum, options: TaxpayerTypeOptions },
