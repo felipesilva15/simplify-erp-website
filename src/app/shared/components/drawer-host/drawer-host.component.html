@@ -1,5 +1,13 @@
 @for (item of dynamicDrawerService.drawers(); track item.ref) {
-  <p-drawer [visible]="true" [style]="{ zIndex: item.zIndex }"
+  <p-drawer [visible]="item.visible()"
+            [position]="getPosition(item)"
+            [style]="getStyle(item)"
+            [modal]="item.config.modal ?? true"
+            [dismissible]="item.config.dismissible ?? true"
+            [closeOnEscape]="item.config.closeOnEscape ?? true"
+            [showCloseIcon]="item.config.showCloseIcon ?? true"
+            [header]="item.config.header"
+            [styleClass]="item.config.styleClass"
             (onHide)="item.ref.close()">
     <ng-container *drawerOutlet="item"></ng-container>
   </p-drawer>
