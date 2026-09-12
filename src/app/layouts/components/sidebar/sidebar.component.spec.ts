@@ -3,8 +3,12 @@ import { Subject } from 'rxjs';
 import { NavigationEnd, provideRouter, Router } from '@angular/router';
 import { SidebarComponent } from './sidebar.component';
 import { MenuService } from '../../../core/services/menu-service';
+import { DynamicDrawerService } from '../../../shared/services/dynamic-drawer-service';
+import { SidebarDrawerContentComponent } from '../sidebar-drawer-content/sidebar-drawer-content.component';
+import { Position } from '../../../core/enums/position';
 import { LogoType } from '../../../shared/enums/logo-type';
 import { MenuItem } from 'primeng/api';
+import { DrawerConfig } from '../../../core/models/drawer-config';
 
 describe('SidebarComponent', () => {
   let component: SidebarComponent;
@@ -115,17 +119,17 @@ describe('SidebarComponent', () => {
     });
 
     describe('isMobileScreen', () => {
-      it('should return true when windowWidth is 576', () => {
-        component.windowWidth.set(576);
+      it('should return true when windowWidth is 992', () => {
+        component.windowWidth.set(992);
         expect(component.isMobileScreen()).toBe(true);
       });
 
-      it('should return true when windowWidth is less than 576', () => {
-        component.windowWidth.set(400);
+      it('should return true when windowWidth is less than 992', () => {
+        component.windowWidth.set(600);
         expect(component.isMobileScreen()).toBe(true);
       });
 
-      it('should return false when windowWidth is greater than 576', () => {
+      it('should return false when windowWidth is greater than 992', () => {
         component.windowWidth.set(1024);
         expect(component.isMobileScreen()).toBe(false);
       });
@@ -175,6 +179,35 @@ describe('SidebarComponent', () => {
       component.isExpanded.set(false);
       component.toggle();
       expect(component.isExpanded()).toBe(true);
+    });
+  });
+
+  describe('openDrawer', () => {
+    it('should open the sidebar drawer with left position', () => {
+      const drawerService = TestBed.inject(DynamicDrawerService);
+      vi.spyOn(drawerService, 'open');
+
+      component.openDrawer();
+
+      expect(drawerService.open).toHaveBeenCalledWith(
+        SidebarDrawerContentComponent,
+        expect.objectContaining({
+          position: Position.Left,
+          size: '18rem',
+          modal: true,
+        } as DrawerConfig)
+      );
+    });
+  });
+
+  describe('onWindowResize', () => {
+    it('should update windowWidth with the current innerWidth', () => {
+      component.windowWidth.set(999);
+      vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1400);
+
+      component.onWindowResize();
+
+      expect(component.windowWidth()).toBe(1400);
     });
   });
 

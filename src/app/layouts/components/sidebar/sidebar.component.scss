@@ -1,31 +1,13 @@
-.menu-item.active {
-  color: var(--p-primary-contrast-color) !important;
-  background-color: var(--p-primary-color) !important;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-p-divider {
-  padding: 0;
-}
-
-.action-block {
-  top: -15px; 
-  left: 0;
-}
-
 aside {
   width: 0;
 
   &.expanded {
     width: 18rem;
-
-    .action-block {
-      top: 0;
-      left: 15px; 
-    }
   }
+}
+
+.mobile-sidebar-trigger {
+  position: absolute;
+  top: 8px;
+  left: 8px
 }

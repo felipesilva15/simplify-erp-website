@@ -1,0 +1,44 @@
+<div class="mb-6 flex flex-row align-items-center justify-content-between relative transition-all transition-duration-300 w-16rem action-block" [class.expanded]="expanded">
+    <app-logo [type]="logoType" [height]="'48px'" [link]="'/'"></app-logo>
+    <button pButton [text]="true" [rounded]="true" (click)="onAction()">
+        <span class="material-symbols-outlined font-light">
+            {{ buttonIcon }}
+        </span>
+    </button>
+</div>
+<div class="p-3">
+    <p-panelMenu [model]="menu">
+        <ng-template #item let-item>
+            @if (item.separator) {
+                <p-divider class="my-0" />
+            } @else if (item.link) {
+                <a [routerLink]="[item.link]" class="flex align-items-center border-none justify-content-between px-3 py-2 border-round cursor-pointer no-underline transition-colors transition-duration-300 menu-item" [class.active]="item.active">
+                    <div class="flex align-items-center gap-3">
+                        <i [class]="item.icon" class="text-lg"></i>
+                        <span class="text-sm white-space-nowrap">{{ item.label }}</span>
+                    </div>
+                    @if (item.items) {
+                        <i
+                            class="pi pi-chevron-right text-xs transition-transform transition-duration-200"
+                            [ngClass]="{ 'rotate-90': item.expanded }"
+                        ></i>
+                    }
+                </a>
+            }
+            @else {
+                <div class="flex align-items-center border-none justify-content-between px-3 py-2 border-round cursor-pointer transition-colors transition-duration-300 menu-item" [class.active]="item.active">
+                    <div class="flex align-items-center gap-3">
+                        <i [class]="item.icon" class="text-lg"></i>
+                        <span class="text-sm white-space-nowrap">{{ item.label }}</span>
+                    </div>
+                    @if (item.items) {
+                        <i
+                            class="pi pi-chevron-right text-xs transition-transform transition-duration-200"
+                            [ngClass]="{ 'rotate-90': item.expanded }"
+                        ></i>
+                    }
+                </div>
+            }
+        </ng-template>
+    </p-panelMenu>
+</div>

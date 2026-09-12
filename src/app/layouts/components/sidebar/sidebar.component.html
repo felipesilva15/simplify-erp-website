@@ -1,48 +1,11 @@
-
-
-<aside class="sidebar bg-white h-full pt-4 transition-all transition-duration-300 ease-in-out" [class.expanded]="showSidebar()">
-    <div class="mb-6 flex flex-row align-items-center justify-content-between relative transition-all transition-duration-300 w-5rem sm:w-16rem action-block" [class.expanded]="showSidebar()">
-        <app-logo [type]="logoType()" [height]="'48px'" [link]="'/'"></app-logo>
-        <button pButton [text]="true" (click)="toggle()">
-            <span class="material-symbols-outlined font-light">
-                dock_to_right
-            </span>
-        </button>
-    </div>
-    <div class="p-3">
-        <p-panelMenu [model]="menu">
-            <ng-template #item let-item>
-                @if (item.separator) {
-                    <p-divider class="my-0" />
-                } @else if (item.link) {
-                    <a [routerLink]="[item.link]" class="flex align-items-center border-none justify-content-between px-3 py-2 border-round cursor-pointer no-underline transition-colors transition-duration-300 menu-item" [class.active]="item.active">
-                        <div class="flex align-items-center gap-3">
-                            <i [class]="item.icon" class="text-lg"></i>
-                            <span class="text-sm">{{ item.label }}</span>
-                        </div>
-                        @if (item.items) {
-                            <i
-                                class="pi pi-chevron-right text-xs transition-transform transition-duration-200"
-                                [ngClass]="{ 'rotate-90': item.expanded }"
-                            ></i>
-                        }
-                    </a>
-                }
-                @else {
-                    <div class="flex align-items-center border-none justify-content-between px-3 py-2 border-round cursor-pointer transition-colors transition-duration-300 menu-item" [class.active]="item.active">
-                        <div class="flex align-items-center gap-3">
-                            <i [class]="item.icon" class="text-lg"></i>
-                            <span class="text-sm">{{ item.label }}</span>
-                        </div>
-                        @if (item.items) {
-                            <i
-                                class="pi pi-chevron-right text-xs transition-transform transition-duration-200"
-                                [ngClass]="{ 'rotate-90': item.expanded }"
-                            ></i>
-                        }
-                    </div>
-                }
-            </ng-template>
-        </p-panelMenu>
-    </div>
-</aside>
+@if (isMobileScreen()) {
+    <button pButton [text]="true" class="mobile-sidebar-trigger" (click)="openDrawer()">
+        <span class="material-symbols-outlined font-light">
+            menu
+        </span>
+    </button>
+} @else {
+    <aside class="sidebar bg-white h-full pt-4 transition-all transition-duration-300 ease-in-out" [class.expanded]="showSidebar()">
+        <app-sidebar-content [menu]="menu" [logoType]="logoType()" buttonIcon="dock_to_right" [expanded]="showSidebar()" (action)="toggle()" />
+    </aside>
+}
