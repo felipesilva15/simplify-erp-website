@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { SidebarContentComponent } from './sidebar-content.component';
 import { MenuItem } from 'primeng/api';
-import { LogoType } from '../../../../shared/enums/logo-type';
+import { LogoType } from '../../../shared/enums/logo-type';
 
 describe('SidebarContentComponent', () => {
   let component: SidebarContentComponent;
