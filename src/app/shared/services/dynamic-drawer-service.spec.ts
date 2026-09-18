@@ -89,5 +89,29 @@ describe('DynamicDrawerService', () => {
       vi.advanceTimersByTime(800);
       expect(service.drawers()).toHaveLength(1);
     });
+
+    it('should remove leftover drawer masks but preserve dialog masks on empty stack', () => {
+      vi.useFakeTimers();
+
+      const drawerMask = document.createElement('div');
+      drawerMask.className = 'p-drawer-mask p-overlay-mask';
+      const dialogMask = document.createElement('div');
+      dialogMask.className = 'p-dialog-mask p-overlay-mask';
+      document.body.append(drawerMask, dialogMask);
+
+      try {
+        const ref = service.open(class HostComponent {}, {});
+        ref.close();
+
+        vi.advanceTimersByTime(800);
+
+        expect(document.querySelector('.p-drawer-mask')).toBeNull();
+        expect(document.querySelector('.p-dialog-mask')).not.toBeNull();
+        expect(document.querySelector('.p-overlay-mask')).toBe(dialogMask);
+      } finally {
+        drawerMask.remove();
+        dialogMask.remove();
+      }
+    });
   });
 });

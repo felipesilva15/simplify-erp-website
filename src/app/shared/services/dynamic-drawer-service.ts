@@ -41,7 +41,7 @@ export class DynamicDrawerService {
     this.stack.update(s => s.filter(i => i.ref !== ref));
 
     if (this.stack().length === 0) {
-      document.querySelectorAll('.p-overlay-mask').forEach(el => el.remove());
+      document.querySelectorAll('.p-drawer-mask').forEach(el => el.remove());
     }
   }
 }
