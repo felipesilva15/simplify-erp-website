@@ -52,6 +52,6 @@ export class PartnerTypeService implements CrudService<PartnerType>, LookupServi
 
   search(params: LookupFilter): Observable<ApiResponse<LookupItem[]>> | Promise<ApiResponse<LookupItem[]>> {
     const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
-    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/lookup`, { withCredentials: true, params: httpParams });
+    return this.http.get<ApiResponse<LookupItem[]>>(`${this.baseUrl}/lookup`, { withCredentials: true, params: httpParams });
   }
 }

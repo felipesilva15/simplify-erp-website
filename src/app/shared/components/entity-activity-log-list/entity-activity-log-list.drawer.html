@@ -1,0 +1,56 @@
+<div class="entity-activity-log-list flex flex-column gap-3 px-1 py-2">
+    @if (loading()) {
+        <div class="flex align-items-center gap-2 text-color-secondary">
+            <i class="pi pi-spin pi-spinner"></i>
+            <span>Carregando histórico de alterações...</span>
+        </div>
+    }
+
+    @if (error(); as errorMessage) {
+        <p-message severity="error" [text]="errorMessage"></p-message>
+    }
+
+    @if (!loading() && !error() && groupedLogs().length === 0) {
+        <div class="text-color-secondary">Nenhum registro de alteração encontrado.</div>
+    }
+
+    @if (groupedLogs().length > 0) {
+        <p-accordion [value]="expandedKeys()" [multiple]="true">
+            @for (group of groupedLogs(); track group.key) {
+                <p-accordion-panel [value]="group.key">
+                    <p-accordion-header>
+                        <span class="flex align-items-center gap-2">
+                            <span class="font-semibold">{{ group.label }}</span>
+                            <span class="text-sm text-color-secondary">{{ group.logs.length }} registro(s)</span>
+                        </span>
+                    </p-accordion-header>
+                    <p-accordion-content>
+                        <p-timeline [value]="group.logs" align="left">
+                            <ng-template #marker let-log>
+                                <span class="activity-log-marker">
+                                    <i [class]="markerIconFor(log.action)"></i>
+                                </span>
+                            </ng-template>
+                            <ng-template #content let-log>
+                                <div class="flex flex-column gap-1 pb-4 w-full">
+                                    <div class="flex align-items-center gap-2 flex-wrap">
+                                        <span class="text-sm text-color-secondary">{{ log.created_at | date: 'HH:mm' }}</span>
+                                        @if (log.action_label) {
+                                            <span class="font-semibold text-sm">{{ log.action_label }}</span>
+                                        }
+                                        @if (log.user) {
+                                            <span class="text-sm text-color-secondary">por {{ log.user.name }}</span>
+                                        }
+                                    </div>
+                                    @if (log.description) {
+                                        <span class="text-sm text-color-secondary">{{ log.description }}</span>
+                                    }
+                                </div>
+                            </ng-template>
+                        </p-timeline>
+                    </p-accordion-content>
+                </p-accordion-panel>
+            }
+        </p-accordion>
+    }
+</div>

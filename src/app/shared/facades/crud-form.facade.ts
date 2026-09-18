@@ -14,6 +14,7 @@ import { KeyValue, Location } from "@angular/common";
 import { ApiMetaOption } from '../../core/enums/api-meta-option';
 import { ApiMetaType } from '../../core/types/api-meta-type';
 import { FormPageFacade } from '../../core/contracts/form-page-facade';
+import { ActivityLog } from '../../core/models/activity-log';
 
 export abstract class CrudFormFacade<
     T extends BaseEntity,
@@ -51,6 +52,7 @@ export abstract class CrudFormFacade<
     isView: Signal<boolean> = computed(() => this._mode() === FormMode.View);
     hasWarnings: Signal<boolean> = computed(() => this.warnings().length > 0);
     hasServerErrors: Signal<boolean> = computed(() => this.serverErrors().length > 0);
+    hasActivityLogsMethod: Signal<boolean> = computed(() => 'activityLogs' in this.service && typeof (this.service).activityLogs === 'function');
 
     constructor(
         protected service: CrudService<T>,
@@ -298,5 +300,19 @@ export abstract class CrudFormFacade<
         return this.confirmDialogService.confirm({
             message: 'Existem alterações não salvas. Deseja mesmo sair?'
         });
+    }
+    
+    loadLogs(): Observable<ApiResponse<ActivityLog[]>> | null {
+        if ('activityLogs' in this.service && typeof (this.service).activityLogs === 'function') {
+            const id = this._entity()?.id;
+
+            if (id == null) {
+                return null;
+            }
+
+            return (this.service).activityLogs(id);
+        }
+
+        return null;
     }
 }

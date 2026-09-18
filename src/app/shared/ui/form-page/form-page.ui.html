@@ -3,7 +3,14 @@
     <div class="flex flex-row flex-wrap justify-content-between align-items-end gap-1 mt-5 mb-3">
         <h2 class="text-3xl m-0">{{ title() }}</h2>
         @if (facade && facade.entity()?.updated_at) {
-            <span id="last-updated-date" class="text-color-secondary animation-duration-300 fadein">Última alteração em: {{ facade.entity()?.updated_at | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+            @if (facade.hasActivityLogsMethod()) {
+                <a id="last-updated-date" class="text-primary cursor-pointer inline-flex align-items-center gap-2 animation-duration-300 fadein" (click)="onActivityLog()" pTooltip="Clique para ver o histórico de alterações" tooltipPosition="left" showDelay="300" hideDelay="200">
+                    <i class="pi pi-history"></i>
+                    <span>Última alteração em: {{ facade.entity()?.updated_at | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+                </a>
+            } @else {
+                <span id="last-updated-date" class="text-color-secondary animation-duration-300 fadein">Última alteração em: {{ facade.entity()?.updated_at | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+            }
         }
     </div>
     <div class="bg-white border-round p-3">

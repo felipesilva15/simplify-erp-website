@@ -10,11 +10,13 @@ import { LookupFilter } from '../../../../core/models/lookup-filter';
 import { LookupItem } from '../../../../core/models/lookup-item';
 import { ListRequestParams } from '../../../../core/models/list-request-params';
 import { HttpQueryBuilderService } from '../../../../core/services/http-query-builder-service';
+import { LogableService } from '../../../../core/contracts/logable-service';
+import { ActivityLog } from '../../../../core/models/activity-log';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UserService implements CrudService<User>, LookupService {
+export class UserService implements CrudService<User>, LookupService, LogableService {
   private readonly baseUrl: string = environment.baseUrlApi + '/security/users';
   
   private http = inject(HttpClient)
@@ -47,5 +49,10 @@ export class UserService implements CrudService<User>, LookupService {
 
   search(_filter: LookupFilter): Observable<ApiResponse<LookupItem[]>> | Promise<ApiResponse<LookupItem[]>> {
     throw new Error('Method not implemented.');
+  }
+
+  activityLogs(id: number, params?: ListRequestParams): Observable<ApiResponse<ActivityLog[]>> {
+    const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
+    return this.http.get<ApiResponse<ActivityLog[]>>(`${this.baseUrl}/${id}/activity-logs`, { withCredentials: true, params: httpParams });
   }
 }

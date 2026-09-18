@@ -1,0 +1,23 @@
+// Único CSS custom necessário na timeline: o p-timeline do PrimeNG SEMPRE renderiza a
+// coluna `.p-timeline-event-opposite` (mesmo sem template) e ela tem `flex: 1` no tema,
+// consumindo metade da largura e "centralizando" o conteúdo mesmo com align="left".
+// Ocultá-la faz a linha e o conteúdo ocuparem toda a largura disponível.
+:host ::ng-deep .p-timeline-left .p-timeline-event-opposite {
+    display: none;
+}
+
+.activity-log-marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--p-content-background);
+    border: 1px solid var(--p-content-border-color);
+    color: var(--p-content-color);
+
+    .pi {
+        font-size: 0.875rem;
+    }
+}

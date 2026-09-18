@@ -16,6 +16,18 @@ import { AppTemplate } from '../../directives/app-template';
 })
 class MockBreadcrumbComponent { }
 
+function createFacade(entity: any) {
+  return {
+    entity: () => entity,
+    warnings: () => [],
+    hasWarnings: () => false,
+    hasServerErrors: () => false,
+    serverErrors: () => [],
+    hasActivityLogsMethod: () => false,
+    loadLogs: () => null,
+  } as any;
+}
+
 describe('FormPageUi', () => {
   let component: FormPageUi;
   let fixture: ComponentFixture<FormPageUi>;
@@ -60,7 +72,8 @@ describe('FormPageUi', () => {
       updated_at: null,
     };
 
-    fixture.componentRef.setInput('entity', entity);
+    component.facade = createFacade(entity);
+    fixture.componentRef.setInput('facade', component.facade);
     fixture.detectChanges();
 
     const lastUpdatedElement = fixture.debugElement.query(By.css('#last-updated-date'));
@@ -77,7 +90,8 @@ describe('FormPageUi', () => {
       updated_at: new Date('2026-07-01T12:00:00Z'),
     };
 
-    fixture.componentRef.setInput('entity', entity);
+    component.facade = createFacade(entity);
+    fixture.componentRef.setInput('facade', component.facade);
     fixture.detectChanges();
 
     const lastUpdatedElement = fixture.debugElement.query(By.css('#last-updated-date'));

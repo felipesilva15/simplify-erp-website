@@ -11,11 +11,13 @@ import { HttpQueryBuilderService } from '../../../../core/services/http-query-bu
 import { LookupService } from '../../../../core/contracts/lookup-service';
 import { LookupFilter } from '../../../../core/models/lookup-filter';
 import { LookupItem } from '../../../../core/models/lookup-item';
+import { LogableService } from '../../../../core/contracts/logable-service';
+import { ActivityLog } from '../../../../core/models/activity-log';
 
 @Injectable({
   providedIn: 'root',
 })
-export class RoleService implements CrudService<Role>, LookupService {
+export class RoleService implements CrudService<Role>, LookupService, LogableService {
   private readonly baseUrl: string = environment.baseUrlApi + '/security/roles';
   
   private http: HttpClient = inject(HttpClient)
@@ -52,6 +54,11 @@ export class RoleService implements CrudService<Role>, LookupService {
 
   search(params: LookupFilter): Observable<ApiResponse<LookupItem[]>> | Promise<ApiResponse<LookupItem[]>> {
     const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
-    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/lookup`, { withCredentials: true, params: httpParams });
+    return this.http.get<ApiResponse<LookupItem[]>>(`${this.baseUrl}/lookup`, { withCredentials: true, params: httpParams });
+  }
+
+  activityLogs(id: number, params?: ListRequestParams): Observable<ApiResponse<ActivityLog[]>> {
+    const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
+    return this.http.get<ApiResponse<ActivityLog[]>>(`${this.baseUrl}/${id}/activity-logs`, { withCredentials: true, params: httpParams });
   }
 }
