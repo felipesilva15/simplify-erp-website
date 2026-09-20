@@ -161,6 +161,9 @@ export class PartnerFormPage implements OnInit {
   }
 
   configureFormValidators(): void {
+    if (this.form.disabled)
+      return;
+
     const personType = this.form.controls.person_type;
     const taxpayerType = this.form.controls.taxpayer_type;
     const gender = this.form.controls.gender;
