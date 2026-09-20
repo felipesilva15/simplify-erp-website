@@ -1,0 +1,300 @@
+<app-form-page
+    [title]="title()"
+    [breadcrumbItems]="breadcrumbItems"
+    [facade]="facade"
+    >
+    <ng-template appTemplate="content">
+        @if (!facade.loading()) {
+            <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+                <app-collapsible-section title="Dados gerais">
+                    <p-fluid class="grid">
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
+                            <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+                            <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="trade_name">Nome comercial<span class="text-red-500 font-bold">*</span></label>
+                            <input id="trade_name" formControlName="trade_name" pInputText required [invalid]="isInvalid('trade_name')" />
+                            <app-form-control-errors [control]="form.get('trade_name')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <label htmlFor="partner_type_code">Tipo de parceiro<span class="text-red-500 font-bold">*</span></label>
+                            <app-partner-type-lookup formControlName="partner_type_code"></app-partner-type-lookup>
+                            <app-form-control-errors [control]="form.get('partner_type_code')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <label htmlFor="person_type">Tipo de pessoa<span class="text-red-500 font-bold">*</span></label>
+                            <p-select id="person_type" inputId="person_type" formControlName="person_type" appendTo="body" [options]="personTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione o tipo de pessoa" [invalid]="isInvalid('person_type')"></p-select>
+                            <app-form-control-errors [control]="form.get('person_type')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <label htmlFor="taxpayer_type">Contribuinte<span class="text-red-500 font-bold">*</span></label>
+                            <p-select id="taxpayer_type" inputId="taxpayer_type" formControlName="taxpayer_type" appendTo="body" [options]="taxpayerTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione a situação" [invalid]="isInvalid('taxpayer_type')"></p-select>
+                            <app-form-control-errors [control]="form.get('taxpayer_type')"></app-form-control-errors>
+                        </div>
+                    </p-fluid>
+                </app-collapsible-section>
+
+                <app-collapsible-section title="Documentos">
+                    <p-fluid class="grid">
+                        <div class="col-12 md:col-4">
+                            <label htmlFor="document_number">Documento<span class="text-red-500 font-bold">*</span></label>
+                            <input id="document_number" mask="DOCUMENT" [dropSpecialCharacters]="true" formControlName="document_number" pInputText required [invalid]="isInvalid('document_number')" />
+                            <app-form-control-errors [control]="form.get('document_number')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <label htmlFor="identity_number">RG</label>
+                            <input id="identity_number" formControlName="identity_number" pInputText [invalid]="isInvalid('identity_number')" />
+                            <app-form-control-errors [control]="form.get('identity_number')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <label htmlFor="identity_issuer">Órgão emissor</label>
+                            <input id="identity_issuer" formControlName="identity_issuer" pInputText [invalid]="isInvalid('identity_issuer')" />
+                            <app-form-control-errors [control]="form.get('identity_issuer')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <label htmlFor="state_registration">Inscrição estadual</label>
+                            <input id="state_registration" formControlName="state_registration" pInputText [invalid]="isInvalid('state_registration')" />
+                            <app-form-control-errors [control]="form.get('state_registration')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <label htmlFor="municipal_registration">Inscrição municipal</label>
+                            <input id="municipal_registration" formControlName="municipal_registration" pInputText [invalid]="isInvalid('municipal_registration')" />
+                            <app-form-control-errors [control]="form.get('municipal_registration')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <label htmlFor="suframa_registration">Inscrição Suframa</label>
+                            <input id="suframa_registration" formControlName="suframa_registration" pInputText [invalid]="isInvalid('suframa_registration')" />
+                            <app-form-control-errors [control]="form.get('suframa_registration')"></app-form-control-errors>
+                        </div>
+                    </p-fluid>
+                </app-collapsible-section>
+
+                <app-collapsible-section title="Dados complementares">
+                    <p-fluid class="grid">
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="partner_since">Parceiro desde</label>
+                            <p-datepicker id="partner_since" inputId="partner_since" pInputMask="99/99/9999" formControlName="partner_since" appendTo="body" dateFormat="dd/mm/yy" [iconDisplay]="'input'" [showIcon]="true"     [invalid]="isInvalid('partner_since')"></p-datepicker>
+                            <app-form-control-errors [control]="form.get('partner_since')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="birth_date">Data de nascimento</label>
+                            <p-datepicker id="birth_date" inputId="birth_date" pInputMask="99/99/9999" formControlName="birth_date" appendTo="body" dateFormat="dd/mm/yy" [iconDisplay]="'input'" [showIcon]="true"  [invalid]="isInvalid('birth_date')"></p-datepicker>
+                            <app-form-control-errors [control]="form.get('birth_date')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="gender">Gênero</label>
+                            <p-select id="gender" inputId="gender" formControlName="gender" appendTo="body" [options]="genderOptions" optionLabel="name" optionValue="code" [showClear]="true" placeholder="Selecione o gênero" [invalid]="isInvalid('gender')"></p-select>
+                            <app-form-control-errors [control]="form.get('gender')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="marital_status">Estado civil</label>
+                            <p-select id="marital_status" inputId="marital_status" formControlName="marital_status" appendTo="body" [options]="maritalStatusOptions" optionLabel="name" optionValue="code" placeholder="Selecione o estado civil" [invalid]="isInvalid('marital_status')"></p-select>
+                            <app-form-control-errors [control]="form.get('marital_status')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="father_name">Nome do pai</label>
+                            <input id="father_name" formControlName="father_name" pInputText [invalid]="isInvalid('father_name')" />
+                            <app-form-control-errors [control]="form.get('father_name')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="father_document">Documento do pai</label>
+                            <input id="father_document" formControlName="father_document" pInputText [invalid]="isInvalid('father_document')" />
+                            <app-form-control-errors [control]="form.get('father_document')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="mother_name">Nome da mãe</label>
+                            <input id="mother_name" formControlName="mother_name" pInputText [invalid]="isInvalid('mother_name')" />
+                            <app-form-control-errors [control]="form.get('mother_name')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label htmlFor="mother_document">Documento da mãe</label>
+                            <input id="mother_document" formControlName="mother_document" pInputText [invalid]="isInvalid('mother_document')" />
+                            <app-form-control-errors [control]="form.get('mother_document')"></app-form-control-errors>
+                        </div>
+                    </p-fluid>
+                </app-collapsible-section>
+
+                <app-collapsible-section title="Dados bancários">
+                    <p-fluid class="grid">
+                        <div class="col-12 md:col-4">
+                            <label htmlFor="pix_type">Tipo da chave PIX</label>
+                            <p-select id="pix_type" inputId="pix_type" formControlName="pix_type" appendTo="body" [showClear]="true" [options]="pixTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione o tipo da chave" [invalid]="isInvalid('pix_type')"></p-select>
+                            <app-form-control-errors [control]="form.get('pix_type')"></app-form-control-errors>
+                        </div>
+                        <div class="col-12 md:col-8">
+                            <label htmlFor="pix_key">Chave PIX</label>
+                            <input id="pix_key" formControlName="pix_key" pInputText [invalid]="isInvalid('pix_key')" />
+                            <app-form-control-errors [control]="form.get('pix_key')"></app-form-control-errors>
+                        </div>
+                    </p-fluid>
+                </app-collapsible-section>
+
+                <app-collapsible-section title="Observações">
+                    <p-fluid class="grid">
+                        <div class="col-12">
+                            <label htmlFor="notes">Observações</label>
+                            <textarea id="notes" pTextarea formControlName="notes" rows="4" [invalid]="isInvalid('notes')"></textarea>
+                            <app-form-control-errors [control]="form.get('notes')"></app-form-control-errors>
+                        </div>
+                    </p-fluid>
+                </app-collapsible-section>
+
+                <p-fluid class="grid">
+                    <div class="col-12">
+                        <div class="flex justify-content-end gap-2">
+                            <p-button label="Voltar" [outlined]="true" [disabled]="facade.loading()" (onClick)="facade.navigateBack(form)" />
+                            <p-button label="Salvar" icon="pi pi-save" type="submit" [disabled]="form.disabled" [loading]="facade.saving()" />
+                        </div>
+                    </div>
+                </p-fluid>
+            </form>
+        } @else {
+            <div class="flex flex-column gap-5">
+                <section class="flex flex-column gap-3">
+                    <div class="flex align-items-center justify-content-between w-full">
+                        <p-skeleton height="16px" width="20%" borderRadius="4px"></p-skeleton>
+                        <p-skeleton width="14px" height="14px" shape="circle"></p-skeleton>
+                    </div>
+                    <p-fluid class="grid">
+                        <div class="col-12 md:col-6">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                    </p-fluid>
+                </section>
+
+                <section class="flex flex-column gap-3">
+                    <div class="flex align-items-center justify-content-between w-full">
+                        <p-skeleton height="16px" width="14%" borderRadius="4px"></p-skeleton>
+                        <p-skeleton width="14px" height="14px" shape="circle"></p-skeleton>
+                    </div>
+                    <p-fluid class="grid">
+                        <div class="col-12 md:col-4">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                    </p-fluid>
+                </section>
+
+                <section class="flex flex-column gap-3">
+                    <div class="flex align-items-center justify-content-between w-full">
+                        <p-skeleton height="16px" width="22%" borderRadius="4px"></p-skeleton>
+                        <p-skeleton width="14px" height="14px" shape="circle"></p-skeleton>
+                    </div>
+                    <p-fluid class="grid">
+                        <div class="col-12 md:col-6">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                    </p-fluid>
+                </section>
+
+                <section class="flex flex-column gap-3">
+                    <div class="flex align-items-center justify-content-between w-full">
+                        <p-skeleton height="16px" width="18%" borderRadius="4px"></p-skeleton>
+                        <p-skeleton width="14px" height="14px" shape="circle"></p-skeleton>
+                    </div>
+                    <p-fluid class="grid">
+                        <div class="col-12 md:col-4">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                        <div class="col-12 md:col-8">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="39px"></p-skeleton>
+                        </div>
+                    </p-fluid>
+                </section>
+
+                <section class="flex flex-column gap-3">
+                    <div class="flex align-items-center justify-content-between w-full">
+                        <p-skeleton height="16px" width="16%" borderRadius="4px"></p-skeleton>
+                        <p-skeleton width="14px" height="14px" shape="circle"></p-skeleton>
+                    </div>
+                    <p-fluid class="grid">
+                        <div class="col-12">
+                            <p-skeleton height="14px" width="30%" class="mb-2"></p-skeleton>
+                            <p-skeleton width="100%" height="88px"></p-skeleton>
+                        </div>
+                    </p-fluid>
+                </section>
+
+                <p-fluid class="grid">
+                    <div class="col-12">
+                        <div class="flex justify-content-end gap-2">
+                            <p-skeleton width="69px" height="39px" borderRadius="6px"></p-skeleton>
+                            <p-skeleton width="93px" height="39px" borderRadius="6px"></p-skeleton>
+                        </div>
+                    </div>
+                </p-fluid>
+            </div>
+        }
+    </ng-template>
+</app-form-page>

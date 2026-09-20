@@ -1,0 +1,24 @@
+<section class="flex flex-column gap-3">
+    <button
+        type="button"
+        class="collapsible-section__header"
+        (click)="toggle()"
+        [attr.aria-expanded]="open()"
+        [attr.aria-controls]="bodyId"
+    >
+        <span class="font-bold">{{ title() }}</span>
+        <i
+            class="pi pi-chevron-down collapsible-section__chevron"
+            [class.collapsible-section__chevron--open]="open()"
+        ></i>
+    </button>
+    <div
+        [id]="bodyId"
+        class="collapsible-section__body"
+        [class.collapsible-section__body--expanded]="open()"
+    >
+        <div class="collapsible-section__body-inner">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</section>
