@@ -13,6 +13,12 @@
     margin: 0.25rem 0;
 }
 
+.p-select-overlay,
+.p-datepicker-panel,
+.p-autocomplete-panel {
+  z-index: 1000 !important;
+}
+
 /* Sidebar drawer */
 
 .sidebar-drawer .p-drawer-content {
