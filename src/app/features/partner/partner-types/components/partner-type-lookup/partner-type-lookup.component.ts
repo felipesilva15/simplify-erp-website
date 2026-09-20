@@ -36,4 +36,12 @@ export class PartnerTypeLookupComponent {
   }
 
   registerOnTouched(fn: any): void { /* empty */ }
+
+  setDisabledState(isDisabled: boolean): void {
+    if (isDisabled) {
+      this.innerControl.disable({ emitEvent: false });
+    } else {
+      this.innerControl.enable({ emitEvent: false });
+    }
+  }
 }

@@ -210,7 +210,7 @@ export abstract class CrudFormFacade<
         return Object.fromEntries(
             Object.entries(payload).map(([key, value]) => {
                 if (this.isLookupItem(value)) {
-                    return [key, (value as LookupItem).meta ?? null];
+                    return [key, (value as LookupItem).key ?? null];
                 }
 
                 if (Array.isArray(value) && value.every(this.isLookupItem)) {

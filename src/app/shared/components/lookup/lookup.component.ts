@@ -165,6 +165,13 @@ export class LookupComponent implements OnInit, OnDestroy {
         (value: any) => value != null && value != undefined
       ) as (string | number)[];
 
+      if (keys.length === 0) {
+        this.internalControl.setValue([], { emitEvent: false });
+        this.loading.set(false);
+        this.cdr.markForCheck();
+        return;
+      }
+
       const filter: LookupFilter = {
         q: '',
         keys: keys,
@@ -189,6 +196,11 @@ export class LookupComponent implements OnInit, OnDestroy {
       return;
     }
  
+    if (typeof value === 'object') {
+      this.internalControl.setValue(null, { emitEvent: false });
+      return;
+    }
+
     // Modo single — é key primitiva: busca e hidrata
     this.loading.set(true);
 

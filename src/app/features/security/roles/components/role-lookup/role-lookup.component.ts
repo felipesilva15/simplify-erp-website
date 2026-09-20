@@ -36,4 +36,12 @@ export class RoleLookupComponent {
   }
 
   registerOnTouched(fn: any): void { }
+
+  setDisabledState(isDisabled: boolean): void {
+    if (isDisabled) {
+      this.innerControl.disable({ emitEvent: false });
+    } else {
+      this.innerControl.enable({ emitEvent: false });
+    }
+  }
 }
