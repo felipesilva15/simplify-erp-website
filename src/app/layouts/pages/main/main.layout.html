@@ -1,8 +1,8 @@
 <main class="h-screen h-full flex row animation-duration-300 fadein">
     <app-sidebar></app-sidebar>
-    <div class="h-full w-full">
+    <div class="h-full flex-1 min-w-0">
         <app-navbar></app-navbar>
-        <div class="bg-gray-100 content-container w-full md:p-5 p-3">
+        <div class="bg-gray-100 content-container w-full overflow-x-auto md:p-5 p-3">
             <router-outlet></router-outlet>
         </div>
     </div>
