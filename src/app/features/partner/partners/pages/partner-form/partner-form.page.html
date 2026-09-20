@@ -26,12 +26,12 @@
                         </div>
                         <div class="col-12 md:col-4">
                             <label htmlFor="person_type">Tipo de pessoa<span class="text-red-500 font-bold">*</span></label>
-                            <p-select id="person_type" inputId="person_type" formControlName="person_type" appendTo="body" [options]="personTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione o tipo de pessoa" [invalid]="isInvalid('person_type')"></p-select>
+                            <p-select id="person_type" inputId="person_type" formControlName="person_type" appendTo="body" [options]="personTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione o tipo de pessoa" (onChange)="configureFormValidators()" [invalid]="isInvalid('person_type')"></p-select>
                             <app-form-control-errors [control]="form.get('person_type')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
                             <label htmlFor="taxpayer_type">Contribuinte<span class="text-red-500 font-bold">*</span></label>
-                            <p-select id="taxpayer_type" inputId="taxpayer_type" formControlName="taxpayer_type" appendTo="body" [options]="taxpayerTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione a situação" [invalid]="isInvalid('taxpayer_type')"></p-select>
+                            <p-select id="taxpayer_type" inputId="taxpayer_type" formControlName="taxpayer_type" appendTo="body" [options]="taxpayerTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione a situação" (onChange)="configureFormValidators()" [invalid]="isInvalid('taxpayer_type')"></p-select>
                             <app-form-control-errors [control]="form.get('taxpayer_type')"></app-form-control-errors>
                         </div>
                     </p-fluid>
@@ -55,7 +55,9 @@
                             <app-form-control-errors [control]="form.get('identity_issuer')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="state_registration">Inscrição estadual</label>
+                            <label htmlFor="state_registration">
+                                Inscrição estadual@if (form.get('state_registration')?.hasValidator(validatorRequired)) {<span class="text-red-500 font-bold">*</span>}
+                            </label>
                             <input id="state_registration" formControlName="state_registration" pInputText [invalid]="isInvalid('state_registration')" />
                             <app-form-control-errors [control]="form.get('state_registration')"></app-form-control-errors>
                         </div>
@@ -85,7 +87,9 @@
                             <app-form-control-errors [control]="form.get('birth_date')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="gender">Gênero</label>
+                            <label htmlFor="gender">
+                                Gênero@if (form.get('gender')?.hasValidator(validatorRequired)) {<span class="text-red-500 font-bold">*</span>}
+                            </label>
                             <p-select id="gender" inputId="gender" formControlName="gender" appendTo="body" [options]="genderOptions" optionLabel="name" optionValue="code" [showClear]="true" placeholder="Selecione o gênero" [invalid]="isInvalid('gender')"></p-select>
                             <app-form-control-errors [control]="form.get('gender')"></app-form-control-errors>
                         </div>

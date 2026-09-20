@@ -101,11 +101,13 @@ export class PartnerFormPage implements OnInit {
   public facade: GenericCrudFormFacade<Partner> = inject(GenericCrudFormFacade<Partner>);
   private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
 
+  personType = PersonType;
   personTypeOptions: { code: PersonType, name: string }[] = PersonTypeOptions;
   taxpayerTypeOptions: { code: TaxpayerType, name: string }[] = TaxpayerTypeOptions;
   genderOptions: { code: Gender, name: string }[] = GenderOptions;
   maritalStatusOptions: { code: MaritalStatus, name: string }[] = MaritalStatusOptions;
   pixTypeOptions: { code: PixType, name: string }[] = PixTypeOptions;
+  validatorRequired = Validators.required;
 
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
@@ -158,8 +160,80 @@ export class PartnerFormPage implements OnInit {
     this.configureFormValidators();
   }
 
-  private configureFormValidators(): void {
-    console.log('not implemented!');
+  configureFormValidators(): void {
+    const personType = this.form.controls.person_type;
+    const taxpayerType = this.form.controls.taxpayer_type;
+    const gender = this.form.controls.gender;
+    const stateRegistration = this.form.controls.state_registration;
+    const municipalRegistration = this.form.controls.municipal_registration;
+    const suframaRegistration = this.form.controls.suframa_registration;
+    const identityNumber = this.form.controls.identity_number;
+    const identityIssuer = this.form.controls.identity_issuer;
+    const maritalStatus = this.form.controls.marital_status;
+    const fatherName = this.form.controls.father_name;
+    const fatherDocument = this.form.controls.father_document;
+    const motherName = this.form.controls.mother_name;
+    const motherDocument = this.form.controls.mother_document;
+
+    gender.removeValidators(Validators.required);
+
+    gender.enable();
+    taxpayerType.enable();
+    stateRegistration.enable();
+    municipalRegistration.enable();
+    suframaRegistration.enable();
+    identityNumber.enable();
+    identityIssuer.enable();
+    maritalStatus.enable();
+    fatherName.enable();
+    fatherDocument.enable();
+    motherName.enable();
+    motherDocument.enable();
+
+    switch (personType.value) {
+      case PersonType.Person:
+        taxpayerType.setValue(TaxpayerType.Exempt);
+        stateRegistration.setValue('');
+        municipalRegistration.setValue('');
+        suframaRegistration.setValue('');
+        
+        gender.addValidators(Validators.required);
+
+        taxpayerType.disable();
+        stateRegistration.disable();
+        municipalRegistration.disable();
+        suframaRegistration.disable();
+        break;
+
+      case PersonType.Company:
+        identityNumber.setValue('');
+        identityIssuer.setValue('');
+        maritalStatus.setValue(null);
+        fatherName.setValue('');
+        fatherDocument.setValue('');
+        motherName.setValue('');
+        motherDocument.setValue('');
+        gender.setValue(null);
+
+        identityNumber.disable();
+        identityIssuer.disable();
+        maritalStatus.disable();
+        fatherName.disable();
+        fatherDocument.disable();
+        motherName.disable();
+        motherDocument.disable();
+        gender.disable();
+        break;
+    
+      default:
+        break;
+    }
+
+    if (taxpayerType.value == TaxpayerType.Taxpayer) {
+      stateRegistration.addValidators(Validators.required);
+    } else {
+      stateRegistration.removeValidators(Validators.required);
+    }
   }
 
   onSubmit(): void {
