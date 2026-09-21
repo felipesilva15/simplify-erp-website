@@ -3,7 +3,9 @@
         @if (enableSelection()) {
             <p-button icon="pi pi-trash" severity="danger" [text]="true" [raised]="true" [disabled]="!selectedRecords.length || facade.loading()" pTooltip="Deletar registros selecionados" showDelay="600" hideDelay="300" />
         }
-        <p-button icon="pi pi-file-excel" severity="success" [text]="true" [raised]="true" pTooltip="Exportar dados para Excel" [disabled]="facade.loading() || true" showDelay="600" hideDelay="300" />
+        @if (exportMenuItems.length && facade.totalRecords() > 0) {
+            <p-button icon="pi pi-file-excel" severity="success" [text]="true" [raised]="true" pTooltip="Exportar dados" [disabled]="facade.loading()" showDelay="600" hideDelay="300" (onClick)="onExportMenuClick($event)" />
+        }
         <p-button icon="pi pi-print" severity="secondary" [text]="true" [raised]="true" pTooltip="Imprimir registros" [disabled]="facade.loading() || true" showDelay="600" hideDelay="300" />
         <p-button icon="pi pi-refresh" severity="secondary" [text]="true" [raised]="true" pTooltip="Atualizar consulta" [disabled]="facade.loading()" showDelay="600" hideDelay="300" (onClick)="facade.load()" />
     </div>
@@ -184,3 +186,4 @@
 <app-filter-definer [visible]="facade.filterDefinitionVisible()" [fields]="filterFieldDefinition()" (apply)="facade.applyFilters($event)" (visibleChange)="facade.fitlersVisibleChange($event)"></app-filter-definer>
 <p-contextmenu #cm [model]="menuItems" />
 <p-menu #mobileMenu [model]="menuItems" popup="true" appendTo="body" />
+<p-menu #exportMenu [model]="exportMenuItems" popup="true" appendTo="body" />

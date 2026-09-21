@@ -18,6 +18,7 @@ import { CrudListFacade } from '../../facades/crud-list.facade';
 import { BaseEntity } from '../../../core/models/base-entity';
 import { FilterDefinerComponent } from "../filter-definer/filter-definer.component";
 import { FilterFieldDefinition } from '../../../core/models/filter-field-definition';
+import { ExportMenuItem } from '../../../core/models/export-menu-item';
 
 @Component({
   selector: 'app-crud-list',
@@ -63,6 +64,7 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
   first = 0;
   rowsPerPageOptions: number[] = [3, 5, 10, 20, 50];
   menuItems: MenuItem[] = [];
+  exportMenuItems: MenuItem[] = [];
   columnCount: WritableSignal<number> = signal(0);
   isMobile: WritableSignal<boolean> = signal(false);
 
@@ -71,6 +73,7 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
 
   @ViewChild('cm') cm!: Menu;
   @ViewChild('mobileMenu') mobileMenu!: Menu;
+  @ViewChild('exportMenu') exportMenu!: Menu;
 
   private mobileMediaQuery?: MediaQueryList;
   private onMediaChange = (event: MediaQueryListEvent): void => {
@@ -80,6 +83,7 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
   ngOnInit(): void {
     this.columnCount.set(this.cols.length + (this.enableSelection() ? 1 : 0));
     this.setupMediaQuery();
+    this.buildExportMenuItems();
 
     if (this.lazyLoadEnabled()) {
       this.onLazyLoad({ first: this.first, rows: this.rows });
@@ -155,6 +159,18 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
       disabled: !this.facade.can(item.permission),
       command: () => item.action && item.action(record)
     }));
+  }
+
+  private buildExportMenuItems(): void {
+    this.exportMenuItems = this.facade.exportMenu().map((item: ExportMenuItem) => ({
+      ...item,
+      disabled: !this.facade.can(item.permission),
+      command: item.command ?? (() => this.facade.export(item.format, item.extension))
+    }));
+  }
+
+  onExportMenuClick(event: Event): void {
+    this.exportMenu.toggle(event);
   }
 
   onLazyLoad(event: TableLazyLoadEvent): void {

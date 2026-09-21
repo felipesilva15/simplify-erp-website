@@ -1,6 +1,6 @@
 import { CrudPermissionDefinition } from './../../core/models/crud-permission-definition';
 import { signal, inject, WritableSignal } from '@angular/core';
-import { finalize } from 'rxjs';
+import { finalize, Observable } from 'rxjs';
 import { CrudService } from '../../core/contracts/crud-service';
 import { PermissionService } from '../../core/auth/services/permission-service';
 import { ConfirmDialogService } from '../services/confirm-dialog-service';
@@ -9,6 +9,15 @@ import { BaseEntity } from '../../core/models/base-entity';
 import { ListRequestParams } from '../../core/models/list-request-params';
 import { RequestFiltersType } from '../../core/types/request-filters-type';
 import { ApiMetaOption } from '../../core/enums/api-meta-option';
+import { ExportableService } from '../../core/contracts/exportable-service';
+import { ExportExtension } from '../../core/enums/export-extension';
+import { ExportFormat } from '../../core/enums/export-format';
+import { ExportMenuItem } from '../../core/models/export-menu-item';
+import { ExportRequestParams } from '../../core/models/export-request-params';
+
+export interface CrudListFacadeConfig {
+    exportMenu?: ExportMenuItem[];
+}
 
 export class CrudListFacade<T extends BaseEntity> {
     private permissionService: PermissionService = inject(PermissionService);
@@ -21,6 +30,7 @@ export class CrudListFacade<T extends BaseEntity> {
     private _filterDefinitionVisible: WritableSignal<boolean> = signal<boolean>(false);
     private _requestParams: WritableSignal<ListRequestParams | undefined> = signal<ListRequestParams | undefined>(undefined);
     private _totalRecords: WritableSignal<number> = signal<number>(0);
+    private _exportMenu: WritableSignal<ExportMenuItem[]> = signal<ExportMenuItem[]>([]);
 
     response = this._response.asReadonly();
     data = this._data.asReadonly();
@@ -29,11 +39,15 @@ export class CrudListFacade<T extends BaseEntity> {
     filterDefinitionVisible = this._filterDefinitionVisible.asReadonly();
     requestParams = this._requestParams.asReadonly();
     totalRecords = this._totalRecords.asReadonly();
+    exportMenu = this._exportMenu.asReadonly();
 
     constructor(
         private service: CrudService<T>,
-        private crudPermissionDefinition: CrudPermissionDefinition
-    ) {}
+        private crudPermissionDefinition: CrudPermissionDefinition,
+        private config: CrudListFacadeConfig = {}
+    ) {
+        this._exportMenu.set(config.exportMenu ?? []);
+    }
 
     load(): void {
         this._loading.set(true);
@@ -139,5 +153,48 @@ export class CrudListFacade<T extends BaseEntity> {
 
     canView(): boolean { 
         return this.can(this.crudPermissionDefinition.view);
+    }
+
+    export(format: ExportFormat, extension: ExportExtension): void {
+        const exportable = this.service as Partial<ExportableService>;
+        const exportFn = exportable.export?.bind(exportable);
+
+        if (typeof exportFn !== 'function') {
+            this._error.set('Exportação não disponível para este recurso.');
+            return;
+        }
+
+        this.exportCustom(format, extension, params => exportFn(params));
+    }
+
+    exportCustom(format: ExportFormat, extension: ExportExtension, handler: (params: ExportRequestParams) => Observable<Blob>): void {
+        const params: ExportRequestParams = {
+            ...(this._requestParams() ?? {}),
+            format,
+            extension,
+        };
+
+        handler(params).subscribe({
+            next: (blob: Blob) => this.downloadBlob(blob, extension),
+            error: () => this._error.set('Erro ao exportar dados.')
+        });
+    }
+
+    private downloadBlob(blob: Blob, extension: ExportExtension): void {
+        if (typeof document === 'undefined') {
+            return;
+        }
+
+        const timestamp = new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-');
+        const fileName = `export_${timestamp}.${extension}`;
+        const objectUrl = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(objectUrl);
     }
 }

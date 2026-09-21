@@ -11,6 +11,10 @@ import { ApiMetaOption } from '../../core/enums/api-meta-option';
 import { ApiResponse } from '../../core/models/api-response';
 import { FilterOperator } from '../../core/enums/filter-operator';
 import { RequestFiltersType } from '../../core/types/request-filters-type';
+import { ExportMenuItem } from '../../core/models/export-menu-item';
+import { ExportExtension } from '../../core/enums/export-extension';
+import { ExportFormat } from '../../core/enums/export-format';
+import { ExportableService } from '../../core/contracts/exportable-service';
 
 interface TestEntity extends BaseEntity {
   name: string;
@@ -71,6 +75,23 @@ describe('CrudListFacade', () => {
     expect(facade.requestParams()).toBeUndefined();
     expect(facade.totalRecords()).toBe(0);
     expect(facade.response()).toBeNull();
+    expect(facade.exportMenu()).toEqual([]);
+  });
+
+  it('should initialize exportMenu from config', () => {
+    const exportMenu: ExportMenuItem[] = [
+      {
+        label: 'Excel completo',
+        extension: ExportExtension.Xlsx,
+        format: ExportFormat.Completo,
+      },
+    ];
+
+    const configuredFacade = TestBed.runInInjectionContext(() => {
+      return new CrudListFacade<TestEntity>(mockCrudService, permissionDef, { exportMenu });
+    });
+
+    expect(configuredFacade.exportMenu()).toEqual(exportMenu);
   });
 
   describe('load', () => {
@@ -206,6 +227,138 @@ describe('CrudListFacade', () => {
         per_page: 20,
         sorts: 'name:asc',
       });
+    });
+  });
+
+  describe('export', () => {
+    it('should set error when service does not implement ExportableService', () => {
+      facade.export(ExportFormat.Completo, ExportExtension.Xlsx);
+
+      expect(facade.error()).toBe('Exportação não disponível para este recurso.');
+    });
+
+    it('should call service export with current request params and trigger download', () => {
+      const exportSpy = vi.fn().mockReturnValue(of(new Blob(['data'])));
+      const exportableService = {
+        ...mockCrudService,
+        list: vi.fn().mockReturnValue(of({ success: true, message: 'ok', data: [] } as ApiResponse<TestEntity[]>)),
+        export: exportSpy,
+      } as unknown as Mocked<ExportableService & CrudService<TestEntity>>;
+
+      const exportableFacade = TestBed.runInInjectionContext(() => {
+        return new CrudListFacade<TestEntity>(exportableService, permissionDef);
+      });
+
+      exportableFacade.applyLazyLoad(2, 20, 'name:asc');
+
+      const originalCreateObjectURL = URL.createObjectURL;
+      const originalRevokeObjectURL = URL.revokeObjectURL;
+      const createObjectUrlSpy = vi.fn().mockReturnValue('blob:mock');
+      const revokeObjectUrlSpy = vi.fn();
+      const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+      URL.createObjectURL = createObjectUrlSpy as typeof URL.createObjectURL;
+      URL.revokeObjectURL = revokeObjectUrlSpy as typeof URL.revokeObjectURL;
+
+      try {
+        exportableFacade.export(ExportFormat.Completo, ExportExtension.Xlsx);
+
+        expect(exportSpy).toHaveBeenCalledWith({
+          page: 2,
+          per_page: 20,
+          sorts: 'name:asc',
+          format: ExportFormat.Completo,
+          extension: ExportExtension.Xlsx,
+        });
+        expect(createObjectUrlSpy).toHaveBeenCalled();
+        expect(clickSpy).toHaveBeenCalled();
+        expect(revokeObjectUrlSpy).toHaveBeenCalled();
+      } finally {
+        URL.createObjectURL = originalCreateObjectURL;
+        URL.revokeObjectURL = originalRevokeObjectURL;
+        clickSpy.mockRestore();
+      }
+    });
+
+    it('should call the default service export preserving the service as this context', () => {
+      const exportableService = {
+        ...mockCrudService,
+        list: vi.fn().mockReturnValue(of({ success: true, message: 'ok', data: [] } as ApiResponse<TestEntity[]>)),
+        export: vi.fn(function (this: unknown) {
+          expect(this).toBe(exportableService);
+          return of(new Blob(['data']));
+        }),
+      } as unknown as Mocked<ExportableService & CrudService<TestEntity>>;
+
+      const exportableFacade = TestBed.runInInjectionContext(() => {
+        return new CrudListFacade<TestEntity>(exportableService, permissionDef);
+      });
+
+      exportableFacade.export(ExportFormat.Completo, ExportExtension.Xlsx);
+    });
+
+    it('should set error when export fails', () => {
+      const exportableService = {
+        ...mockCrudService,
+        export: vi.fn().mockReturnValue(throwError(() => new Error('API Error'))),
+      } as unknown as Mocked<ExportableService & CrudService<TestEntity>>;
+
+      const exportableFacade = TestBed.runInInjectionContext(() => {
+        return new CrudListFacade<TestEntity>(exportableService, permissionDef);
+      });
+
+      exportableFacade.export(ExportFormat.Resumido, ExportExtension.Csv);
+
+      expect(exportableFacade.error()).toBe('Erro ao exportar dados.');
+    });
+
+    it('should call the custom export handler with current request params and trigger download', () => {
+      const handler = vi.fn().mockReturnValue(of(new Blob(['data'])));
+      const customFacade = TestBed.runInInjectionContext(() => {
+        return new CrudListFacade<TestEntity>(mockCrudService, permissionDef);
+      });
+
+      mockCrudService.list.mockReturnValue(of({ success: true, message: 'ok', data: [] } as ApiResponse<TestEntity[]>));
+      customFacade.applyLazyLoad(2, 20, 'name:asc');
+
+      const originalCreateObjectURL = URL.createObjectURL;
+      const originalRevokeObjectURL = URL.revokeObjectURL;
+      const createObjectUrlSpy = vi.fn().mockReturnValue('blob:mock');
+      const revokeObjectUrlSpy = vi.fn();
+      const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+      URL.createObjectURL = createObjectUrlSpy as typeof URL.createObjectURL;
+      URL.revokeObjectURL = revokeObjectUrlSpy as typeof URL.revokeObjectURL;
+
+      try {
+        customFacade.exportCustom(ExportFormat.Completo, ExportExtension.Xlsx, handler);
+
+        expect(handler).toHaveBeenCalledWith({
+          page: 2,
+          per_page: 20,
+          sorts: 'name:asc',
+          format: ExportFormat.Completo,
+          extension: ExportExtension.Xlsx,
+        });
+        expect(createObjectUrlSpy).toHaveBeenCalled();
+        expect(clickSpy).toHaveBeenCalled();
+        expect(revokeObjectUrlSpy).toHaveBeenCalled();
+      } finally {
+        URL.createObjectURL = originalCreateObjectURL;
+        URL.revokeObjectURL = originalRevokeObjectURL;
+        clickSpy.mockRestore();
+      }
+    });
+
+    it('should set error when custom export handler fails', () => {
+      const handler = vi.fn().mockReturnValue(throwError(() => new Error('API Error')));
+      const customFacade = TestBed.runInInjectionContext(() => {
+        return new CrudListFacade<TestEntity>(mockCrudService, permissionDef);
+      });
+
+      customFacade.exportCustom(ExportFormat.Completo, ExportExtension.Csv, handler);
+
+      expect(customFacade.error()).toBe('Erro ao exportar dados.');
     });
   });
 

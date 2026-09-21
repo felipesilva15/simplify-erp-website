@@ -6,6 +6,9 @@ import { CrudListFacade } from '../../facades/crud-list.facade';
 import { TableColumn } from '../../../core/models/table-column';
 import { ColumnType } from '../../../core/enums/column-type';
 import { BaseEntity } from '../../../core/models/base-entity';
+import { ExportExtension } from '../../../core/enums/export-extension';
+import { ExportFormat } from '../../../core/enums/export-format';
+import { provideNgxMask } from 'ngx-mask';
 
 interface TestEntity extends BaseEntity {
   name: string;
@@ -20,6 +23,7 @@ function createMockFacade() {
     loading: vi.fn().mockReturnValue(false),
     filterDefinitionVisible: vi.fn().mockReturnValue(false),
     requestParams: vi.fn().mockReturnValue(undefined),
+    exportMenu: vi.fn().mockReturnValue([]),
     canCreate: vi.fn().mockReturnValue(true),
     load: vi.fn(),
     openFilters: vi.fn(),
@@ -27,6 +31,7 @@ function createMockFacade() {
     fitlersVisibleChange: vi.fn(),
     can: vi.fn().mockReturnValue(true),
     applyLazyLoad: vi.fn(),
+    export: vi.fn(),
   };
 }
 
@@ -68,6 +73,7 @@ describe('CrudListComponent', () => {
             snapshot: { paramMap: { get: vi.fn() } },
           },
         },
+        provideNgxMask(),
       ],
     }).compileComponents();
 
@@ -319,6 +325,143 @@ describe('CrudListComponent', () => {
       expect(component.menuItems.length).toBe(2);
       expect(component.menuItems[0].disabled).toBe(false);
       expect(component.menuItems[1].disabled).toBe(true);
+    });
+  });
+
+  describe('Export menu', () => {
+    it('should build export menu items with commands calling facade.export', () => {
+      facade.exportMenu.mockReturnValue([
+        {
+          label: 'Excel completo',
+          icon: 'pi pi-file-excel',
+          extension: ExportExtension.Xlsx,
+          format: ExportFormat.Completo,
+        },
+        {
+          label: 'CSV resumido',
+          icon: 'pi pi-file',
+          extension: ExportExtension.Csv,
+          format: ExportFormat.Resumido,
+          permission: 'partners.export',
+        },
+      ]);
+      fixture.detectChanges();
+
+      expect(component.exportMenuItems.length).toBe(2);
+
+      component.exportMenuItems[0].command!({} as any);
+      expect(facade.export).toHaveBeenCalledWith(ExportFormat.Completo, ExportExtension.Xlsx);
+
+      component.exportMenuItems[1].command!({} as any);
+      expect(facade.export).toHaveBeenCalledWith(ExportFormat.Resumido, ExportExtension.Csv);
+    });
+
+    it('should execute a custom command defined in the menu item instead of the default facade.export', () => {
+      const customCommand = vi.fn();
+      facade.exportMenu.mockReturnValue([
+        {
+          label: 'Exportação customizada',
+          icon: 'pi pi-file',
+          extension: ExportExtension.Csv,
+          format: ExportFormat.Resumido,
+          permission: 'partners.export',
+          command: customCommand,
+        },
+      ]);
+      fixture.detectChanges();
+
+      expect(component.exportMenuItems.length).toBe(1);
+      expect(component.exportMenuItems[0].disabled).toBe(false);
+
+      component.exportMenuItems[0].command!({} as any);
+
+      expect(customCommand).toHaveBeenCalled();
+      expect(facade.export).not.toHaveBeenCalled();
+    });
+
+    it('should disable export menu item when permission is missing', () => {
+      facade.exportMenu.mockReturnValue([
+        {
+          label: 'Exportar',
+          extension: ExportExtension.Xlsx,
+          format: ExportFormat.Completo,
+          permission: 'partners.export',
+        },
+      ]);
+      facade.can.mockReturnValue(false);
+      fixture.detectChanges();
+
+      expect(component.exportMenuItems[0].disabled).toBe(true);
+    });
+
+    it('should render the export button enabled when there are records', () => {
+      facade.exportMenu.mockReturnValue([
+        {
+          label: 'Excel completo',
+          extension: ExportExtension.Xlsx,
+          format: ExportFormat.Completo,
+        },
+      ]);
+      facade.totalRecords.mockReturnValue(10);
+      fixture.detectChanges();
+
+      const exportButton = fixture.nativeElement.querySelector(
+        'p-button[ptooltip="Exportar dados"]'
+      );
+      expect(exportButton).toBeTruthy();
+      expect(facade.loading()).toBe(false);
+    });
+
+    it('should hide the export button when there are no records', () => {
+      facade.exportMenu.mockReturnValue([
+        {
+          label: 'Excel completo',
+          extension: ExportExtension.Xlsx,
+          format: ExportFormat.Completo,
+        },
+      ]);
+      facade.totalRecords.mockReturnValue(0);
+      fixture.detectChanges();
+
+      const exportButton = fixture.nativeElement.querySelector(
+        'p-button[ptooltip="Exportar dados"]'
+      );
+      expect(exportButton).toBeFalsy();
+    });
+
+    it('should disable the export button while the facade is loading', () => {
+      facade.exportMenu.mockReturnValue([
+        {
+          label: 'Excel completo',
+          extension: ExportExtension.Xlsx,
+          format: ExportFormat.Completo,
+        },
+      ]);
+      facade.totalRecords.mockReturnValue(10);
+      facade.loading.mockReturnValue(true);
+      fixture.detectChanges();
+
+      const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector(
+        'p-button[ptooltip="Exportar dados"] button'
+      );
+      expect(buttonElement).toBeTruthy();
+      expect(buttonElement.disabled).toBe(true);
+    });
+
+    it('should toggle the export menu popup on click', () => {
+      facade.exportMenu.mockReturnValue([
+        {
+          label: 'Excel completo',
+          extension: ExportExtension.Xlsx,
+          format: ExportFormat.Completo,
+        },
+      ]);
+      fixture.detectChanges();
+
+      const toggleSpy = vi.spyOn(component.exportMenu, 'toggle');
+      component.onExportMenuClick(new Event('click'));
+
+      expect(toggleSpy).toHaveBeenCalled();
     });
   });
 
