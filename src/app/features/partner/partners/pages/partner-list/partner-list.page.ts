@@ -16,6 +16,24 @@ import { PixTypeLabels, PixTypeOptions } from '../../enums/pix-type';
 import { PersonTypeLabels, PersonTypeOptions } from '../../enums/person-type';
 import { DocumentPipe } from '../../../../../shared/pipes/document-pipe';
 import { PartnerTypeLookupComponent } from '../../../partner-types/components/partner-type-lookup/partner-type-lookup.component';
+import { ExportMenuItem } from '../../../../../core/models/export-menu-item';
+import { ExportExtension } from '../../../../../core/enums/export-extension';
+import { ExportFormat } from '../../../../../core/enums/export-format';
+
+const partnerExportMenu: ExportMenuItem[] = [
+  {
+    label: 'Completo (Excel)',
+    icon: 'pi pi-file-excel',
+    extension: ExportExtension.Xlsx,
+    format: ExportFormat.Completo,
+  },
+  {
+    label: 'Completo (CSV)',
+    icon: 'pi pi-file',
+    extension: ExportExtension.Csv,
+    format: ExportFormat.Completo,
+  }
+];
 
 @Component({
   selector: 'app-partner-list',
@@ -32,6 +50,8 @@ import { PartnerTypeLookupComponent } from '../../../partner-types/components/pa
         update: 'partners.update',
         view: 'partners.view',
         delete: 'partners.delete'
+      }, {
+        exportMenu: partnerExportMenu
       }),
       deps: [
         PartnerService

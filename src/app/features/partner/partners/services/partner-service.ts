@@ -13,11 +13,13 @@ import { ActivityLog } from '../../../../core/models/activity-log';
 import { LookupService } from '../../../../core/contracts/lookup-service';
 import { LogableService } from '../../../../core/contracts/logable-service';
 import { CrudService } from '../../../../core/contracts/crud-service';
+import { ExportableService } from '../../../../core/contracts/exportable-service';
+import { ExportRequestParams } from '../../../../core/models/export-request-params';
 
 @Injectable({
   providedIn: 'root',
 })
-export class PartnerService implements CrudService<Partner>, LookupService, LogableService {
+export class PartnerService implements CrudService<Partner>, LookupService, LogableService, ExportableService {
   private readonly baseUrl: string = environment.baseUrlApi + '/partner/partners';
   
   private http: HttpClient = inject(HttpClient)
@@ -60,5 +62,10 @@ export class PartnerService implements CrudService<Partner>, LookupService, Loga
   activityLogs(id: number, params?: ListRequestParams): Observable<ApiResponse<ActivityLog[]>> {
     const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
     return this.http.get<ApiResponse<ActivityLog[]>>(`${this.baseUrl}/${id}/activity-logs`, { withCredentials: true, params: httpParams });
+  }
+
+  export(params: ExportRequestParams): Observable<Blob> {
+    const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
+    return this.http.get(`${this.baseUrl}/export`, { withCredentials: true, params: httpParams, responseType: 'blob' });
   }
 }
