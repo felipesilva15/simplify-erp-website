@@ -110,7 +110,7 @@ export class PartnerListPage implements AfterViewInit {
       { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },
       { field: 'name', header: 'Nome', sortable: true, type: ColumnType.Text },
       { field: 'trade_name', header: 'Apelido', sortable: true, type: ColumnType.Text },
-      { field: 'partner_type_code', header: 'Tipo de parceiro', sortable: true, type: ColumnType.Text },
+      { field: 'partner_type_name', header: 'Tipo de parceiro', sortable: true, type: ColumnType.Text },
       { field: 'person_type', header: 'Tipo de pessoa', sortable: true, type: ColumnType.Enum, enumOptionLabels: PersonTypeLabels },
       { field: 'document_number', header: 'Documento', sortable: true, type: ColumnType.Text, pipe: new DocumentPipe() },
       { field: 'taxpayer_type', header: 'Contribuinte', sortable: true, type: ColumnType.Enum, enumOptionLabels: TaxpayerTypeLabels },

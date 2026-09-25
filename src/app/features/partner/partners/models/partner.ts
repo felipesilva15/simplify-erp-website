@@ -9,7 +9,8 @@ export interface Partner extends BaseEntity{
     id: number;
     name: string;
     trade_name: string;
-    partner_type_code: string
+    partner_type_code: string;
+    partner_type_name: string;
     person_type: PersonType;
     taxpayer_type: TaxpayerType;
     document_number: string;
