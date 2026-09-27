@@ -40,7 +40,7 @@ describe('DynamicDialogHostComponent', () => {
     const routes: Routes = [
       { path: '', component: RootComponent },
       {
-        path: 'partner/partner-types',
+        path: 'third-party/partner-types',
         component: HostListComponent,
         children: [
           { path: 'new', ...FAKE_DIALOG_ROUTE },
@@ -75,7 +75,7 @@ describe('DynamicDialogHostComponent', () => {
   }
 
   it('should resolve service.open with the route params in config.data', async () => {
-    await open('/partner/partner-types/7/edit');
+    await open('/third-party/partner-types/7/edit');
 
     expect(openMock).toHaveBeenCalledTimes(1);
     const [, config] = openMock.mock.calls[0];
@@ -83,21 +83,21 @@ describe('DynamicDialogHostComponent', () => {
   });
 
   it('should go back to the list after closing from /new', async () => {
-    await open('/partner/partner-types/new');
+    await open('/third-party/partner-types/new');
 
-    expect(router.url).toBe('/partner/partner-types');
+    expect(router.url).toBe('/third-party/partner-types');
   });
 
   it('should go back to the list after closing from /:id', async () => {
-    await open('/partner/partner-types/5');
+    await open('/third-party/partner-types/5');
 
-    expect(router.url).toBe('/partner/partner-types');
+    expect(router.url).toBe('/third-party/partner-types');
   });
 
   it('should go back to the list after closing from /:id/edit (not to /:id)', async () => {
-    await open('/partner/partner-types/5/edit');
+    await open('/third-party/partner-types/5/edit');
 
-    expect(router.url).toBe('/partner/partner-types');
+    expect(router.url).toBe('/third-party/partner-types');
     expect(openMock).toHaveBeenCalledTimes(1);
   });
 
@@ -109,17 +109,17 @@ describe('DynamicDialogHostComponent', () => {
       })
     );
 
-    await router.navigateByUrl('/partner/partner-types/5/edit');
+    await router.navigateByUrl('/third-party/partner-types/5/edit');
     fixture.detectChanges();
 
     // rota abandonada antes do dialog fechar (ex.: location.back / navegação externa)
-    await router.navigateByUrl('/partner/partner-types');
+    await router.navigateByUrl('/third-party/partner-types');
     fixture.detectChanges();
 
     resolveOpen();
     await new Promise((resolve) => setTimeout(resolve, 0));
     fixture.detectChanges();
 
-    expect(router.url).toBe('/partner/partner-types');
+    expect(router.url).toBe('/third-party/partner-types');
   });
 });

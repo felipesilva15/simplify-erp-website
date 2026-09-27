@@ -46,11 +46,11 @@ export class PartnerTypeListPage implements OnInit {
   private dialogRefreshService: DialogRefreshService = inject(DialogRefreshService);
   public facade: CrudListFacade<PartnerType> = inject(CrudListFacade<PartnerType>);
 
-  title: WritableSignal<string> = signal<string>('Listar perfis')
+  title: WritableSignal<string> = signal<string>('Listar tipos de parceiro')
   breadcrumbItems: MenuItem[] = [
-    { label: 'Parceiros' },
+    { label: 'Terceiros' },
     { label: 'Tipos de parceiro' },
-    { label: 'Listar', routerLink: '/partner/partnerTypes' }
+    { label: 'Listar', routerLink: '/third-party/partner-types' }
   ];
   cols: TableColumn<PartnerType>[] = [
     { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },

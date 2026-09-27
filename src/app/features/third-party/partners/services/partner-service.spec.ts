@@ -24,13 +24,14 @@ describe('PartnerService', () => {
   let httpMock: HttpTestingController;
   let queryBuilder: { buildHttpParams: ReturnType<typeof vi.fn> };
 
-  const baseUrl = `${environment.baseUrlApi}/partner/partners`;
+  const baseUrl = `${environment.baseUrlApi}/third-party/partners`;
 
   const partner: Partner = {
     id: 1,
     name: 'Felipe Silva',
     trade_name: 'Felipe MEI',
     partner_type_code: 'C',
+    partner_type_name: 'Cliente',
     person_type: PersonType.Person,
     taxpayer_type: TaxpayerType.Taxpayer,
     document_number: '12345678901',

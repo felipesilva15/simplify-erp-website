@@ -16,7 +16,7 @@ import { LookupService } from '../../../../core/contracts/lookup-service';
   providedIn: 'root',
 })
 export class PartnerTypeService implements CrudService<PartnerType>, LookupService {
-  private readonly baseUrl: string = environment.baseUrlApi + '/partner/partner-types';
+  private readonly baseUrl: string = environment.baseUrlApi + '/third-party/partner-types';
   
   private http: HttpClient = inject(HttpClient)
   private queryBuilder: HttpQueryBuilderService = inject(HttpQueryBuilderService)

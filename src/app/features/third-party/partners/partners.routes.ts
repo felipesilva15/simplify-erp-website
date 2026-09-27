@@ -3,7 +3,7 @@ import { PartnerListPage } from './pages/partner-list/partner-list.page';
 import { permissionGuard } from '../../../core/guards/permission-guard';
 import { PartnerFormPage } from './pages/partner-form/partner-form.page';
 
-export const PARTNER_ROUTES: Routes = [
+export const PARTNERS_ROUTES: Routes = [
     {
         path: '',
         data: { permission: 'partners.viewAny' },

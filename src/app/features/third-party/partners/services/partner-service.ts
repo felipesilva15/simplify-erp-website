@@ -20,7 +20,7 @@ import { ExportRequestParams } from '../../../../core/models/export-request-para
   providedIn: 'root',
 })
 export class PartnerService implements CrudService<Partner>, LookupService, LogableService, ExportableService {
-  private readonly baseUrl: string = environment.baseUrlApi + '/partner/partners';
+  private readonly baseUrl: string = environment.baseUrlApi + '/third-party/partners';
   
   private http: HttpClient = inject(HttpClient)
   private queryBuilder: HttpQueryBuilderService = inject(HttpQueryBuilderService)
