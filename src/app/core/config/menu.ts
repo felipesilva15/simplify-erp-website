@@ -11,12 +11,12 @@ export const MENU: AppMenuItem[] = [
     link: '/'
   },
   {
-    label: 'Terceiros',
+    label: 'Terceiro',
     icon: 'pi pi-folder',
     active: false,
     items: [
       {
-        label: 'Terceiros',
+        label: 'Parceiros',
         icon: 'pi pi-user',
         active: false,
         link: '/third-party/partners',

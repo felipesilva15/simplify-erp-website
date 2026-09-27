@@ -140,7 +140,7 @@ export class PartnerFormPage implements OnInit {
   mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
   
   modeLabel: Signal<string> = computed(() => FormModeLabel[this.mode()]);
-  title: Signal<string> = computed(() => this.modeLabel() + ' terceiro');
+  title: Signal<string> = computed(() => this.modeLabel() + ' parceiro');
   activeBreadcrumbItemLabel: Signal<string> = computed(() => this.modeLabel() + (this.id() ? ` (ID: ${this.id()})`: ''))
 
   constructor() {
@@ -148,8 +148,8 @@ export class PartnerFormPage implements OnInit {
     this.mode.set(this.routeUtilsService.getFormModeFromCurrentUrl());
 
     this.breadcrumbItems = [
-      { label: 'Terceiros' },
-      { label: 'Terceiros' },
+      { label: 'Terceiro' },
+      { label: 'Parceiros' },
       { label: 'Listar', routerLink: '/third-party/partners' },
       { label: this.activeBreadcrumbItemLabel(), routerLink: this.router.url }
     ];

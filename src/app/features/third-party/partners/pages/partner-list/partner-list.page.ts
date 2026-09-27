@@ -66,10 +66,10 @@ export class PartnerListPage implements AfterViewInit {
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   public facade: CrudListFacade<Partner> = inject(CrudListFacade<Partner>);
 
-  title: WritableSignal<string> = signal<string>('Listar terceiros')
+  title: WritableSignal<string> = signal<string>('Listar parceiros')
   breadcrumbItems: MenuItem[] = [
-    { label: 'Terceiros' },
-    { label: 'Terceiros' },
+    { label: 'Terceiro' },
+    { label: 'Parceiros' },
     { label: 'Listar', routerLink: '/third-party/partners' }
   ];
   cols: TableColumn<Partner>[] = [];

@@ -48,7 +48,7 @@ export class PartnerTypeListPage implements OnInit {
 
   title: WritableSignal<string> = signal<string>('Listar tipos de parceiro')
   breadcrumbItems: MenuItem[] = [
-    { label: 'Terceiros' },
+    { label: 'Terceiro' },
     { label: 'Tipos de parceiro' },
     { label: 'Listar', routerLink: '/third-party/partner-types' }
   ];
