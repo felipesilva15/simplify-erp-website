@@ -14,6 +14,24 @@ import { TableMenuItem } from '../../../../../core/models/table-menu-item';
 import { TagModule } from 'primeng/tag';
 import { PhonePipe } from '../../../../../shared/pipes/phone-pipe';
 import { RoleLookupComponent } from '../../../../../features/security/roles/components/role-lookup/role-lookup.component';
+import { ExportExtension } from '../../../../../core/enums/export-extension';
+import { ExportFormat } from '../../../../../core/enums/export-format';
+import { ExportMenuItem } from '../../../../../core/models/export-menu-item';
+
+const exportMenu: ExportMenuItem[] = [
+  {
+    label: 'Completo (Excel)',
+    icon: 'pi pi-file-excel',
+    extension: ExportExtension.Xlsx,
+    format: ExportFormat.Completo,
+  },
+  {
+    label: 'Completo (CSV)',
+    icon: 'pi pi-file',
+    extension: ExportExtension.Csv,
+    format: ExportFormat.Completo,
+  }
+];
 
 @Component({
   selector: 'app-user-list',
@@ -31,6 +49,8 @@ import { RoleLookupComponent } from '../../../../../features/security/roles/comp
         update: 'users.update',
         view: 'users.view',
         delete: 'users.delete'
+      }, {
+        exportMenu: exportMenu
       }),
       deps: [
         UserService
