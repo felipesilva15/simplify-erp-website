@@ -13,6 +13,24 @@ import { AppTemplate } from "../../../../../shared/directives/app-template";
 import { FilterFieldDefinition } from '../../../../../core/models/filter-field-definition';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DialogRefreshService } from '../../../../../shared/services/dialog-refresh.service';
+import { ExportMenuItem } from '../../../../../core/models/export-menu-item';
+import { ExportExtension } from '../../../../../core/enums/export-extension';
+import { ExportFormat } from '../../../../../core/enums/export-format';
+
+const exportMenu: ExportMenuItem[] = [
+  {
+    label: 'Completo (Excel)',
+    icon: 'pi pi-file-excel',
+    extension: ExportExtension.Xlsx,
+    format: ExportFormat.Completo,
+  },
+  {
+    label: 'Completo (CSV)',
+    icon: 'pi pi-file',
+    extension: ExportExtension.Csv,
+    format: ExportFormat.Completo,
+  }
+];
 
 @Component({
   selector: 'app-role-list',
@@ -31,6 +49,8 @@ import { DialogRefreshService } from '../../../../../shared/services/dialog-refr
         update: 'roles.update',
         view: 'roles.view',
         delete: 'roles.delete'
+      }, {
+        exportMenu: exportMenu
       }),
       deps: [
         RoleService
