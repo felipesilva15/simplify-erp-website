@@ -11,7 +11,7 @@
     </div>
     <div class="flex flex-row flex-wrap gap-2">
         <p-button pRipple label="Filtros" [icon]="facade.requestParams()?.filters ? 'pi pi-filter-fill' : 'pi pi-filter'" [text]="true" severity="secondary" [raised]="true" (onClick)="facade.openFilters()" [disabled]="facade.loading()" />
-        <p-button pRipple label="Incluir" icon="pi pi-plus" [routerLink]="formRoute()" [disabled]="!facade.canCreate()" [pTooltip]="facade.canCreate() ? '' : 'Você não possui permissão para incluir.'" tooltipPosition="left" />
+        <p-button pRipple label="Incluir" icon="pi pi-plus" [routerLink]="formRoute()" [disabled]="!facade.canCreate() || !formRoute()" [pTooltip]="!formRoute() ? 'Inclusão não configurada para este recurso.' : facade.canCreate() ? '' : 'Você não possui permissão para incluir.'" tooltipPosition="left" />
     </div>
 </div>
 
