@@ -21,6 +21,10 @@ export const routes: Routes = [
                 path: 'third-party',
                 loadChildren: () => import('./features/third-party/third-party.routes').then(r => r.THIRD_PARTY_ROUTES) 
             },
+            {
+                path: 'hr',
+                loadChildren: () => import('./features/hr/hr.routes').then(r => r.HR_ROUTES) 
+            },
         ],
     },
     {
