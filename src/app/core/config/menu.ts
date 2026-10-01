@@ -11,6 +11,34 @@ export const MENU: AppMenuItem[] = [
     link: '/'
   },
   {
+    label: 'Geografia',
+    icon: 'pi pi-map-marker',
+    active: false,
+    items: [
+      {
+        label: 'Países',
+        icon: 'pi pi-flag',
+        active: false,
+        link: '/geography/countries',
+        permission: 'countries.viewAny'
+      },
+      {
+        label: 'Estados',
+        icon: 'pi pi-map',
+        active: false,
+        link: '/geography/states',
+        permission: 'states.viewAny'
+      },
+      {
+        label: 'Cidades',
+        icon: 'pi pi-building',
+        active: false,
+        link: '/geography/cities',
+        permission: 'cities.viewAny'
+      }
+    ]
+  },
+  {
     label: 'Terceiro',
     icon: 'pi pi-folder',
     active: false,
@@ -42,6 +70,20 @@ export const MENU: AppMenuItem[] = [
         active: false,
         link: '/catalog/products',
         permission: 'products.viewAny'
+      }
+    ]
+  },
+  {
+    label: 'RH',
+    icon: 'pi pi-id-card',
+    active: false,
+    items: [
+      {
+        label: 'Profissões',
+        icon: 'pi pi-briefcase',
+        active: false,
+        link: '/hr/professions',
+        permission: 'professions.viewAny'
       }
     ]
   },
