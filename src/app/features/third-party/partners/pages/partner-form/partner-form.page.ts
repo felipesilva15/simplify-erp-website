@@ -15,11 +15,9 @@ import { LookupItem } from '../../../../../core/models/lookup-item';
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
 import { FormControlErrorsComponent } from '../../../../../shared/components/form-control-errors/form-control-errors.component';
 import { AppTemplate } from '../../../../../shared/directives/app-template';
-import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { FormPageUi } from '../../../../../shared/ui/form-page/form-page.ui';
 import { CollapsibleSectionComponent } from '../../../../../shared/components/collapsible-section/collapsible-section.component';
 import { PartnerTypeLookupComponent } from '../../../partner-types/components/partner-type-lookup/partner-type-lookup.component';
-import { Partner } from '../../models/partner';
 import { PartnerService } from '../../services/partner-service';
 import { PersonType, PersonTypeOptions } from '../../enums/person-type';
 import { TaxpayerType, TaxpayerTypeOptions } from '../../enums/taxpayer-type';
@@ -28,6 +26,11 @@ import { MaritalStatus, MaritalStatusOptions } from '../../enums/marital-status'
 import { PixType, PixTypeOptions } from '../../enums/pix-type';
 import { NgxMaskDirective } from 'ngx-mask';
 import { InputMaskModule } from 'primeng/inputmask';
+import { ChildEntityListComponent } from '../../../../../shared/components/child-entity-list/child-entity-list.component';
+import { ChildEntityListFacade } from '../../../../../shared/facades/child-entity-list.facade';
+import { PartnerFormFacade } from '../../facades/partner-form.facade';
+import { CONTACTS_LIST_CONFIG } from '../../../contacts/config/contacts-child-list.config';
+import { Contact } from '../../../contacts/models/contact';
 
 interface FormType {
   name: FormControl<string>;
@@ -53,6 +56,7 @@ interface FormType {
   pix_type: FormControl<PixType | null>;
   pix_key: FormControl<string>;
   notes: FormControl<string>;
+  contacts: FormControl<Contact[] | null>;
 }
 
 @Component({
@@ -74,13 +78,18 @@ interface FormType {
     CollapsibleSectionComponent,
     PartnerTypeLookupComponent,
     NgxMaskDirective,
-    InputMaskModule
+    InputMaskModule,
+    ChildEntityListComponent,
 ],
   providers: [
     {
-      provide: GenericCrudFormFacade<Partner>,
-      useFactory: (service: PartnerService) =>
-        new GenericCrudFormFacade<Partner>(service, {
+      provide: ChildEntityListFacade,
+      useFactory: () => new ChildEntityListFacade<Contact>(CONTACTS_LIST_CONFIG),
+    },
+    {
+      provide: PartnerFormFacade,
+      useFactory: (service: PartnerService, contactsFacade: ChildEntityListFacade<Contact>) =>
+        new PartnerFormFacade(service, contactsFacade, {
           successMessage: 'Registro salvo!',
           permission: {
             create: 'partners.create',
@@ -88,7 +97,7 @@ interface FormType {
             view: 'partners.view'
           },
         }),
-      deps: [PartnerService]
+      deps: [PartnerService, ChildEntityListFacade]
     }
   ],
   templateUrl: './partner-form.page.html',
@@ -98,7 +107,9 @@ export class PartnerFormPage implements OnInit {
   private fb: FormBuilder = inject(FormBuilder)
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
-  public facade: GenericCrudFormFacade<Partner> = inject(GenericCrudFormFacade<Partner>);
+  public facade: PartnerFormFacade = inject(PartnerFormFacade);
+  /** Configuração da lista de contatos, entregue ao componente de lista. */
+  contactsConfig = CONTACTS_LIST_CONFIG;
   private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
 
   personType = PersonType;
@@ -134,6 +145,7 @@ export class PartnerFormPage implements OnInit {
     pix_type: new FormControl<PixType | null>(null),
     pix_key: ['', []],
     notes: ['', []],
+    contacts: new FormControl<Contact[]>([]),
   });
   
   id: WritableSignal<number> = signal<number>(0);

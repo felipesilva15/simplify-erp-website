@@ -1,0 +1,36 @@
+<form class="flex flex-column gap-4 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="submit()">
+  <p-fluid class="grid">
+    <div class="col-12 md:col-6">
+      <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
+      <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+      <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
+    </div>
+    <div class="col-12 md:col-6">
+      <label htmlFor="position">Cargo</label>
+      <input id="position" formControlName="position" pInputText />
+      <app-form-control-errors [control]="form.get('position')"></app-form-control-errors>
+    </div>
+    <div class="col-12 md:col-6">
+      <label htmlFor="phone">Telefone<span class="text-red-500 font-bold">*</span></label>
+      <input id="phone" formControlName="phone" pInputText required [invalid]="isInvalid('phone')" />
+      <app-form-control-errors [control]="form.get('phone')"></app-form-control-errors>
+    </div>
+    <div class="col-12 md:col-6">
+      <label htmlFor="email">E-mail</label>
+      <input id="email" formControlName="email" pInputText type="email" [invalid]="isInvalid('email')" />
+      <app-form-control-errors [control]="form.get('email')"></app-form-control-errors>
+    </div>
+    <div class="col-12">
+      <div class="flex align-items-center gap-3">
+        <p-toggleswitch formControlName="is_primary" inputId="is_primary" />
+        <label htmlFor="is_primary">Contato principal</label>
+      </div>
+      <app-form-control-errors [control]="form.get('is_primary')"></app-form-control-errors>
+    </div>
+    <div class="col-12">
+      <label htmlFor="notes">Observações</label>
+      <textarea id="notes" formControlName="notes" pTextarea rows="3" autoResize="true"></textarea>
+      <app-form-control-errors [control]="form.get('notes')"></app-form-control-errors>
+    </div>
+  </p-fluid>
+</form>

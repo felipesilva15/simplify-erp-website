@@ -1,4 +1,5 @@
 import { BaseEntity } from "../../../../core/models/base-entity";
+import { Contact } from "../../contacts/models/contact";
 import { Gender } from "../enums/gender";
 import { MaritalStatus } from "../enums/marital-status";
 import { PersonType } from "../enums/person-type";
@@ -31,6 +32,7 @@ export interface Partner extends BaseEntity{
     pix_type?: PixType;
     pix_key?: string;
     notes?: string;
+    contacts?: Contact[];
     created_at?: Date;
     updated_at?: Date;
     deleted_at?: Date;

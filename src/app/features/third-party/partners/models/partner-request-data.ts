@@ -1,3 +1,4 @@
+import { Contact } from "../../contacts/models/contact";
 import { Gender } from "../enums/gender";
 import { MaritalStatus } from "../enums/marital-status";
 import { PersonType } from "../enums/person-type";
@@ -28,4 +29,5 @@ export interface PartnerRequestData {
     pix_type?: PixType;
     pix_key?: string;
     notes?: string;
+    contacts?: Contact[];
 }

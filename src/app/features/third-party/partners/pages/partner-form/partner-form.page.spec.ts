@@ -7,6 +7,7 @@ import { PartnerService } from '../../services/partner-service';
 import { AuthService } from '../../../../../core/auth/services/auth-service';
 import { provideNgxMask } from 'ngx-mask';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 import { LookupItem } from '../../../../../core/models/lookup-item';
 
 describe('PartnerFormPage', () => {
@@ -48,6 +49,7 @@ describe('PartnerFormPage', () => {
       providers: [
         provideRouter([{ path: 'new', component: PartnerFormPage }]),
         provideNgxMask(),
+        DialogService,
         { provide: ActivatedRoute, useValue: activatedRouteStub },
         { provide: PartnerService, useValue: mockPartnerService },
         { provide: AuthService, useValue: { user: { permissions: ['*'] } } },

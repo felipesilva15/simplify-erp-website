@@ -67,7 +67,7 @@ Abra `http://localhost:4200/`. O app recarrega automaticamente a cada alteraçã
 
 ## Testes
 
-Testes unitários ficam junto ao código-fonte em arquivos `*.spec.ts` (65 arquivos hoje). Para executar:
+Testes unitários ficam junto ao código-fonte em arquivos `*.spec.ts` (68 arquivos hoje). Para executar:
 
 ```bash
 npm test
@@ -81,6 +81,8 @@ npm run build
 ```
 
 Compila a aplicação para `dist/`. A configuração de produção aplica `outputHashing` e budgets (initial: warning 500kB / erro 1MB; anyComponentStyle: 4kB/8kB) definidos em `angular.json`.
+
+> **Atenção**: hoje `npm run build` falha em `bundle initial exceeded maximum budget` (1.28 MB > 1 MB). É uma pendência pré-existente do projeto (o bundle inicial é dominado por PrimeNG e estilos globais; as rotas são lazy), não um problema de uma feature específica. Detalhes em [`docs/spec.md` — 18.1](docs/spec.md#181-padrões-verificados-no-projeto-fatos).
 
 ## Lint
 
@@ -101,24 +103,28 @@ src/
 │   ├── app.routes.ts           # rotas raiz (auth, main layout, error, wildcard → 404)
 │   ├── core/                   # camada transversal: auth, guards, contracts, models, services, config
 │   │   ├── config/             # tema, menu, traduções PrimeNG, aliases de máscara
-│   │   ├── contracts/          # interfaces de serviço (Crud, Lookup, Logable, Exportable)
+│   │   ├── contracts/          # interfaces de serviço (Crud, Lookup, Logable, Exportable, ChildEntityForm, ChildItemEditor)
 │   │   ├── guards/             # appStartup, permission, pendingChanges
 │   │   ├── interceptors/       # tratamento global de erros HTTP
 │   │   ├── auth/               # AuthService e PermissionService
-│   │   └── services/           # startup, loading, query builder, menu, datas, árvore
+│   │   └── services/           # startup, loading, query builder, menu, datas, árvore, breakpoint
 │   ├── features/               # módulos de funcionalidade (rotas lazy)
 │   │   ├── security/           # auth (login), users, roles
-│   │   ├── third-party/        # partners, partner-types
+│   │   ├── third-party/        # partners, partner-types, contacts (lista filha 1:N)
 │   │   ├── configuration/      # module-service (consultado para permissões)
 │   │   └── error/              # páginas de erro (403, 404, 500, 502, 503)
 │   ├── layouts/                # shell aplicativo (main layout, navbar, sidebar) e error layout
-│   └── shared/                 # componentes reutilizáveis (crud-list, lookup, breadcrumb),
-│                               # facades (crud-list/form), ui wrappers, pipes, validators
+│   └── shared/                 # componentes reutilizáveis (crud-list, lookup, child-entity-list, breadcrumb),
+│                               # facades (crud-list/form, child-entity-list), ui wrappers, pipes, validators
 ├── assets/styles/              # estilos globais (variables, config, custom, global)
 └── environments/               # environment.ts / environment.development.ts
 ```
 
 Detalhes da arquitetura, contratos de API e fluxos estão em [`docs/spec.md`](docs/spec.md).
+
+### Padrão de entidades filhas (1:N)
+
+`shared/components/child-entity-list` + `ChildEntityListFacade` resolvem listas filhas editadas em memória e enviadas junto com o formulário pai (referência atual: `contacts` do `Partner`). O formulário do item é um componente `ChildEntityForm<T>` instanciado dinamicamente em um modal, e os erros da API voltam no padrão `arrayKey.indice[.campo]` (ex.: `contacts.2.name`), sendo normalizados pelo facade e exibidos na linha correspondente. A especificação completa está em [`docs/spec.md` — 7.5](docs/spec.md#75-listas-de-itens-filhos-1n--childentitylistfacadet--childentitylistcomponent).
 
 ## Requisito externo
 

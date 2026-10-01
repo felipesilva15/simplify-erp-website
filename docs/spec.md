@@ -98,16 +98,18 @@ Sem cookie válido, `loadUser` resolve com `user = null`; as rotas guardadas por
 | `LogableService` | `activityLogs(id, params?)` | Role, User, Partner |
 | `ExportableService` | `export(params): Observable<Blob>` | Role, User, Partner |
 | `FormPageFacade<T>` | signals `entity/meta/warnings/...` + `loadLogs()` | `CrudFormFacade` (ver 7.x) |
+| `ChildEntityForm<T>` | signals `item`/`errors` + `form: FormGroup` + `submit()`/`cancel()` | `ContactFormComponent` (ver 7.5) |
+| `ChildItemEditor<T>` | rótulos em signals, `activeItem`, `activeErrors`, `commit(value)`, `close()`, `applyActiveErrors(form)` | `ChildEntityListFacade<T>` (ver 7.5) |
 
 `HttpQueryBuilderService` (core/services): serializa `ListRequestParams` em `HttpParams`, aninhando objetos (`filters[x][eq]`) e arrays (`keys[]`).
 
 ## 5. Modelos centrais
 
-- `ApiResponse<T>` (`core/models/api-response.ts`): envelope **obrigatório** de todas as respostas — `{ success, message, data, warnings?, links?, errors?, meta? }`.
+- `ApiResponse<T>` (`core/models/api-response.ts`): envelope **obrigatório** de todas as respostas — `{ success, message, data, warnings?, links?, errors?, meta? }`. `errors` é `Record<string, string[]>` (chave = caminho do campo, valor = lista de mensagens), o que dá suporte às listas de itens filhos indexadas (ver 7.5).
 - `ApiMetaType`: chaves definidas por `ApiMetaOption` — `editable`, `current_page`, `last_page`, `per_page`, `total`.
 - `BaseEntity`: `{ id, created_at?, updated_at? }`.
 - `LookupItem`: `{ key, label, sublabel?, meta? }`; `LookupResult` normaliza `meta` → `{ items, total, page, perPage }`.
-- Modelos de domínio: `User` (com `permissions: string[]`, `roles: Role[]`, `is_admin`), `Role` (com `permissions: RolePermission[]`), `Module`/`ModuleResource`/`ModuleResourcePermission` (árvore de permissões), `Partner` (extenso, ver enums em `features/third-party/partners/enums`), `PartnerType`.
+- Modelos de domínio: `User` (com `permissions: string[]`, `roles: Role[]`, `is_admin`), `Role` (com `permissions: RolePermission[]`), `Module`/`ModuleResource`/`ModuleResourcePermission` (árvore de permissões), `Partner` (extenso, ver enums em `features/third-party/partners/enums`), `PartnerType`, `Contact` (entidade filha 1:N de `Partner`, ver 7.5).
 
 ## 6. Integração com a API
 
@@ -174,6 +176,89 @@ Sem cookie válido, `loadUser` resolve com `user = null`; as rotas guardadas por
 
 `LookupComponent` (shared/components/lookup) implementa `ControlValueAccessor`: autocomplete com debounce (300ms), paginação e hidratação por chaves (`keys`). `LookupFacade` normaliza `ApiResponse<LookupItem[]>` em `LookupResult`. Exemplos de uso real: `RoleLookupComponent` (perfis no usuário e filtro de usuários) e `PartnerTypeLookupComponent` (tipo de parceiro no formulário/filtro de parceiros).
 
+### 7.5 Listas de itens filhos (1:N) — `ChildEntityListFacade<T>` + `ChildEntityListComponent`
+
+Padrão para entidades filhas editadas **em memória** e enviadas junto na submissão do formulário pai (referência real: `contacts` do `Partner`).
+
+#### 7.5.1 Divisão de responsabilidades
+
+| Peça | Papel |
+|---|---|
+| `ChildEntityListFacade<T>` (`shared/facades`) | Estado (itens, chaves de linha, editor ativo, erros), CVA, diffing, normalização/aplicação de erros da API e a conexão com o modal |
+| `ChildEntityListComponent` (`shared/components/child-entity-list`) | Orquestrador: cabeçalho (título + ação de inclusão), escolha do modo de visualização, ponte CVA com `formControlName` |
+| `SummaryTableComponent` | View **read-only** do modo `ReadonlyTableModal`: tabela (desktop) ou cards (mobile), edição por linha, remoção e indicador de erros |
+| `ChildItemDialogComponent` | Shell do modal (`FormDialogUi`): título, corpo e botões **Salvar**/**Voltar** |
+| `ChildFormOutletDirective` | `createComponent()` do formulário do item dentro do shell, resolvido por token (`CHILD_FORM_ITEM`, `CHILD_FORM_ERRORS`, `CHILD_ITEM_EDITOR`) |
+
+As views **nunca** manipulam o array: apenas leem estado e emitem intents. Trocar o modo de visualização, portanto, não exige reescrever nada de estado ou de erro.
+
+#### 7.5.2 Configuração declarativa (`ChildEntityListConfig<T>`)
+
+| Campo | Padrão | Descrição |
+|---|---|---|
+| `arrayKey` | — | Chave do array no payload e nos erros da API (`contacts`) |
+| `viewMode` | — | `ChildEntityViewMode.ReadonlyTableModal` (implementado) ou `InlineTable` (previsto, ver 17) |
+| `itemLabel` / `itemsLabel` | `Item` / `Itens` | Rótulos |
+| `addLabel` / `submitLabel` / `cancelLabel` | `Incluir` / `Salvar` / `Voltar` | Rótulos de ação |
+| `columns` | — | `ChildFieldDefinition[]` (`field: PropertyKey`, `header`, tipo, máscara) exibidas na tabela resumida |
+| `createItem` | — | Item "em branco" para a criação (`id: 0`) |
+| `formComponent` | — | Componente `ChildEntityForm<T>`; **obrigatório** em `ReadonlyTableModal` (o facade lança no constructor se faltar) |
+| `dialogSize` | `md` (840px) | Tamanho do modal de item |
+| `removeConfirmMessage` | — | Quando presente, a remoção pede confirmação |
+| `emptyMessage` | `Nenhum registro encontrado.` | Estado vazio da tabela |
+| `serializeItem` / `hydrateItem` | recursivo | Sobrescrita da conversão item ↔ payload (padrão: ISO dates + `LookupItem → key`) |
+
+> O `config` entregue ao `input` do componente deve ser **a mesma instância** passada ao provider do facade (`{ provide: ChildEntityListFacade, useFactory: () => new ChildEntityListFacade(CONTACTS_LIST_CONFIG) }`), para que modo de visualização e schema de campos venham sempre da mesma fonte.
+
+#### 7.5.3 Chave de linha e diffing
+
+Cada carga (`writeValue`/`hydrate`) reatribui chaves de linha (`nextRowKey++`), e os erros são indexados por **chave**, não por posição — assim remover ou reordenar linhas nunca reaplica o erro no item errado. `value()` recalcula o payload e só chama o `onChange` do CVA quando o snapshot (`JSON.stringify`) realmente mudou, evitando o ciclo de `writeValue` do próprio CVA.
+
+#### 7.5.4 Erros indexados (`applyServerErrors`)
+
+O facade é o **único** lugar que faz o parsing do padrão `arrayKey.indice[.campo]` (`arrayKey = contacts`):
+
+| Chave da API | Efeito |
+|---|---|
+| `contacts.2.name` | campo `name` do item de índice 2 |
+| `contacts.2.address.street` | campo aninhado (o resto do caminho vira a chave do controle) |
+| `contacts.2` | erro do item, sem campo (exibido no badge da linha) |
+
+Chaves fora do padrão (outra lista, índice inexistente, regra nova) vão para `unmappedErrors`, exibidas no banner do pai sem exigir alteração de código. `handlesErrorPath(path)` permite ao facade pai (`PartnerFormFacade`) delegar o que pertence à lista filha antes de aplicar os erros do formulário pai.
+
+Ao abrir o editor de um item com erro, `ChildItemDialogComponent` injeta os erros normalizados no `FormGroup` via `applyActiveErrors` (erro `server`, removido no primeiro `valueChanges` do usuário).
+
+#### 7.5.5 Uso (referência `contacts`)
+
+```ts
+// features/third-party/partners/pages/partner-form/partner-form.page.ts
+providers: [
+  { provide: ChildEntityListFacade, useFactory: () => new ChildEntityListFacade(CONTACTS_LIST_CONFIG) },
+]
+
+// no formulário pai
+this.form = this.fb.group({ ..., contacts: new FormControl<Contact[] | null>(null) });
+```
+
+```html
+<app-child-entity-list formControlName="contacts" [config]="contactsConfig" />
+```
+
+```ts
+// facade pai: roteia contacts.* para o facade da lista antes de aplicar os erros próprios
+override applyServerErrors(response: ApiResponse<unknown>): void {
+  this.childFacade.applyServerErrors(response.errors);
+
+  const ownErrors = Object.fromEntries(
+    Object.entries(response.errors ?? {}).filter(([path]) => !this.childFacade.handlesErrorPath(path)),
+  );
+
+  super.applyServerErrors({ ...response, errors: ownErrors });
+}
+```
+
+O componente de formulário do item (`ContactFormComponent`) é criado dinamicamente dentro do shell: obtém `item`/`errors` por token, carrega o item em edição com `patchValue` (uma única vez, antes da aplicação dos erros), valida, chama `editor.commit(...)` em **Salvar** e `editor.close()` em **Voltar**.
+
 ## 8. Diálogos, drawers e navegação
 
 ### 8.1 Rotas-dialog (`DynamicDialogHostComponent`)
@@ -230,13 +315,14 @@ Sempre para o `AppLoadingService`.
 ## 12. Responsividade
 
 - Sidebar colapsa em telas ≤ 992px; listagens trocam tabela por cards em ≤ 768px (`crud-list.component.ts`).
+- A tabela resumida das listas de itens filhos faz o mesmo em ≤ 768px (`SummaryTableComponent` + `BreakpointService`, media query `max-width: 768px`): os cards empilham os campos e as ações por linha, e a edição continua abrindo o mesmo modal.
 - Diálogos respondem via breakpoints (`95vw` quando a viewport é menor que largura + 5vw).
 - Layout usa CSS utility do PrimeFlex e estilos em `assets/styles/`.
 
 ## 13. Testes e conformidade
 
 - **Runner**: Vitest via `@angular/build:unit-test` (`angular.json` → `vitest.config.ts`), jsdom, coverage v8 (text/json/html), excluindo `*.layout.html` e `*.page.html` do reporte.
-- **Distribuição**: 65 arquivos `*.spec.ts` ao lado do código; principais cobertos: auth, permission, guards, interceptors, serviços de core/features, facades (crud-list/form, lookup), componentes e pipes/validators.
+- **Distribuição**: 68 arquivos `*.spec.ts` ao lado do código; principais cobertos: auth, permission, guards, interceptors, serviços de core/features, facades (crud-list/form, lookup, child-entity-list), componentes e pipes/validators. O `ChildEntityListFacade` é instanciado via `TestBed.runInInjectionContext`/`useFactory` nos specs, porque usa `inject()` em inicializadores de campo.
 - **Lint**: `eslint.config.mjs` — standalone obrigatório (`prefer-standalone`), `prefer-on-push-component-change-detection`, control flow moderno nos templates, acessibilidade, `@typescript-eslint/no-explicit-any: error`, TypeScript estrito; specs com regras relaxadas.
 
 ## 14. Rotas da aplicação (mapa)
@@ -282,6 +368,7 @@ sequenceDiagram
 - Nenhum tokens em `localStorage`/`sessionStorage`.
 - Componentes, serviços e páginas novos seguem as convenções: standalone + `OnPush` + control flow + nomes `*.page / *.dialog / *.drawer / *.ui / *.component`.
 - Datas de API no formato ISO `YYYY-MM-DD`.
+- Listas de itens filhos (1:N) não têm endpoint próprio: são editadas em memória e enviadas no payload do pai; erros voltam no padrão `arrayKey.indice[.campo]` e são normalizados pelo `ChildEntityListFacade`.
 
 ## 17. Pontos não determinados / a confirmar
 
@@ -289,6 +376,9 @@ sequenceDiagram
 - **Catálogo/Produtos e Configurações**: itens de menu sem rotas implementadas.
 - **Backend não documentado**: contratos acima foram mapeados a partir do consumo no frontend; responsabilidades do servidor (regras de hard delete, formato exato de `meta`, tipos de exportação `full/summarized/detailed`) dependem do repo do backend.
 - `UserService.search` lança "Method not implemented" — sem lookup de usuário (consistente com a UI atual).
+- **`contacts` do `Partner`**: o frontend envia `contacts` no corpo de `POST/PUT /third-party/partners`; não há endpoint próprio de contatos (nem rota de listagem). O formato exato do item e o caminho dos erros (`contacts.2.name`) dependem do backend — enquanto não houver contrato publicado, o `ChildEntityListFacade` tolera qualquer chave fora do padrão via `unmappedErrors`.
+- **`ChildEntityViewMode.InlineTable`**: previsto no enum/config, mas sem implementação — o template exibe um aviso e `startEdit` lança erro explícito. A tabela resumida é o único modo funcional.
+- **`DynamicDialogService` com referência global**: `open()` guarda o `ref` em uma única propriedade da instância singleton (`providedIn: 'root'`), portanto dois diálogos aninhados (ex.: item de uma lista filha aberto a partir de um dialog já aberto) podem interferir no fechamento um do outro. Hoje não ocorre na UI atual; corrigir exige referência por chamada (retornar o `DynamicDialogRef` ou uma promise própria por abertura).
 
 ---
 
@@ -298,10 +388,11 @@ Toda mudança no projeto deve entregar o que está descrito abaixo.
 
 ### 18.1 Padrões verificados no projeto (fatos)
 
-- **Testes unitários** ao lado do código, em arquivos `*.spec.ts`, executados via `npm test`/`ng test` (Vitest + jsdom). Source: 65 specs em `src/**`.
+- **Testes unitários** ao lado do código, em arquivos `*.spec.ts`, executados via `npm test`/`ng test` (Vitest + jsdom). Source: 68 specs em `src/**`.
 - **Cobertura de código** com `@vitest/coverage-v8` (`npm run test:coverage`); relatório text/json/html; exclusões em `vitest.config.ts` (`*.layout.html`, `*.page.html`).
 - **Lint obrigatório** (`npm run lint`) com ESLint + angular-eslint; arquivo de regras `eslint.config.mjs`. Regras marcantes: standalone, OnPush, control flow moderno, acessibilidade, TypeScript estrito, `no-explicit-any` (exceto `*.spec.ts`).
 - **Build via Angular CLI**: `angular.json` usa `@angular/build:application` com budgets e `fileReplacements` de environments; comandos `npm start`, `npm run build`, `npm run watch`.
+  - **Fato atual**: `npm run build` **falha** desde antes das alterações de 1:N com `bundle initial exceeded maximum budget` (1.28 MB contra o budget de 1.00 MB em `angular.json`) — o bundle inicial é dominado por PrimeNG/styles globais, não pelo código de feature (as rotas são lazy). Ajustar o budget ou parcelar PrimeNG é decisão de projeto, não é regressão das features.
 - **Convenções de código** (pela nomenclatura dominante): standalone components; sufixos `*.page` (páginas de rota), `*.dialog` (diálogos), `*.drawer` (drawers), `*.ui` (wrappers de layout), `*.component` (componentes), `*Service` (services), `*Facade` (fachadas), enums com `*Labels`/`*Options`.
 - **Padrão de commits**: Conventional Commits em pt-BR (`feat:`, `fix:`, `refactor:`, ...) — evidência: `git log`.
 - **Idioma**: UI/mensagens em pt-BR; código-fonte (identificadores, testes) em inglês.
