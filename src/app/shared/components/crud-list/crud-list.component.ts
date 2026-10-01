@@ -19,6 +19,8 @@ import { BaseEntity } from '../../../core/models/base-entity';
 import { FilterDefinerComponent } from "../filter-definer/filter-definer.component";
 import { FilterFieldDefinition } from '../../../core/models/filter-field-definition';
 import { ExportMenuItem } from '../../../core/models/export-menu-item';
+import { CellValueFormatterService } from '../../services/cell-value-formatter.service';
+import { MOBILE_MEDIA_QUERY } from '../../../core/services/breakpoint.service';
 
 @Component({
   selector: 'app-crud-list',
@@ -45,9 +47,7 @@ import { ExportMenuItem } from '../../../core/models/export-menu-item';
   styleUrl: './crud-list.component.scss',
 })
 export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestroy {
-  private datePipe = inject(DatePipe);
-  private currencyPipe = inject(CurrencyPipe);
-  private percentPipe = inject(PercentPipe);
+  private cellValueFormatter: CellValueFormatterService = inject(CellValueFormatterService);
 
   readonly cardClass = 'surface-card border-1 border-round p-3 transition-all transition-duration-200';
   readonly cardHeaderClass = 'flex align-items-center justify-content-between gap-2 pb-2 mb-2 border-bottom-1 surface-border';
@@ -107,41 +107,14 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
 
   private setupMediaQuery(): void {
     if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
-      this.mobileMediaQuery = window.matchMedia('(max-width: 768px)');
+      this.mobileMediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
       this.isMobile.set(this.mobileMediaQuery.matches);
       this.mobileMediaQuery.addEventListener('change', this.onMediaChange);
     }
   }
 
   formatRowValue(record: T, column: TableColumn<T>): string {
-    const value: any = record[column.field] ?? '';
-
-    if (column.pipe) {
-      return column.pipe.transform(value, ...(column.pipeArgs ?? []));
-    }
-
-    switch (column.type) {
-      case ColumnType.Date:
-        return this.datePipe.transform(value, 'dd/MM/yyyy') ?? '';
-
-      case ColumnType.Datetime:
-        return this.datePipe.transform(value, 'dd/MM/yyyy hh:mm:ss') ?? '';
-
-      case ColumnType.Currency:
-        return this.currencyPipe.transform(value, 'BRL') ?? '';
-
-      case ColumnType.Percent:
-        return this.percentPipe.transform(value) ?? '';
-
-      case ColumnType.Boolean:
-        return value ? 'Sim' : 'Não';
-
-      case ColumnType.Enum:
-        return column.enumOptionLabels ? column.enumOptionLabels[value] : value;
-
-      default:
-        return String(value);
-    }
+    return this.cellValueFormatter.format(record, column);
   }
 
   onContextMenuSelect(event: any): void {

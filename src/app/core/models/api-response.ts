@@ -7,6 +7,6 @@ export interface ApiResponse<T> {
     data: T;
     warnings?: string[],
     links?: ApiLinkType;
-    errors?: Record<string, string>;
+    errors?: Record<string, string[]>;
     meta?: ApiMetaType;
 }

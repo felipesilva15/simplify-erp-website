@@ -1,4 +1,4 @@
-import { LookupItem } from './../../core/models/lookup-item';
+import { isLookupItem, unwrapLookups } from '../../core/lib/lookup-payload';
 import { ToastService } from './../services/toast-service';
 import { computed, effect, inject, Injector, Signal, signal, WritableSignal } from "@angular/core";
 import { BaseEntity } from "../../core/models/base-entity";
@@ -207,33 +207,22 @@ export abstract class CrudFormFacade<
     }
 
     protected unwrapLookups(payload: Record<string, unknown>): Record<string, unknown> {
-        return Object.fromEntries(
-            Object.entries(payload).map(([key, value]) => {
-                if (this.isLookupItem(value)) {
-                    return [key, (value as LookupItem).key ?? null];
-                }
-
-                if (Array.isArray(value) && value.every(this.isLookupItem)) {
-                    return [key, value.map((item: LookupItem) => item.meta ?? null)];
-                }
-
-                if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-                    return [key, this.unwrapLookups(value as Record<string, unknown>)];
-                }
-
-                return [key, value];
-            })
-        );
+        return unwrapLookups(payload);
     }
 
     protected isLookupItem(value: unknown): boolean {
-        return (
-            typeof value === 'object' &&
-            value !== null &&
-            'key' in value &&
-            'label' in value &&
-            'meta' in value
-        );
+        return isLookupItem(value);
+    }
+
+    /**
+     * Permite que uma subclasse trate caminhos de erro da API que não pertencem
+     * a nenhum controle do formulário pai — tipicamente o índice de um item
+     * filho (`contacts.2.name`). Retornar `true` remove o caminho do banner
+     * genérico de `serverErrors`, para que a exibição fique a cargo de quem o
+     * tratou (ex.: `ChildEntityListFacade`).
+     */
+    protected isHandledServerErrorPath(_path: string): boolean {
+        return false;
     }
 
     applyServerErrors(form: FormGroup, response: ApiResponse<undefined>): void {
@@ -243,15 +232,17 @@ export abstract class CrudFormFacade<
             Object.entries(response.errors).forEach(([path, messages]) => {
                 const control = form.get(this.toControlPath(path));
                 if (control) {
-                    control.setErrors({ ...control.errors, server: messages });
+                    control.setErrors({ ...control.errors, server: messages.join(' ') });
                     control.markAsTouched();
 
                     control.valueChanges.pipe(take(1)).subscribe(() => {
-                        const { _server, ...rest } = control.errors ?? {};
-                        control.setErrors(Object.keys(rest).length ? rest : null);
+                        const errors = { ...control.errors };
+                        delete errors['server'];
+
+                        control.setErrors(Object.keys(errors).length ? errors : null);
                     });
-                } else {
-                   serverErrors.push({key: path, value: messages[0]});
+                } else if (!this.isHandledServerErrorPath(path)) {
+                    serverErrors.push({ key: path, value: messages[0] });
                 }
             });
         }

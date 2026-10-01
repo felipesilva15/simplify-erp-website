@@ -1,0 +1,38 @@
+<section class="flex flex-column gap-3">
+    <div class="flex flex-row flex-wrap justify-content-between align-items-center gap-2">
+        <span class="font-bold">{{ facade.itemsLabel() }}</span>
+        <p-button
+            pRipple
+            [label]="facade.addLabel()"
+            icon="pi pi-plus"
+            [text]="true"
+            severity="secondary"
+            [raised]="true"
+            [disabled]="facade.disabled()"
+            (onClick)="onAdd()"
+        />
+    </div>
+
+    @if (facade.hasErrors()) {
+        <p-message severity="error" size="small" variant="simple">
+            {{ facade.invalidItemCount() }}
+            {{ facade.invalidItemCount() === 1 ? 'item com erro de validação' : 'itens com erro de validação' }}.
+            Os campos inválidos estão destacados.
+        </p-message>
+    }
+
+    @switch (viewMode()) {
+        @case (ChildEntityViewMode.ReadonlyTableModal) {
+            <app-summary-table
+                [view]="summaryView()"
+                (openEditor)="onOpenEditor($event)"
+                (itemRemoved)="onRemoveItem($event)"
+            />
+        }
+        @case (ChildEntityViewMode.InlineTable) {
+            <p-message severity="warn" size="small" variant="simple">
+                O modo de tabela editável ainda não foi implementado.
+            </p-message>
+        }
+    }
+</section>

@@ -1,0 +1,24 @@
+<app-form-dialog>
+    <ng-template appTemplate="content">
+        <div class="flex flex-column gap-3">
+            @if (activeErrors().messages.length) {
+                <p-message icon="pi pi-exclamation-triangle" severity="error">
+                    {{ activeErrors().messages[0] }}
+                </p-message>
+            }
+            <ng-container *appChildFormOutlet="editor" />
+        </div>
+    </ng-template>
+    <ng-template appTemplate="footer">
+        <p-button
+            [label]="editor.cancelLabel()"
+            [outlined]="true"
+            (onClick)="onCancel()"
+        />
+        <p-button
+            [label]="editor.submitLabel()"
+            icon="pi pi-save"
+            (onClick)="onSubmit()"
+        />
+    </ng-template>
+</app-form-dialog>
