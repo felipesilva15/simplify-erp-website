@@ -75,7 +75,7 @@ export class ProfessionListPage implements OnInit {
   cols: TableColumn<Profession>[] = [
     { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },
     { field: 'name', header: 'Nome', sortable: true, type: ColumnType.Text },
-    { field: 'cbo', header: 'CBO', sortable: false, type: ColumnType.Text }
+    { field: 'cbo', header: 'CBO', sortable: true, type: ColumnType.Text }
   ];
   filterDefinition: FilterFieldDefinition[] = [
     { name: 'id', label: 'ID', type: ColumnType.Integer },

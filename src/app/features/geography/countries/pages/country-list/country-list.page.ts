@@ -75,7 +75,7 @@ export class CountryListPage  implements OnInit {
   cols: TableColumn<Country>[] = [
     { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },
     { field: 'name', header: 'Nome', sortable: true, type: ColumnType.Text },
-    { field: 'iso_code', header: 'Código ISO', sortable: false, type: ColumnType.Text }
+    { field: 'iso_code', header: 'Código ISO', sortable: true, type: ColumnType.Text }
   ];
   filterDefinition: FilterFieldDefinition[] = [
     { name: 'id', label: 'ID', type: ColumnType.Integer },
