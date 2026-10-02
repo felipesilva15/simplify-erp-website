@@ -147,7 +147,7 @@
                         <ng-container *ngTemplateOutlet="column.template; context: { $implicit: record }"></ng-container>
                     } @else if (column.type === 'boolean') {
                         <td>
-                            @if (record?.[column.field]) {
+                            @if (isTruthyValue(record, column)) {
                                 <i class="pi pi-check" pTooltip="Sim"></i>
                             }
                         </td>
@@ -167,7 +167,7 @@
             </tr>
         </ng-template>
         <ng-template pTemplate="loadingbody">
-            @for (_ of [].constructor(5); track $index) {
+            @for (_ of [].constructor(10); track $index) {
                 <tr>
                     @if (enableSelection()) {
                         <td></td>

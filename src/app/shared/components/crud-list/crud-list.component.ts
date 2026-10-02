@@ -117,6 +117,10 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
     return this.cellValueFormatter.format(record, column);
   }
 
+  isTruthyValue(record: T, column: TableColumn<T>): boolean {
+    return !!this.cellValueFormatter.resolve(record, column.field);
+  }
+
   onContextMenuSelect(event: any): void {
     this.buildMenuItems(event.data);
   }

@@ -9,7 +9,8 @@ import { ColumnType } from '../../core/enums/column-type';
  * nos dois contextos.
  */
 export interface CellDefinition {
-  field: PropertyKey;
+  /** Chave da propriedade na linha. Aceita caminho aninhado (`state.name`). */
+  field: string;
   type?: ColumnType;
   pipe?: PipeTransform;
   pipeArgs?: unknown[];
@@ -38,7 +39,7 @@ export class CellValueFormatterService {
   private percentPipe = new PercentPipe(this.locale);
 
   format(record: unknown, definition: CellDefinition): string {
-    const value: unknown = (record as Record<PropertyKey, unknown> | null)?.[definition.field] ?? '';
+    const value: unknown = this.resolve(record, definition.field) ?? '';
 
     if (definition.pipe) {
       return definition.pipe.transform(value, ...(definition.pipeArgs ?? []));
@@ -66,5 +67,27 @@ export class CellValueFormatterService {
       default:
         return String(value);
     }
+  }
+
+  /**
+   * Lê o valor de uma célula a partir da linha. Quando o `field` contém
+   * pontos, o valor é resolvido como caminho aninhado (`state.name`), o que
+   * permite colunas apontarem para propriedades de objetos relacionados.
+   * Qualquer elo nulo do caminho devolve `undefined`.
+   */
+  resolve(record: unknown, field: string): unknown {
+    if (record === null || record === undefined) {
+      return undefined;
+    }
+
+    return field
+      .split('.')
+      .reduce<unknown>(
+        (value: unknown, segment: string) =>
+          value === null || value === undefined
+            ? undefined
+            : (value as Record<string, unknown>)[segment],
+        record
+      );
   }
 }

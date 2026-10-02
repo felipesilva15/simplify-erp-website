@@ -70,4 +70,27 @@ describe('CellValueFormatterService', () => {
 
     expect(service.format({ name: 'Ana' }, { field: 'name', type: ColumnType.Text, pipe })).toBe('custom:Ana');
   });
+
+  it('should resolve nested paths declared with dots', () => {
+    expect(service.format({ state: { name: 'São Paulo' } }, { field: 'state.name' })).toBe('São Paulo');
+  });
+
+  it('should resolve nested paths with the column type formatting', () => {
+    const record = { state: { created_at: '2020-01-15' } };
+    const value = service.format(record, { field: 'state.created_at', type: ColumnType.Date });
+
+    expect(value).not.toBe('');
+    expect(value).toContain('2020');
+  });
+
+  it('should return an empty string when a nested path breaks midway', () => {
+    expect(service.format({ state: null }, { field: 'state.name' })).toBe('');
+    expect(service.format({ state: {} }, { field: 'state.name' })).toBe('');
+  });
+
+  it('should expose the raw nested value through resolve', () => {
+    expect(service.resolve({ state: { uf: 'SP' } }, 'state.uf')).toBe('SP');
+    expect(service.resolve({ state: null }, 'state.uf')).toBeUndefined();
+    expect(service.resolve(null, 'state.uf')).toBeUndefined();
+  });
 });
