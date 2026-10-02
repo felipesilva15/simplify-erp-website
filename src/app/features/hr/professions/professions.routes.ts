@@ -19,7 +19,7 @@ export const PROFESSIONS_ROUTES: Routes = [
                     dialog: {
                         component: ProfessionFormDialog,
                         config: {
-                            title: 'Visualizar perfil',
+                            title: 'Visualizar profissão',
                             size: DialogSize.Small,
                             closeable: true
                         },

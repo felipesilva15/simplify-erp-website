@@ -44,12 +44,15 @@ export class ProfessionService implements CrudService<Profession>, LookupService
   edit(id: number): Observable<ApiResponse<Profession>> {
     throw new Error('Method not implemented.');
   }
+
   create(payload: Partial<Profession>): Observable<ApiResponse<Profession>> {
     throw new Error('Method not implemented.');
   }
+
   update(id: number, payload: Partial<Profession>): Observable<ApiResponse<Profession>> {
     throw new Error('Method not implemented.');
   }
+  
   delete(id: number): Observable<void> {
     throw new Error('Method not implemented.');
   }
