@@ -8,5 +8,9 @@ export const GEOGRAPHY_ROUTES: Routes = [
     {
         path: 'states',
         loadChildren: () => import('./states/states.routes').then(r => r.STATES_ROUTES)
+    },
+    {
+        path: 'cities',
+        loadChildren: () => import('./cities/cities.routes').then(r => r.CITIES_ROUTES)
     }
 ];
