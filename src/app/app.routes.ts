@@ -14,6 +14,10 @@ export const routes: Routes = [
         canActivate: [appStartupGuard],
         children: [
             {
+                path: 'geography',
+                loadChildren: () => import('./features/geography/geography.routes').then(r => r.GEOGRAPHY_ROUTES) 
+            },
+            {
                 path: 'security',
                 loadChildren: () => import('./features/security/security.routes').then(r => r.SECURITY_ROUTES) 
             },
