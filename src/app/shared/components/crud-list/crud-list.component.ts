@@ -1,6 +1,8 @@
 import { ColumnType } from '../../../core/enums/column-type';
 import { TableColumn } from '../../../core/models/table-column';
-import { Component, inject, input, Input, InputSignal, model, ModelSignal, OnDestroy, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, inject, input, Input, InputSignal, model, ModelSignal, OnDestroy, OnInit, signal, ViewChild, WritableSignal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounce, distinctUntilChanged, Subject, timer } from 'rxjs';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MenuItem } from 'primeng/api';
@@ -21,6 +23,9 @@ import { FilterFieldDefinition } from '../../../core/models/filter-field-definit
 import { ExportMenuItem } from '../../../core/models/export-menu-item';
 import { CellValueFormatterService } from '../../services/cell-value-formatter.service';
 import { MOBILE_MEDIA_QUERY } from '../../../core/services/breakpoint.service';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-crud-list',
@@ -35,6 +40,9 @@ import { MOBILE_MEDIA_QUERY } from '../../../core/services/breakpoint.service';
     CheckboxModule,
     PaginatorModule,
     FormsModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
     NgTemplateOutlet,
     FilterDefinerComponent
   ],
@@ -58,6 +66,9 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
   formRoute: InputSignal<string> = input<string>('new');
   enableSelection: InputSignal<boolean> = input<boolean>(false);
   lazyLoadEnabled: InputSignal<boolean> = input<boolean>(true);
+  enableSearch: InputSignal<boolean> = input<boolean>(false);
+  searchPlaceholder: InputSignal<string> = input<string>('Buscar...');
+  searchDelay: InputSignal<number> = input<number>(600);
   filterFieldDefinition: ModelSignal<FilterFieldDefinition[]> = model<FilterFieldDefinition[]>([]);
 
   rows = 10;
@@ -67,6 +78,9 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
   exportMenuItems: MenuItem[] = [];
   columnCount: WritableSignal<number> = signal(0);
   isMobile: WritableSignal<boolean> = signal(false);
+
+  searchTerm = signal('');
+  searchInput$ = new Subject<string>();
 
   selectedRecords: T[] = [];
   currentRecord?: T;
@@ -79,6 +93,8 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
   private onMediaChange = (event: MediaQueryListEvent): void => {
     this.isMobile.set(event.matches);
   };
+
+  private destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.columnCount.set(this.cols.length + (this.enableSelection() ? 1 : 0));
@@ -99,10 +115,31 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
 
       return definitions;
     });
+
+    this.searchInput$
+      .pipe(
+        debounce(() => timer(this.searchDelay())),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((term: string) => {
+        this.first = 0;
+        this.facade.applySearch(term);
+      });
   }
 
   ngOnDestroy(): void {
     this.mobileMediaQuery?.removeEventListener('change', this.onMediaChange);
+  }
+
+  onSearchInput(value: string): void {
+    this.searchTerm.set(value);
+    this.searchInput$.next(value);
+  }
+
+  onSearchClear(): void {
+    this.searchTerm.set('');
+    this.searchInput$.next('');
   }
 
   private setupMediaQuery(): void {

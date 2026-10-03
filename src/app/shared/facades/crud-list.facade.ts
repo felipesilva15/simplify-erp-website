@@ -95,6 +95,25 @@ export class CrudListFacade<T extends BaseEntity> {
         this.load();
     }
 
+    applySearch(term: string | undefined): void {
+        const query = term?.trim();
+
+        this._requestParams.update((p: ListRequestParams | undefined) => {
+            const params = p ?? {};
+            if (query) {
+                params.q = query;
+            } else {
+                delete params.q;
+            }
+
+            params.page = 1;
+
+            return params;
+        });
+
+        this.load();
+    }
+
     applyLazyLoad(page: number, per_page: number, sorts: string | undefined): void {
         this._requestParams.update(p => ({
             ...(p ?? {}),

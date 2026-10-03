@@ -1,4 +1,20 @@
 <div class="mb-3 flex flex-row md:justify-content-end justify-content-between flex-wrap align-items-center gap-2">
+    @if (enableSearch()) {
+        <div class="w-full md:w-20rem md:mr-auto">
+            <p-iconfield>
+                <p-inputicon class="pi pi-search" />
+                <input pInputText type="text" [fluid]="true"
+                   [placeholder]="searchPlaceholder()"
+                   [ngModel]="searchTerm()"
+                   (ngModelChange)="onSearchInput($event)"
+                   (keydown.escape)="onSearchClear()" />
+                @if(searchTerm()) {
+                    <p-inputicon class="pi pi-times cursor-pointer" (click)="onSearchClear()" />
+                }
+            </p-iconfield>
+            
+        </div>
+    }
     <div class="flex flex-row flex-wrap gap-2">
         @if (enableSelection()) {
             <p-button icon="pi pi-trash" severity="danger" [text]="true" [raised]="true" [disabled]="!selectedRecords.length || facade.loading()" pTooltip="Deletar registros selecionados" showDelay="600" hideDelay="300" />
