@@ -1,5 +1,5 @@
 <app-list-page [title]="title()" [breadcrumbItems]="breadcrumbItems">
     <ng-template appTemplate="content">
-        <app-crud-list [cols]="cols" [facade]="facade" [tableMenu]="tableMenu" [filterFieldDefinition]="filterDefinition" />
+        <app-crud-list [cols]="cols" [facade]="facade" [tableMenu]="tableMenu" [filterFieldDefinition]="filterDefinition" [enableSearch]="true" [searchPlaceholder]="'Buscar por ID, nome, apelido ou documento...'" />
     </ng-template>
 </app-list-page>

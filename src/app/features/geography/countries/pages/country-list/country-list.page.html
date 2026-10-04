@@ -1,6 +1,6 @@
 <app-list-page [title]="title()" [breadcrumbItems]="breadcrumbItems">
     <ng-template appTemplate="content">
-        <app-crud-list [cols]="cols" [facade]="facade" [tableMenu]="tableMenu" [filterFieldDefinition]="filterDefinition" [formRoute]="''" />
+        <app-crud-list [cols]="cols" [facade]="facade" [tableMenu]="tableMenu" [filterFieldDefinition]="filterDefinition" [formRoute]="''" [enableSearch]="true" [searchPlaceholder]="'Buscar por ID, nome ou código ISO...'" />
     </ng-template>
 </app-list-page>
 <router-outlet />

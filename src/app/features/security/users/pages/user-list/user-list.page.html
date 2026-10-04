@@ -1,6 +1,6 @@
 <app-list-page [title]="title()" [breadcrumbItems]="breadcrumbItems">
     <ng-template appTemplate="content">
-        <app-crud-list [cols]="cols" [facade]="facade" [tableMenu]="tableMenu" [filterFieldDefinition]="filterDefinition" />
+        <app-crud-list [cols]="cols" [facade]="facade" [tableMenu]="tableMenu" [filterFieldDefinition]="filterDefinition" [enableSearch]="true" [searchPlaceholder]="'Buscar por ID, nome, e-mail ou usuário...'" />
     </ng-template>
 </app-list-page>
 <ng-template #rolesTemplate let-record>

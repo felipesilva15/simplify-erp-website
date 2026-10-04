@@ -88,18 +88,6 @@ export class PartnerTypeListPage implements OnInit {
       icon: 'pi pi-eye',
       permission: 'partnerTypes.view',
       action: (record?: PartnerType) => this.router.navigate([record?.id], { relativeTo: this.activatedRoute })
-    },
-    { 
-      label: 'Editar', 
-      icon: 'pi pi-pencil',
-      permission: 'partnerTypes.edit',
-      action: (record?: PartnerType) => this.router.navigate([record?.id, 'edit'], { relativeTo: this.activatedRoute })
-    },
-    { 
-      label: 'Deletar', 
-      icon: 'pi pi-trash',
-      permission: 'partnerTypes.delete',
-      action: (record?: PartnerType) => record && this.facade.delete(record)
     }
   ];
 
