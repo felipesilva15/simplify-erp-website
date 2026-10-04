@@ -11,11 +11,13 @@ import { LookupFilter } from '../../../../core/models/lookup-filter';
 import { LookupItem } from '../../../../core/models/lookup-item';
 import { CrudService } from '../../../../core/contracts/crud-service';
 import { LookupService } from '../../../../core/contracts/lookup-service';
+import { ExportableService } from '../../../../core/contracts/exportable-service';
+import { ExportRequestParams } from '../../../../core/models/export-request-params';
 
 @Injectable({
   providedIn: 'root',
 })
-export class PartnerTypeService implements CrudService<PartnerType>, LookupService {
+export class PartnerTypeService implements CrudService<PartnerType>, LookupService, ExportableService {
   private readonly baseUrl: string = environment.baseUrlApi + '/third-party/partner-types';
   
   private http: HttpClient = inject(HttpClient)
@@ -53,5 +55,10 @@ export class PartnerTypeService implements CrudService<PartnerType>, LookupServi
   search(params: LookupFilter): Observable<ApiResponse<LookupItem[]>> | Promise<ApiResponse<LookupItem[]>> {
     const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
     return this.http.get<ApiResponse<LookupItem[]>>(`${this.baseUrl}/lookup`, { withCredentials: true, params: httpParams });
+  }
+
+  export(params: ExportRequestParams): Observable<Blob> {
+    const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
+    return this.http.get(`${this.baseUrl}/export`, { withCredentials: true, params: httpParams, responseType: 'blob' });
   }
 }

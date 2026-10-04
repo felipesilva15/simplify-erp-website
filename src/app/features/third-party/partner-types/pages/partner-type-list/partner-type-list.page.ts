@@ -13,6 +13,24 @@ import { FilterFieldDefinition } from '../../../../../core/models/filter-field-d
 import { TableMenuItem } from '../../../../../core/models/table-menu-item';
 import { AppTemplate } from '../../../../../shared/directives/app-template';
 import { DialogRefreshService } from '../../../../../shared/services/dialog-refresh.service';
+import { ExportExtension } from '../../../../../core/enums/export-extension';
+import { ExportFormat } from '../../../../../core/enums/export-format';
+import { ExportMenuItem } from '../../../../../core/models/export-menu-item';
+
+const exportMenu: ExportMenuItem[] = [
+  {
+    label: 'Completo (Excel)',
+    icon: 'pi pi-file-excel',
+    extension: ExportExtension.Xlsx,
+    format: ExportFormat.Completo,
+  },
+  {
+    label: 'Completo (CSV)',
+    icon: 'pi pi-file',
+    extension: ExportExtension.Csv,
+    format: ExportFormat.Completo,
+  }
+];
 
 @Component({
   selector: 'app-partner-type-list',
@@ -30,6 +48,8 @@ import { DialogRefreshService } from '../../../../../shared/services/dialog-refr
         update: 'partnerTypes.update',
         view: 'partnerTypes.view',
         delete: 'partnerTypes.delete'
+      }, {
+        exportMenu: exportMenu
       }),
       deps: [
         PartnerTypeService
