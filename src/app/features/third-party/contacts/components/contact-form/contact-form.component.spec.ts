@@ -12,10 +12,10 @@ describe('ContactFormComponent', () => {
   const existingContact: Contact = {
     id: 7,
     name: 'Maria Silva',
-    position: 'Gerente',
+    department: 'Gerente',
     phone: '11988887777',
     email: 'maria@acme.com',
-    is_primary: true,
+    main: true,
     notes: 'Nota interna',
   };
 
@@ -53,10 +53,10 @@ describe('ContactFormComponent', () => {
     expect(component.item()).toBeNull();
     expect(component.form.getRawValue()).toEqual({
       name: '',
-      position: '',
+      department: '',
       phone: '',
       email: '',
-      is_primary: false,
+      main: false,
       notes: '',
     });
   });
@@ -66,19 +66,19 @@ describe('ContactFormComponent', () => {
 
     expect(component.form.getRawValue()).toEqual({
       name: 'Maria Silva',
-      position: 'Gerente',
+      department: 'Gerente',
       phone: '11988887777',
       email: 'maria@acme.com',
-      is_primary: true,
+      main: true,
       notes: 'Nota interna',
     });
   });
 
   it('should patch optional fields as empty when absent', () => {
-    const component = setup({ id: 3, name: 'João', phone: '11', is_primary: false });
+    const component = setup({ id: 3, name: 'João', phone: '11', main: false });
 
     expect(component.form.get('email')?.value).toBe('');
-    expect(component.form.get('position')?.value).toBe('');
+    expect(component.form.get('department')?.value).toBe('');
     expect(component.form.get('notes')?.value).toBe('');
   });
 

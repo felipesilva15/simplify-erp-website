@@ -10,6 +10,7 @@ import { ChildRowErrors } from '../../../../../core/models/child-row-errors';
 import { CHILD_FORM_ERRORS, CHILD_FORM_ITEM, CHILD_ITEM_EDITOR } from '../../../../../core/models/child-form-tokens';
 import { Contact } from '../../models/contact';
 import { FormControlErrorsComponent } from '../../../../../shared/components/form-control-errors/form-control-errors.component';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-contact-form',
@@ -21,6 +22,7 @@ import { FormControlErrorsComponent } from '../../../../../shared/components/for
     PaginatorModule,
     FluidModule,
     FormControlErrorsComponent,
+    NgxMaskDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './contact-form.component.html',
@@ -33,10 +35,11 @@ export class ContactFormComponent implements ChildEntityForm<Contact> {
 
   readonly form: FormGroup = this.fb.group({
     name: ['', Validators.required],
-    position: [''],
-    phone: ['', Validators.required],
+    department: [''],
+    phone: [''],
+    mobile: [''],
     email: ['', [Validators.email]],
-    is_primary: [false],
+    main: [false],
     notes: [''],
   });
 
@@ -70,12 +73,6 @@ export class ContactFormComponent implements ChildEntityForm<Contact> {
     this.editor.close();
   }
 
-  /**
-   * Carrega o item em edição no formulário. O componente é criado dinamicamente
-   * a cada abertura do modal, então o patch acontece uma única vez, antes de o
-   * shell aplicar os erros da API — assim os `valueChanges` gerados aqui não
-   * limpam os erros recém-aplicados.
-   */
   private hydrateForm(item: Contact | null): void {
     if (!item) {
       return;
@@ -83,10 +80,11 @@ export class ContactFormComponent implements ChildEntityForm<Contact> {
 
     this.form.patchValue({
       name: item.name ?? '',
-      position: item.position ?? '',
+      department: item.department ?? '',
       phone: item.phone ?? '',
+      mobile: item.mobile ?? '',
       email: item.email ?? '',
-      is_primary: item.is_primary ?? false,
+      main: item.main ?? false,
       notes: item.notes ?? '',
     });
 

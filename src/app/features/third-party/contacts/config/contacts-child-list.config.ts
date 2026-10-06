@@ -4,6 +4,7 @@ import { ColumnType } from '../../../../core/enums/column-type';
 import { DialogSize } from '../../../../core/enums/dialog-size';
 import { ContactFormComponent } from '../components/contact-form/contact-form.component';
 import { Contact } from '../models/contact';
+import { PhonePipe } from '../../../../shared/pipes/phone-pipe';
 
 /**
  * Configuração da lista de contatos dentro do formulário do parceiro.
@@ -15,22 +16,22 @@ import { Contact } from '../models/contact';
 export const CONTACTS_LIST_CONFIG: ChildEntityListConfig<Contact> = {
     arrayKey: 'contacts',
     viewMode: ChildEntityViewMode.ReadonlyTableModal,
-    itemLabel: 'Contato',
-    itemsLabel: 'Contatos',
+    itemLabel: 'contato',
+    itemsLabel: '',
     columns: [
         { field: 'name', header: 'Nome' },
-        { field: 'position', header: 'Cargo' },
-        { field: 'phone', header: 'Telefone' },
+        { field: 'department', header: 'Departamento' },
+        { field: 'phone', header: 'Telefone', pipe: new PhonePipe() },
+        { field: 'mobile', header: 'Celular', pipe: new PhonePipe() },
         { field: 'email', header: 'E-mail' },
-        { field: 'is_primary', header: 'Principal', type: ColumnType.Boolean },
+        { field: 'main', header: 'Principal', type: ColumnType.Boolean },
     ],
     createItem: () => ({
         id: 0,
         name: '',
-        phone: '',
-        is_primary: false,
+        main: false,
     }),
     formComponent: ContactFormComponent,
-    dialogSize: DialogSize.Large,
+    dialogSize: DialogSize.Small,
     removeConfirmMessage: (contact: Contact) => `Deseja realmente remover o contato "${contact.name}"?`,
 };

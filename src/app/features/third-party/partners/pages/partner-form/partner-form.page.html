@@ -146,7 +146,9 @@
                     </p-fluid>
                 </app-collapsible-section>
 
-                <app-child-entity-list formControlName="contacts" [config]="contactsConfig"></app-child-entity-list>
+                <app-collapsible-section title="Contatos">
+                    <app-child-entity-list formControlName="contacts" [config]="contactsConfig"></app-child-entity-list>
+                </app-collapsible-section>
 
                 <p-fluid class="grid">
                     <div class="col-12">

@@ -43,8 +43,8 @@ describe('CellValueFormatterService', () => {
   });
 
   it('should format booleans as Sim/Não', () => {
-    expect(service.format({ is_primary: true }, { field: 'is_primary', type: ColumnType.Boolean })).toBe('Sim');
-    expect(service.format({ is_primary: false }, { field: 'is_primary', type: ColumnType.Boolean })).toBe('Não');
+    expect(service.format({ main: true }, { field: 'main', type: ColumnType.Boolean })).toBe('Sim');
+    expect(service.format({ main: false }, { field: 'main', type: ColumnType.Boolean })).toBe('Não');
   });
 
   it('should format enums using the provided labels', () => {
