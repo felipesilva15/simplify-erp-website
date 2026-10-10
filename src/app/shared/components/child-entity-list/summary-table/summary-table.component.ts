@@ -10,21 +10,27 @@ import { CellValueFormatterService } from '../../../services/cell-value-formatte
 
 /**
  * View do modo `readonly-table-modal`: tabela somente leitura com as colunas
- * resumidas do item. A edição ocorre no modal, aberto pelo clique na linha ou
- * pelo ícone de edição; a remoção é direta, pelo ícone da lixeira.
+ * resumidas do item e o número da ordem (configurável). As ações de cada item
+ * ficam congeladas à direita da tabela (PrimeNG `pFrozenColumn`), de modo que
+ * permanecem visíveis mesmo com scroll horizontal:
+ * - **visualizar** (olho): sempre disponível, abre o modal em modo somente
+ *   leitura — inclusive quando o formulário pai está desabilitado;
+ * - **editar** (lápis): desabilitado quando a lista está desabilitada;
+ * - **remover** (lixeira): desabilitado quando a lista está desabilitada.
  *
- * Não há menu de contexto: existem apenas duas ações por item.
+ * Não há menu de contexto: as ações são expostas diretamente na linha (ou no
+ * card, no mobile).
  *
  * A responsividade é uma troca de template dentro deste mesmo componente —
  * tabela acima do breakpoint, layout empilhado (pares label/valor) abaixo —
- * mantendo idênticas a edição, as ações e a exibição de erros.
+ * mantendo idênticas a edição, a visualização, as ações e a exibição de erros.
  */
 @Component({
     selector: 'app-summary-table',
     imports: [TableModule, ButtonModule, TagModule, TooltipModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    host: { class: 'block' },
     templateUrl: './summary-table.component.html',
-    styleUrl: './summary-table.component.scss',
 })
 export class SummaryTableComponent<T = unknown> {
     private formatter: CellValueFormatterService = inject(CellValueFormatterService);
@@ -35,13 +41,27 @@ export class SummaryTableComponent<T = unknown> {
     /** Abre o editor do item na posição informada. */
     openEditor = output<number>();
 
+    /** Abre o item em modo somente leitura (visualização). */
+    viewItem = output<number>();
+
     /** Solicita a remoção do item na posição informada. */
     itemRemoved = output<number>();
 
     isMobile = this.breakpoint.isMobile;
 
     get columnCount(): number {
-        return this.view().columns().length + 1;
+        const extraColumns = (this.showOrder() ? 1 : 0) + 1;
+
+        return this.view().columns().length + extraColumns;
+    }
+
+    showOrder(): boolean {
+        return this.view().showOrder();
+    }
+
+    /** Número da ordem do item (1-based), usado na coluna de ordem e nos cards. */
+    orderNumber(index: number): number {
+        return index + 1;
     }
 
     formatValue(item: T, column: ChildFieldDefinition): string {

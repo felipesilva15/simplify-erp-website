@@ -69,11 +69,21 @@ export interface ChildEntityListConfig<T> {
     /** Rótulo da ação de confirmação no modal. Default: `'Salvar'`. */
     submitLabel?: string;
 
+    /** Rótulo da ação de visualização do item. Default: `'Visualizar'`. */
+    viewLabel?: string;
+
     /** Rótulo do cancelamento. Default: `'Voltar'`. */
     cancelLabel?: string;
 
     /** Mensagem exibida quando não há itens. Default: `'Nenhum registro encontrado.'`. */
     emptyMessage?: string;
+
+    /**
+     * Exibe a coluna com o número da ordem do item (linha + 1) na tabela
+     * resumida. Também controla o indicador de ordem no card mobile.
+     * Default: `true`.
+     */
+    showOrder?: boolean;
 
     /** Tamanho do modal. Default: `DialogSize.Medium`. */
     dialogSize?: DialogSize;

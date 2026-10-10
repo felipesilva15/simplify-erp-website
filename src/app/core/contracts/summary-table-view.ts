@@ -15,6 +15,12 @@ export interface SummaryTableView<T> {
     disabled: Signal<boolean>;
     emptyMessage: Signal<string>;
 
+    /** `true` quando a coluna de ordem do item deve ser exibida. */
+    showOrder: Signal<boolean>;
+
+    /** Rótulo da ação de visualização do item (tooltip do olho). */
+    viewLabel: Signal<string>;
+
     /** Erros do item na posição informada, para o indicador da linha. */
     rowErrors: (index: number) => ChildRowErrors;
 

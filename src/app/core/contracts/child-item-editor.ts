@@ -31,6 +31,12 @@ export interface ChildItemEditor<T> {
     /** Rótulo do cancelamento. */
     readonly cancelLabel: Signal<string>;
 
+    /** Rótulo do item quando o modal está em modo visualização. */
+    readonly viewLabel: Signal<string>;
+
+    /** `true` quando o modal está em modo somente leitura (visualização). */
+    readonly readOnly: Signal<boolean>;
+
     /** `true` quando o modal está criando um item novo. */
     readonly isNew: Signal<boolean>;
 

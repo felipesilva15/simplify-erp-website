@@ -22,6 +22,9 @@ interface ChildEditorState {
     /** Chave da linha em edição, ou `null` na criação. */
     rowKey: number | null;
     isNew: boolean;
+
+    /** `true` quando o modal está em modo somente leitura (visualização). */
+    readOnly: boolean;
 }
 
 /**
@@ -82,11 +85,15 @@ export class ChildEntityListFacade<T> implements ChildItemEditor<T> {
     cancelLabel: Signal<string> = computed(() => this.config.cancelLabel ?? 'Voltar');
     createLabel: Signal<string> = computed(() => `${this.addLabel()} ${this.itemLabel()}`);
     editLabel: Signal<string> = computed(() => `Editar ${this.itemLabel()}`);
+    viewLabel: Signal<string> = computed(() => this.config.viewLabel ?? 'Visualizar');
     emptyMessage: Signal<string> = computed(() => this.config.emptyMessage ?? 'Nenhum registro encontrado.');
 
     formComponent: Type<ChildEntityForm<T>>;
 
     isNew: Signal<boolean> = computed(() => this._editor()?.isNew ?? false);
+
+    /** `true` quando o modal ativo está em modo somente leitura (visualização). */
+    readOnly: Signal<boolean> = computed(() => this._editor()?.readOnly ?? false);
 
     activeItem: Signal<T | null> = computed<T | null>(() => {
         const editor = this._editor();
@@ -174,6 +181,19 @@ export class ChildEntityListFacade<T> implements ChildItemEditor<T> {
 
         if (!this._disabled() && rowKey != null) {
             this.startEdit(rowKey);
+        }
+    }
+
+    /**
+     * Abre o item em modo somente leitura (visualização). Diferente de `add` e
+     * `edit`, **não** depende do estado desabilitado da lista: apenas consulta
+     * o item, sem alterá-lo, portanto continua disponível no modo visualizar.
+     */
+    view(index: number): void {
+        const rowKey = this._rowKeys()[index];
+
+        if (rowKey != null) {
+            this.startView(rowKey);
         }
     }
 
@@ -353,15 +373,29 @@ export class ChildEntityListFacade<T> implements ChildItemEditor<T> {
     // ---- Internos ------------------------------------------------------------------
 
     private startEdit(rowKey: number | null): void {
+        this.assertReadonlyTable();
+        this._editor.set({ rowKey, isNew: rowKey == null, readOnly: false });
+
+        const title = rowKey == null ? this.createLabel() : this.editLabel();
+        this.openDialog(title);
+    }
+
+    private startView(rowKey: number): void {
+        this.assertReadonlyTable();
+        this._editor.set({ rowKey, isNew: false, readOnly: true });
+
+        this.openDialog(`${this.viewLabel()} ${this.itemLabel()}`);
+    }
+
+    private assertReadonlyTable(): void {
         if (this.config.viewMode !== ChildEntityViewMode.ReadonlyTableModal) {
             // Ponto de extensão para ChildEntityViewMode.InlineTable: a edição
             // ocorre por célula, na própria linha, sem modal.
             throw new Error(`Modo de visualização '${this.config.viewMode}' ainda não implementado.`);
         }
+    }
 
-        this._editor.set({ rowKey, isNew: rowKey == null });
-
-        const title = rowKey == null ? this.createLabel() : this.editLabel();
+    private openDialog(title: string): void {
         const closed = this.dialogService.open<unknown>(ChildItemDialogComponent, {
             title,
             size: this.config.dialogSize ?? DialogSize.Medium,

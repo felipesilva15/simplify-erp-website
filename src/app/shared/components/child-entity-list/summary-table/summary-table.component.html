@@ -1,5 +1,5 @@
 @if (isMobile()) {
-    <div class="flex flex-column gap-3">
+    <div class="flex flex-column gap-1">
         @if (!view().items().length) {
             <div class="flex flex-column align-items-center gap-2 py-6 text-color-secondary">
                 <i class="pi pi-inbox text-4xl"></i>
@@ -8,6 +8,11 @@
         } @else {
             @for (item of view().items(); track $index) {
                 <div class="surface-card surface-border border-1 border-round p-3">
+                    @if (showOrder()) {
+                        <div class="flex align-items-center justify-content-between pb-2 mb-2 border-bottom-1 surface-border">
+                            <span class="font-bold text-color-secondary">#{{ orderNumber($index) }}</span>
+                        </div>
+                    }
                     <div class="flex flex-column gap-2">
                         @for (column of view().columns(); track column.field) {
                             <div class="flex align-items-baseline justify-content-between gap-3">
@@ -16,7 +21,7 @@
                             </div>
                         }
                     </div>
-                    <div class="flex align-items-center justify-content-end gap-1 mt-3">
+                    <div class="flex align-items-center justify-content-end gap-1 mt-3 flex-nowrap">
                         @if (view().itemErrorCount($index)) {
                             <p-tag
                                 severity="danger"
@@ -27,12 +32,22 @@
                             />
                         }
                         <p-button
+                            icon="pi pi-eye"
+                            severity="secondary"
+                            [text]="true"
+                            [rounded]="true"
+                            [pTooltip]="view().viewLabel()"
+                            tooltipPosition="left"
+                            (onClick)="viewItem.emit($index)"
+                        />
+                        <p-button
                             icon="pi pi-pencil"
                             severity="secondary"
                             [text]="true"
                             [rounded]="true"
                             [disabled]="view().disabled()"
                             pTooltip="Editar"
+                            tooltipPosition="left"
                             (onClick)="openEditor.emit($index)"
                         />
                         <p-button
@@ -42,6 +57,7 @@
                             [rounded]="true"
                             [disabled]="view().disabled()"
                             pTooltip="Remover"
+                            tooltipPosition="left"
                             (onClick)="itemRemoved.emit($index)"
                         />
                     </div>
@@ -52,7 +68,6 @@
 } @else {
     <p-table
         [value]="view().items()"
-        [rowHover]="true"
         [showLoader]="false"
         [resizableColumns]="true"
         columnResizeMode="expand"
@@ -60,19 +75,29 @@
     >
         <ng-template pTemplate="header">
             <tr>
+                @if (showOrder()) {
+                    <th class="w-3rem">#</th>
+                }
                 @for (column of view().columns(); track column.field) {
                     <th pResizableColumn>{{ column.header }}</th>
                 }
-                <th style="width: 6rem"></th>
+                <th
+                    pFrozenColumn
+                    alignFrozen="right"
+                    class="w-9rem"
+                ></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
-            <tr class="animation-duration-600 fadein summary-table__row" (click)="openEditor.emit(rowIndex)">
+            <tr class="animation-duration-600 fadein">
+                @if (showOrder()) {
+                    <td>{{ orderNumber(rowIndex) }}</td>
+                }
                 @for (column of view().columns(); track column.field) {
                     <td>{{ formatValue(item, column) }}</td>
                 }
-                <td>
-                    <div class="flex align-items-center justify-content-end gap-1">
+                <td pFrozenColumn alignFrozen="right">
+                    <div class="flex align-items-center justify-content-end gap-1 flex-nowrap">
                         @if (view().itemErrorCount(rowIndex)) {
                             <p-tag
                                 severity="danger"
@@ -83,12 +108,22 @@
                             />
                         }
                         <p-button
+                            icon="pi pi-eye"
+                            severity="secondary"
+                            [text]="true"
+                            [rounded]="true"
+                            [pTooltip]="view().viewLabel()"
+                            tooltipPosition="left"
+                            (onClick)="$event.stopPropagation(); viewItem.emit(rowIndex)"
+                        />
+                        <p-button
                             icon="pi pi-pencil"
                             severity="secondary"
                             [text]="true"
                             [rounded]="true"
                             [disabled]="view().disabled()"
                             pTooltip="Editar"
+                            tooltipPosition="left"
                             (onClick)="$event.stopPropagation(); openEditor.emit(rowIndex)"
                         />
                         <p-button
@@ -98,6 +133,7 @@
                             [rounded]="true"
                             [disabled]="view().disabled()"
                             pTooltip="Remover"
+                            tooltipPosition="left"
                             (onClick)="$event.stopPropagation(); itemRemoved.emit(rowIndex)"
                         />
                     </div>

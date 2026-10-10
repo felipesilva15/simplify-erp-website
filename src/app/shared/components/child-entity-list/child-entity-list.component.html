@@ -26,6 +26,7 @@
             <app-summary-table
                 [view]="summaryView()"
                 (openEditor)="onOpenEditor($event)"
+                (viewItem)="onViewItem($event)"
                 (itemRemoved)="onRemoveItem($event)"
             />
         }

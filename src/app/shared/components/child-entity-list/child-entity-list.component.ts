@@ -37,7 +37,7 @@ import { SummaryTableComponent } from './summary-table/summary-table.component';
         ButtonModule,
         MessageModule,
     ],
-providers: [
+    providers: [
       {
         provide: NG_VALUE_ACCESSOR,
         useExisting: ChildEntityListComponent,
@@ -45,8 +45,8 @@ providers: [
       },
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    host: { class: 'flex flex-column' },
     templateUrl: './child-entity-list.component.html',
-    styleUrl: './child-entity-list.component.scss',
 })
 export class ChildEntityListComponent<T = unknown> implements ControlValueAccessor {
 private changeHandler: (value: unknown[]) => void = () => {};
@@ -68,12 +68,20 @@ private changeHandler: (value: unknown[]) => void = () => {};
 
     columns: Signal<ChildFieldDefinition[]> = computed(() => this.config().columns);
 
+    /** `true` quando a coluna de ordem do item deve ser exibida. Default: `true`. */
+    showOrder: Signal<boolean> = computed(() => this.config().showOrder ?? true);
+
+    /** Rótulo da ação de visualização do item. Default: `'Visualizar'`. */
+    viewLabel: Signal<string> = computed(() => this.config().viewLabel ?? this.facade.viewLabel());
+
     /** Superfície de leitura entregue à view do modo tabela resumida. */
     summaryView: Signal<SummaryTableView<T>> = computed<SummaryTableView<T>>(() => ({
         items: this.facade.items,
         columns: this.columns,
         disabled: this.facade.disabled,
         emptyMessage: this.facade.emptyMessage,
+        showOrder: this.showOrder,
+        viewLabel: this.viewLabel,
         rowErrors: (index: number) => this.facade.rowErrors(index),
         itemErrorCount: (index: number) => this.facade.itemErrorCount(index),
     }));
@@ -110,6 +118,11 @@ private changeHandler: (value: unknown[]) => void = () => {};
     onOpenEditor(index: number): void {
         this.touchHandler();
         this.facade.edit(index);
+    }
+
+    onViewItem(index: number): void {
+        this.touchHandler();
+        this.facade.view(index);
     }
 
     onRemoveItem(index: number): void {

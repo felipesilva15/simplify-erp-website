@@ -1,11 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    effect,
-    inject,
-    Signal,
-    viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, Signal, viewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageModule } from 'primeng/message';
@@ -23,6 +16,10 @@ import { FormDialogUi } from '../../../ui/form-dialog/form-dialog.ui';
  *
  * Recebe o editor como `data` do dialog, pois é criado pelo PrimeNG fora do
  * injector da página.
+ *
+ * No modo somente leitura (`editor.readOnly()`), o formulário é desabilitado de
+ * forma genérica (`FormGroup.disable`) e a ação de confirmação é ocultada — o
+ * modal vira apenas um visualizador do item.
  */
 @Component({
     selector: 'app-child-item-dialog',
@@ -34,8 +31,8 @@ import { FormDialogUi } from '../../../ui/form-dialog/form-dialog.ui';
         MessageModule,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    host: { class: 'block' },
     templateUrl: './child-item-dialog.component.html',
-    styleUrl: './child-item-dialog.component.scss',
 })
 export class ChildItemDialogComponent {
     private dialogConfig: DynamicDialogConfig = inject(DynamicDialogConfig);
@@ -51,11 +48,20 @@ export class ChildItemDialogComponent {
 
     constructor() {
         effect(() => {
-            this.editor.applyActiveErrors(this.formOutlet()?.form ?? null);
+            const form = this.formOutlet()?.form ?? null;
+
+            if (this.editor.readOnly()) {
+                form?.disable({ emitEvent: false });
+                return;
+            }
+
+            this.editor.applyActiveErrors(form);
         });
     }
 
     activeErrors: Signal<ChildRowErrors> = this.editor.activeErrors;
+
+    readOnly: Signal<boolean> = this.editor.readOnly;
 
     onSubmit(): void {
         this.formOutlet()?.instance?.submit();

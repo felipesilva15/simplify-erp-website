@@ -1,7 +1,7 @@
 <app-form-dialog>
     <ng-template appTemplate="content">
         <div class="flex flex-column gap-3">
-            @if (activeErrors().messages.length) {
+            @if (!readOnly() && activeErrors().messages.length) {
                 <p-message icon="pi pi-exclamation-triangle" severity="error">
                     {{ activeErrors().messages[0] }}
                 </p-message>
@@ -15,10 +15,12 @@
             [outlined]="true"
             (onClick)="onCancel()"
         />
-        <p-button
-            [label]="editor.submitLabel()"
-            icon="pi pi-save"
-            (onClick)="onSubmit()"
-        />
+        @if (!readOnly()) {
+            <p-button
+                [label]="editor.submitLabel()"
+                icon="pi pi-save"
+                (onClick)="onSubmit()"
+            />
+        }
     </ng-template>
 </app-form-dialog>

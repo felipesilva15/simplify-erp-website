@@ -107,6 +107,7 @@ describe('ChildEntityListFacade', () => {
             expect(facade.addLabel()).toBe('Incluir');
             expect(facade.submitLabel()).toBe('Salvar');
             expect(facade.cancelLabel()).toBe('Voltar');
+            expect(facade.viewLabel()).toBe('Visualizar');
             expect(facade.emptyMessage()).toBe('Nenhum registro encontrado.');
             expect(facade.createLabel()).toBe('Incluir Item');
             expect(facade.editLabel()).toBe('Editar Item');
@@ -443,6 +444,72 @@ describe('ChildEntityListFacade', () => {
             expect(dialogService.open).toHaveBeenCalled();
         });
     });
+
+    describe('view', () => {
+        it('should open the item in read-only mode', () => {
+            const facade = createFacade();
+            facade.writeValue([{ id: 1, name: 'A' }]);
+
+            facade.view(0);
+
+            expect(facade.readOnly()).toBe(true);
+            expect(dialogService.open).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.objectContaining({ title: 'Visualizar Item' }),
+            );
+        });
+
+        it('should keep the editor out of read-only mode when editing', () => {
+            const facade = createFacade();
+            facade.writeValue([{ id: 1, name: 'A' }]);
+
+            facade.edit(0);
+
+            expect(facade.readOnly()).toBe(false);
+        });
+
+        it('should be available even when the list is disabled', () => {
+            const facade = createFacade();
+            facade.writeValue([{ id: 1, name: 'A' }]);
+
+            facade.setDisabledState(true);
+            facade.view(0);
+
+            expect(dialogService.open).toHaveBeenCalled();
+        });
+
+        it('should ignore an out-of-range index', () => {
+            const facade = createFacade();
+            facade.writeValue([{ id: 1, name: 'A' }]);
+
+            facade.view(5);
+
+            expect(facade.readOnly()).toBe(false);
+            expect(dialogService.open).not.toHaveBeenCalled();
+        });
+
+        it('should expose the active item without changes while viewing', () => {
+            const facade = createFacade();
+            facade.writeValue([{ id: 1, name: 'A' }]);
+
+            facade.view(0);
+
+            expect(facade.activeItem()).toEqual({ id: 1, name: 'A' });
+            expect(facade.hasChanges()).toBe(false);
+        });
+
+        it('should use the configured viewLabel in the dialog title', () => {
+            const facade = createFacade(createConfig({ viewLabel: 'Detalhar' }));
+            facade.writeValue([{ id: 1, name: 'A' }]);
+
+            facade.view(0);
+
+            expect(dialogService.open).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.objectContaining({ title: 'Detalhar Item' }),
+            );
+        });
+    });
 });
 
 describe('ChildEntityListComponent', () => {
@@ -453,12 +520,10 @@ describe('ChildEntityListComponent', () => {
      * Configura o TestBed e só então cria o facade: o facade usa `inject()` em
      * inicializadores de campo, portanto precisa de um injector já configurado.
      */
-    function setup(): {
+    function setup(config: ChildEntityListConfig<TestItem> = createConfig()): {
         facade: ChildEntityListFacade<TestItem>;
         component: ChildEntityListComponent<TestItem>;
     } {
-        const config = createConfig();
-
         TestBed.configureTestingModule({
             providers: [
                 { provide: ConfirmDialogService, useValue: { confirm: vi.fn(() => Promise.resolve(true)) } },
@@ -530,6 +595,16 @@ describe('ChildEntityListComponent', () => {
         expect(dialogService.open).toHaveBeenCalled();
     });
 
+    it('should open the item in view mode', () => {
+        const { facade, component } = setup();
+        facade.writeValue([{ id: 1, name: 'A' }]);
+
+        component.onViewItem(0);
+
+        expect(facade.readOnly()).toBe(true);
+        expect(dialogService.open).toHaveBeenCalled();
+    });
+
     it('should remove the informed index', () => {
         const { facade, component } = setup();
         facade.writeValue([{ id: 1, name: 'A' }]);
@@ -547,6 +622,14 @@ describe('ChildEntityListComponent', () => {
 
         expect(view.items()).toEqual([{ id: 1, name: 'A' }]);
         expect(view.columns().map(column => column.field)).toEqual(['name']);
+        expect(view.showOrder()).toBe(true);
+        expect(view.viewLabel()).toBe('Visualizar');
         expect(view.itemErrorCount(0)).toBe(0);
+    });
+
+    it('should allow hiding the order column through the config', () => {
+        const { component } = setup(createConfig({ showOrder: false }));
+
+        expect(component.showOrder()).toBe(false);
     });
 });

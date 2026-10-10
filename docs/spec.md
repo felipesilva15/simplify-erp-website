@@ -186,8 +186,8 @@ Padrão para entidades filhas editadas **em memória** e enviadas junto na submi
 |---|---|
 | `ChildEntityListFacade<T>` (`shared/facades`) | Estado (itens, chaves de linha, editor ativo, erros), CVA, diffing, normalização/aplicação de erros da API e a conexão com o modal |
 | `ChildEntityListComponent` (`shared/components/child-entity-list`) | Orquestrador: cabeçalho (título + ação de inclusão), escolha do modo de visualização, ponte CVA com `formControlName` |
-| `SummaryTableComponent` | View **read-only** do modo `ReadonlyTableModal`: tabela (desktop) ou cards (mobile), edição por linha, remoção e indicador de erros |
-| `ChildItemDialogComponent` | Shell do modal (`FormDialogUi`): título, corpo e botões **Salvar**/**Voltar** |
+| `SummaryTableComponent` | View **read-only** do modo `ReadonlyTableModal`: tabela (desktop) ou cards (mobile), coluna de ordem configurável, ações congeladas à direita (PrimeNG `pFrozenColumn`), edição/visualização por linha, remoção e indicador de erros |
+| `ChildItemDialogComponent` | Shell do modal (`FormDialogUi`): título, corpo e botões **Salvar**/**Voltar**. Em modo somente leitura o formulário é desabilitado (`FormGroup.disable`) e o botão de confirmação é ocultado |
 | `ChildFormOutletDirective` | `createComponent()` do formulário do item dentro do shell, resolvido por token (`CHILD_FORM_ITEM`, `CHILD_FORM_ERRORS`, `CHILD_ITEM_EDITOR`) |
 
 As views **nunca** manipulam o array: apenas leem estado e emitem intents. Trocar o modo de visualização, portanto, não exige reescrever nada de estado ou de erro.
@@ -200,6 +200,8 @@ As views **nunca** manipulam o array: apenas leem estado e emitem intents. Troca
 | `viewMode` | — | `ChildEntityViewMode.ReadonlyTableModal` (implementado) ou `InlineTable` (previsto, ver 17) |
 | `itemLabel` / `itemsLabel` | `Item` / `Itens` | Rótulos |
 | `addLabel` / `submitLabel` / `cancelLabel` | `Incluir` / `Salvar` / `Voltar` | Rótulos de ação |
+| `viewLabel` | `Visualizar` | Rótulo da ação de visualização (olho) e do título do modal somente leitura |
+| `showOrder` | `true` | Exibe a coluna de ordem (linha + 1) na tabela resumida e o indicador de ordem no card mobile |
 | `columns` | — | `ChildFieldDefinition[]` (`field: PropertyKey`, `header`, tipo, máscara) exibidas na tabela resumida |
 | `createItem` | — | Item "em branco" para a criação (`id: 0`) |
 | `formComponent` | — | Componente `ChildEntityForm<T>`; **obrigatório** em `ReadonlyTableModal` (o facade lança no constructor se faltar) |
