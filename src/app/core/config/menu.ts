@@ -65,11 +65,32 @@ export const MENU: AppMenuItem[] = [
     active: false,
     items: [
       {
+        label: 'Serviços',
+        icon: 'pi pi-hammer',
+        active: false,
+        link: '/catalog/services',
+        permission: 'services.viewAny'
+      },
+      {
         label: 'Produtos',
-        icon: 'pi pi-barcode',
+        icon: 'pi pi-shopping-bag',
         active: false,
         link: '/catalog/products',
         permission: 'products.viewAny'
+      },
+      {
+        label: 'Categorias',
+        icon: 'pi pi-chart-pie',
+        active: false,
+        link: '/catalog/product-categories',
+        permission: 'productsCategories.viewAny'
+      },
+      {
+        label: 'Marcas',
+        icon: 'pi pi-at',
+        active: false,
+        link: '/catalog/product-brands',
+        permission: 'productsBrands.viewAny'
       }
     ]
   },

@@ -73,7 +73,7 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
 
   rows = 10;
   first = 0;
-  rowsPerPageOptions: number[] = [3, 5, 10, 20, 50];
+  rowsPerPageOptions: number[] = [5, 10, 20, 50, 100];
   menuItems: MenuItem[] = [];
   exportMenuItems: MenuItem[] = [];
   columnCount: WritableSignal<number> = signal(0);
