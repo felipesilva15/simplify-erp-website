@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "SimplifyErpRoutes",
+  "title": "Gera e registra as rotas de um recurso",
+  "type": "object",
+  "properties": {
+    "module": {
+      "type": "string",
+      "description": "Módulo/feature de destino, em kebab-case (ex.: third-party).",
+      "x-prompt": "Módulo (ex.: third-party)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Recurso no singular, em kebab-case (ex.: partner-type).",
+      "x-prompt": "Recurso no singular (ex.: partner-type)"
+    },
+    "plural": {
+      "type": "string",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+    },
+    "label": {
+      "type": "string",
+      "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro)."
+    },
+    "permission-key": {
+      "type": "string",
+      "description": "Chave base de permissão (ex.: partnerTypes)."
+    },
+    "form-type": {
+      "type": "string",
+      "enum": ["dialog", "page"],
+      "default": "dialog",
+      "description": "Formato do formulário associado às rotas."
+    },
+    "force": {
+      "type": "boolean",
+      "default": false,
+      "description": "Sobrescreve arquivos existentes."
+    }
+  },
+  "required": ["module", "name"]
+}

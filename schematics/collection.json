@@ -1,0 +1,50 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "crud": {
+      "description": "Gera um CRUD completo (model, service, listagem, formulário, rotas, menu, lookup e exportação opcional).",
+      "factory": "./dist/crud/index",
+      "schema": "./dist/crud/schema.json"
+    },
+    "model": {
+      "description": "Gera apenas o model do recurso.",
+      "factory": "./dist/model/index",
+      "schema": "./dist/model/schema.json"
+    },
+    "service": {
+      "description": "Gera apenas o service de acesso à API.",
+      "factory": "./dist/service/index",
+      "schema": "./dist/service/schema.json"
+    },
+    "list": {
+      "description": "Gera apenas a página de listagem.",
+      "factory": "./dist/list/index",
+      "schema": "./dist/list/schema.json"
+    },
+    "form": {
+      "description": "Gera apenas o formulário (dialog ou página).",
+      "factory": "./dist/form/index",
+      "schema": "./dist/form/schema.json"
+    },
+    "routes": {
+      "description": "Gera o arquivo <recurso>.routes.ts e o registra no módulo.",
+      "factory": "./dist/routes/index",
+      "schema": "./dist/routes/schema.json"
+    },
+    "menu": {
+      "description": "Adiciona a entrada do recurso no menu.",
+      "factory": "./dist/menu/index",
+      "schema": "./dist/menu/schema.json"
+    },
+    "lookup": {
+      "description": "Gera apenas o componente de lookup do recurso.",
+      "factory": "./dist/lookup/index",
+      "schema": "./dist/lookup/schema.json"
+    },
+    "export": {
+      "description": "Adiciona as opções de exportação a uma listagem existente.",
+      "factory": "./dist/export/index",
+      "schema": "./dist/export/schema.json"
+    }
+  }
+}

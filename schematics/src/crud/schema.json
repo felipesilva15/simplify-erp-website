@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "SimplifyErpCrud",
+  "title": "Gera um CRUD completo em um módulo existente",
+  "type": "object",
+  "properties": {
+    "module": {
+      "type": "string",
+      "description": "Módulo/feature de destino, em kebab-case (ex.: third-party).",
+      "x-prompt": "Módulo (ex.: third-party)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Recurso no singular, em kebab-case (ex.: partner-type).",
+      "x-prompt": "Recurso no singular (ex.: partner-type)"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Campos no formato nome:tipo[:Rótulo], separados por vírgula (ex.: name:string:Nome,active:boolean:Ativo). Sem eles, gera o esqueleto mínimo."
+    },
+    "plural": {
+      "type": "string",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+    },
+    "label": {
+      "type": "string",
+      "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro)."
+    },
+    "label-plural": {
+      "type": "string",
+      "description": "Rótulo plural em pt-BR (ex.: Tipos de parceiro)."
+    },
+    "module-label": {
+      "type": "string",
+      "description": "Rótulo do módulo usado no menu e breadcrumb (ex.: Terceiro)."
+    },
+    "menu-icon": {
+      "type": "string",
+      "description": "Ícone PrimeIcons do item de menu (ex.: pi pi-star)."
+    },
+    "permission-key": {
+      "type": "string",
+      "description": "Chave base de permissão (ex.: partnerTypes)."
+    },
+    "form-type": {
+      "type": "string",
+      "enum": ["dialog", "page"],
+      "default": "dialog",
+      "description": "Formato do formulário.",
+      "x-prompt": {
+        "message": "Formato do formulário:",
+        "type": "list",
+        "items": [
+          { "value": "dialog", "label": "Dialog (modal)" },
+          { "value": "page", "label": "Página" }
+        ]
+      }
+    },
+    "with-export": {
+      "type": "boolean",
+      "default": false,
+      "description": "Inclui as opções de exportação na listagem."
+    },
+    "skip-menu": {
+      "type": "boolean",
+      "default": false,
+      "description": "Não adiciona a entrada no menu."
+    },
+    "skip-routes": {
+      "type": "boolean",
+      "default": false,
+      "description": "Não gera nem registra o arquivo de rotas."
+    },
+    "skip-lookup": {
+      "type": "boolean",
+      "default": false,
+      "description": "Não gera o componente de lookup."
+    },
+    "skip-tests": {
+      "type": "boolean",
+      "default": false,
+      "description": "Não gera arquivos de teste."
+    },
+    "force": {
+      "type": "boolean",
+      "default": false,
+      "description": "Sobrescreve arquivos existentes."
+    }
+  },
+  "required": ["module", "name"]
+}

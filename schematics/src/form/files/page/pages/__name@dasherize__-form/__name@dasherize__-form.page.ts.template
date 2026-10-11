@@ -1,0 +1,97 @@
+import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
+<%= formFormsImport %>
+import { ActivatedRoute, Router } from '@angular/router';
+import { MenuItem } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { FluidModule } from 'primeng/fluid';
+import { MessageModule } from 'primeng/message';
+import { SkeletonModule } from 'primeng/skeleton';
+<%= formPrimeImports %>
+import { FormMode, FormModeLabel } from '<%= toAppDeep %>core/enums/form-mode';
+import { RouteUtilsService } from '<%= toAppDeep %>core/services/route-utils-service';
+import { FormControlErrorsComponent } from '<%= toAppDeep %>shared/components/form-control-errors/form-control-errors.component';
+import { AppTemplate } from '<%= toAppDeep %>shared/directives/app-template';
+import { GenericCrudFormFacade } from '<%= toAppDeep %>shared/facades/generic-crud-form.facade';
+import { FormPageUi } from '<%= toAppDeep %>shared/ui/form-page/form-page.ui';
+import { <%= className %> } from '../../models/<%= name %>';
+import { <%= serviceClass %> } from '../../services/<%= name %>-service';
+
+interface FormType {
+<%= formTypeLines %>
+}
+
+@Component({
+  selector: '<%= formSelector %>',
+  imports: [
+    MessageModule,
+    FormsModule,
+    ReactiveFormsModule,
+<%= formImportModules %>
+    ButtonModule,
+    FluidModule,
+    FormPageUi,
+    AppTemplate,
+    FormControlErrorsComponent,
+    SkeletonModule
+  ],
+  providers: [
+    {
+      provide: GenericCrudFormFacade<<%= className %>>,
+      useFactory: (service: <%= serviceClass %>) =>
+        new GenericCrudFormFacade<<%= className %>>(service, {
+          successMessage: 'Registro salvo!',
+          permission: {
+            create: '<%= permCreate %>',
+            update: '<%= permUpdate %>',
+            view: '<%= permView %>'
+          }
+        }),
+      deps: [<%= serviceClass %>]
+    }
+  ],
+  templateUrl: './<%= name %>-form.page.html',
+  styleUrl: './<%= name %>-form.page.scss',
+})
+export class <%= formClass %> implements OnInit {
+  private fb: FormBuilder = inject(FormBuilder)
+  private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private router: Router = inject(Router);
+  public facade: GenericCrudFormFacade<<%= className %>> = inject(GenericCrudFormFacade<<%= className %>>);
+  private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
+
+  breadcrumbItems!: MenuItem[];
+  form: FormGroup<FormType> = this.fb.nonNullable.group({
+<%= formGroupLines %>
+  });
+
+  id: WritableSignal<number> = signal<number>(0);
+  mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
+
+  modeLabel: Signal<string> = computed(() => FormModeLabel[this.mode()]);
+  title: Signal<string> = computed(() => this.modeLabel() + ' <%= label.toLowerCase() %>');
+  activeBreadcrumbItemLabel: Signal<string> = computed(() => this.modeLabel() + (this.id() ? ` (ID: ${this.id()})` : ''))
+
+  constructor() {
+    this.id.set(Number(this.activatedRoute.snapshot.paramMap.get('id')));
+    this.mode.set(this.routeUtilsService.getFormModeFromCurrentUrl());
+
+    this.breadcrumbItems = [
+      { label: '<%= moduleLabel %>' },
+      { label: '<%= labelPlural %>' },
+      { label: 'Listar', routerLink: '/<%= module %>/<%= resource %>' },
+      { label: this.activeBreadcrumbItemLabel(), routerLink: this.router.url }
+    ];
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.facade.init(this.mode(), this.form, this.id());
+  }
+
+  onSubmit(): void {
+    this.facade.submit(this.form, this.id()).subscribe();
+  }
+
+  isInvalid(controlName: keyof FormType): boolean {
+    return (this.form.get(controlName)?.invalid ?? false) && ((this.form.get(controlName)?.dirty ?? false) || (this.form.get(controlName)?.touched ?? false))
+  }
+}

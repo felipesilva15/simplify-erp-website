@@ -1,0 +1,89 @@
+import { Component, DestroyRef, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { MenuItem } from 'primeng/api';
+import { ColumnType } from '<%= toAppDeep %>core/enums/column-type';<%= listExportImports %>
+import { FilterFieldDefinition } from '<%= toAppDeep %>core/models/filter-field-definition';
+import { TableColumn } from '<%= toAppDeep %>core/models/table-column';
+import { TableMenuItem } from '<%= toAppDeep %>core/models/table-menu-item';
+import { CrudListComponent } from '<%= toAppDeep %>shared/components/crud-list/crud-list.component';
+import { AppTemplate } from '<%= toAppDeep %>shared/directives/app-template';
+import { CrudListFacade } from '<%= toAppDeep %>shared/facades/crud-list.facade';
+import { DialogRefreshService } from '<%= toAppDeep %>shared/services/dialog-refresh.service';
+import { ListPageUi } from '<%= toAppDeep %>shared/ui/list-page/list-page.ui';
+import { <%= className %> } from '../../models/<%= name %>';
+import { <%= serviceClass %> } from '../../services/<%= name %>-service';
+<%= listExportMenuBlock %>
+@Component({
+  selector: '<%= listSelector %>',
+  imports: [
+    ListPageUi,
+    CrudListComponent,
+    RouterOutlet,
+    AppTemplate
+  ],
+  providers: [
+    {
+      provide: CrudListFacade,
+      useFactory: (service: <%= serviceClass %>) => new CrudListFacade<<%= className %>>(service, {
+        create: '<%= permCreate %>',
+        update: '<%= permUpdate %>',
+        view: '<%= permView %>',
+        delete: '<%= permDelete %>'
+      }<%= listFacadeConfig %>),
+      deps: [
+        <%= serviceClass %>
+      ]
+    }
+  ],
+  templateUrl: './<%= name %>-list.page.html',
+  styleUrl: './<%= name %>-list.page.scss',
+})
+export class <%= listClass %> implements OnInit {
+  private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
+  private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private dialogRefreshService: DialogRefreshService = inject(DialogRefreshService);
+  public facade: CrudListFacade<<%= className %>> = inject(CrudListFacade<<%= className %>>);
+
+  title: WritableSignal<string> = signal<string>('<%= listTitle %>')
+  breadcrumbItems: MenuItem[] = [
+    { label: '<%= moduleLabel %>' },
+    { label: '<%= labelPlural %>' },
+    { label: 'Listar', routerLink: '/<%= module %>/<%= resource %>' }
+  ];
+  cols: TableColumn<<%= className %>>[] = [
+    { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },
+<%= colsLines %>
+  ];
+  filterDefinition: FilterFieldDefinition[] = [
+    { name: 'id', label: 'ID', type: ColumnType.Integer },
+<%= filterLines %>
+  ]
+  tableMenu: TableMenuItem<<%= className %>>[] = [
+    {
+      label: 'Visualizar',
+      icon: 'pi pi-eye',
+      permission: '<%= permView %>',
+      action: (record?: <%= className %>) => this.router.navigate([record?.id], { relativeTo: this.activatedRoute })
+    },
+    {
+      label: 'Editar',
+      icon: 'pi pi-pencil',
+      permission: '<%= permEdit %>',
+      action: (record?: <%= className %>) => this.router.navigate([record?.id, 'edit'], { relativeTo: this.activatedRoute })
+    },
+    {
+      label: 'Deletar',
+      icon: 'pi pi-trash',
+      permission: '<%= permDelete %>',
+      action: (record?: <%= className %>) => record && this.facade.delete(record)
+    }
+  ];
+
+  ngOnInit(): void {
+    this.dialogRefreshService.saved$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.facade.load());
+  }
+}

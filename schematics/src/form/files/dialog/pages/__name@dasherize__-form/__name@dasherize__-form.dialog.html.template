@@ -1,0 +1,18 @@
+<app-form-dialog [facade]="facade">
+  <ng-template appTemplate="content">
+    @if (!facade.loading()) {
+      <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <p-fluid class="grid">
+<%= formFieldBlocks %>
+        </p-fluid>
+      </form>
+    } @else {
+      <p-fluid class="grid">
+<%= formSkeletonBlocks %>
+      </p-fluid>
+    }
+  </ng-template>
+  <ng-template appTemplate="footer">
+    <p-button label="Salvar" icon="pi pi-save" [disabled]="form.disabled || facade.loading()" [loading]="facade.saving()" (onClick)="onSubmit()" />
+  </ng-template>
+</app-form-dialog>

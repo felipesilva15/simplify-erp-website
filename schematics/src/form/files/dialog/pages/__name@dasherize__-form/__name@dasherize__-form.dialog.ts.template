@@ -1,0 +1,101 @@
+import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
+<%= formFormsImport %>
+import { ActivatedRoute } from '@angular/router';
+import { MenuItem } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { FluidModule } from 'primeng/fluid';
+import { MessageModule } from 'primeng/message';
+import { SkeletonModule } from 'primeng/skeleton';
+<%= formPrimeImports %>
+import { FormMode } from '<%= toAppDeep %>core/enums/form-mode';
+import { RouteUtilsService } from '<%= toAppDeep %>core/services/route-utils-service';
+import { FormControlErrorsComponent } from '<%= toAppDeep %>shared/components/form-control-errors/form-control-errors.component';
+import { AppTemplate } from '<%= toAppDeep %>shared/directives/app-template';
+import { GenericCrudFormFacade } from '<%= toAppDeep %>shared/facades/generic-crud-form.facade';
+import { DialogRefreshService } from '<%= toAppDeep %>shared/services/dialog-refresh.service';
+import { DynamicDialogService } from '<%= toAppDeep %>shared/services/dynamic-dialog-service';
+import { FormDialogUi } from '<%= toAppDeep %>shared/ui/form-dialog/form-dialog.ui';
+import { <%= className %> } from '../../models/<%= name %>';
+import { <%= serviceClass %> } from '../../services/<%= name %>-service';
+
+interface FormType {
+<%= formTypeLines %>
+}
+
+@Component({
+  selector: '<%= formSelector %>',
+  imports: [
+    MessageModule,
+    FormsModule,
+    ReactiveFormsModule,
+<%= formImportModules %>
+    FormDialogUi,
+    FluidModule,
+    FormControlErrorsComponent,
+    SkeletonModule,
+    ButtonModule,
+    AppTemplate
+  ],
+  providers: [
+    {
+      provide: GenericCrudFormFacade<<%= className %>>,
+      useFactory: (service: <%= serviceClass %>) =>
+        new GenericCrudFormFacade<<%= className %>>(service, {
+          successMessage: 'Registro salvo!',
+          permission: {
+            create: '<%= permCreate %>',
+            update: '<%= permUpdate %>',
+            view: '<%= permView %>'
+          }
+        }),
+      deps: [<%= serviceClass %>]
+    }
+  ],
+  templateUrl: './<%= name %>-form.dialog.html',
+  styleUrl: './<%= name %>-form.dialog.scss',
+})
+export class <%= formClass %> implements OnInit {
+  private fb: FormBuilder = inject(FormBuilder)
+  private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  public facade: GenericCrudFormFacade<<%= className %>> = inject(GenericCrudFormFacade<<%= className %>>);
+  private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
+  private dialogConfig: DynamicDialogConfig = inject(DynamicDialogConfig);
+  private dynamicDialogService: DynamicDialogService = inject(DynamicDialogService);
+  private dialogRefreshService: DialogRefreshService = inject(DialogRefreshService);
+
+  breadcrumbItems!: MenuItem[];
+  form: FormGroup<FormType> = this.fb.nonNullable.group({
+<%= formGroupLines %>
+  });
+
+  id: WritableSignal<number> = signal<number>(0);
+  mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
+
+  constructor() {
+    const routeParam: string | null = this.activatedRoute.snapshot.paramMap.get('id');
+    const routeId = routeParam === null ? Number.NaN : Number(routeParam);
+    const dialogId = Number((this.dialogConfig?.data as { id?: number } | undefined)?.id);
+
+    this.id.set(Number.isNaN(routeId) ? (Number.isNaN(dialogId) ? 0 : dialogId) : routeId);
+    this.mode.set(this.routeUtilsService.getFormModeFromCurrentUrl());
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.facade.init(this.mode(), this.form, this.id());
+  }
+
+  close(): void {
+    this.dynamicDialogService.close();
+  }
+
+  onSubmit(): void {
+    this.facade.submit(this.form, this.id()).subscribe({
+      next: () => this.dialogRefreshService.notifySaved(),
+    });
+  }
+
+  isInvalid(controlName: keyof FormType): boolean {
+    return (this.form.get(controlName)?.invalid ?? false) && ((this.form.get(controlName)?.dirty ?? false) || (this.form.get(controlName)?.touched ?? false))
+  }
+}

@@ -1,0 +1,31 @@
+import { Routes } from '@angular/router';
+import { permissionGuard } from '<%= toAppRoutes %>core/guards/permission-guard';
+import { <%= listClass %> } from './pages/<%= name %>-list/<%= name %>-list.page';
+import { <%= formClass %> } from './pages/<%= name %>-form/<%= name %>-form.page';
+
+export const <%= routesConst %>: Routes = [
+    {
+        path: '',
+        data: { permission: '<%= permViewAny %>' },
+        component: <%= listClass %>,
+        canActivate: [permissionGuard]
+    },
+    {
+        path: 'new',
+        data: { permission: '<%= permCreate %>' },
+        component: <%= formClass %>,
+        canActivate: [permissionGuard]
+    },
+    {
+        path: ':id/edit',
+        data: { permission: '<%= permEdit %>' },
+        component: <%= formClass %>,
+        canActivate: [permissionGuard]
+    },
+    {
+        path: ':id',
+        data: { permission: '<%= permView %>' },
+        component: <%= formClass %>,
+        canActivate: [permissionGuard]
+    }
+];

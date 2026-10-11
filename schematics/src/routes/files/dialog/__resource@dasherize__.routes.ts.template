@@ -1,0 +1,65 @@
+import { Routes } from '@angular/router';
+import { permissionGuard } from '<%= toAppRoutes %>core/guards/permission-guard';
+import { DialogSize } from '<%= toAppRoutes %>core/enums/dialog-size';
+import { DynamicDialogHostComponent } from '<%= toAppRoutes %>shared/components/dynamic-dialog-host/dynamic-dialog-host.component';
+import { <%= listClass %> } from './pages/<%= name %>-list/<%= name %>-list.page';
+import { <%= formClass %> } from './pages/<%= name %>-form/<%= name %>-form.dialog';
+
+export const <%= routesConst %>: Routes = [
+    {
+        path: '',
+        data: { permission: '<%= permViewAny %>' },
+        component: <%= listClass %>,
+        canActivate: [permissionGuard],
+        children: [
+            {
+                path: 'new',
+                data: {
+                    permission: '<%= permCreate %>',
+                    dialog: {
+                        component: <%= formClass %>,
+                        config: {
+                            title: '<%= label %>',
+                            size: DialogSize.Small,
+                            closeable: true
+                        },
+                    }
+                },
+                component: DynamicDialogHostComponent,
+                canActivate: [permissionGuard]
+            },
+            {
+                path: ':id/edit',
+                data: {
+                    permission: '<%= permEdit %>',
+                    dialog: {
+                        component: <%= formClass %>,
+                        config: {
+                            title: 'Editar <%= label.toLowerCase() %>',
+                            size: DialogSize.Small,
+                            closeable: true
+                        },
+                    },
+                },
+                component: DynamicDialogHostComponent,
+                canActivate: [permissionGuard]
+            },
+            {
+                path: ':id',
+                data: {
+                    permission: '<%= permView %>',
+                    dialog: {
+                        component: <%= formClass %>,
+                        config: {
+                            title: 'Visualizar <%= label.toLowerCase() %>',
+                            size: DialogSize.Small,
+                            closeable: true
+                        },
+                    }
+                },
+                component: DynamicDialogHostComponent,
+                canActivate: [permissionGuard]
+            }
+        ]
+    }
+];
