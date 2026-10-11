@@ -16,21 +16,39 @@
     },
     "fields": {
       "type": "string",
-      "description": "Campos no formato nome:tipo[:Rótulo], separados por vírgula (usado no placeholder)."
+      "default": "",
+      "description": "Campos separados por vírgula (usados para derivar o placeholder).",
+      "x-prompt": "Campos (usados no placeholder; vazio = mínimo)"
     },
     "plural": {
       "type": "string",
-      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+      "default": "",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
+      "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
+    },
+    "placeholder": {
+      "type": "string",
+      "default": "",
+      "description": "Placeholder de busca (vazio = derivado dos campos de texto).",
+      "x-prompt": "Placeholder (vazio = derivado dos campos de texto)"
+    },
+    "lookup-placeholder": {
+      "type": "string",
+      "default": "",
+      "description": "Placeholder do componente de lookup (vazio = o mesmo da busca).",
+      "x-prompt": "Placeholder do lookup (vazio = o mesmo da busca)"
     },
     "skip-tests": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera arquivos de teste."
+      "description": "Não gera arquivos de teste.",
+      "x-prompt": "Pular arquivos de teste?"
     },
     "force": {
       "type": "boolean",
       "default": false,
-      "description": "Sobrescreve arquivos existentes."
+      "description": "Sobrescreve arquivos existentes.",
+      "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
   "required": ["module", "name"]

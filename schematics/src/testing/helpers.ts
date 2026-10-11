@@ -19,6 +19,12 @@ export const THIRD_PARTY_ROUTES: Routes = [
 ];
 `;
 
+const CATALOG_MODULE_ROUTES = `import { Routes } from '@angular/router';
+
+export const CATALOG_ROUTES: Routes = [
+];
+`;
+
 const APP_ROUTES = `import { Routes } from '@angular/router';
 import { MainLayout } from './layouts/main-layout/main-layout';
 
@@ -65,6 +71,7 @@ export function createTree(): UnitTestTree {
 
   tree.create('/angular.json', JSON.stringify({ projects: { app: { sourceRoot: 'src' } } }));
   tree.create('/src/app/features/third-party/third-party.routes.ts', MODULE_ROUTES);
+  tree.create('/src/app/features/catalog/catalog.routes.ts', CATALOG_MODULE_ROUTES);
   tree.create('/src/app/app.routes.ts', APP_ROUTES);
   tree.create('/src/app/core/config/menu.ts', MENU);
 

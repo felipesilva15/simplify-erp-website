@@ -12,7 +12,7 @@ import { CrudListFacade } from '<%= toAppDeep %>shared/facades/crud-list.facade'
 import { DialogRefreshService } from '<%= toAppDeep %>shared/services/dialog-refresh.service';
 import { ListPageUi } from '<%= toAppDeep %>shared/ui/list-page/list-page.ui';
 import { <%= className %> } from '../../models/<%= name %>';
-import { <%= serviceClass %> } from '../../services/<%= name %>-service';
+import { <%= serviceClass %> } from '../../services/<%= name %>-service';<%= listImports %>
 <%= listExportMenuBlock %>
 @Component({
   selector: '<%= listSelector %>',

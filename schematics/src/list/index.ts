@@ -1,5 +1,6 @@
 import { chain, Rule } from '@angular-devkit/schematics';
 import { buildContext } from '../utils/context';
+import { addEnumFiles } from '../utils/enums';
 import { applyTemplateSource, generateFiles } from '../utils/generate';
 import { normalizeOptions } from '../utils/options';
 import { BaseSchema, NormalizedOptions } from '../utils/types';
@@ -21,7 +22,7 @@ export function addList(options: NormalizedOptions): Rule {
     targets.push(`${pageDir}/${options.singular}-list.page.spec.ts`);
   }
 
-  return generateFiles(chain(sources), targets, options.force);
+  return chain([addEnumFiles(options), generateFiles(chain(sources), targets, options.force)]);
 }
 
 export default function list(options: BaseSchema): Rule {

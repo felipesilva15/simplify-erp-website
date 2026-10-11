@@ -1,5 +1,6 @@
-import { isDateField, isNumberField, isStringField, tsString } from './fields';
-import { FieldDefinition, FormType } from './types';
+import { strings } from '@angular-devkit/schematics';
+import { isDateField, isEnumField, isLookupField, isNumberField, isStringField, resolveLookupReference, tsString } from './fields';
+import { FieldDefinition, FormType, LookupRenderContext } from './types';
 
 export interface FormCode {
   formTypeLines: string;
@@ -12,6 +13,10 @@ export interface FormCode {
   formPrimeImports: string;
   /** Entradas variáveis para o array `imports` do componente. */
   formImportModules: string;
+  /** Imports de model/enum/lookup usados pelo componente (pode ser vazio). */
+  formExtraImports: string;
+  /** Propriedades de opções de enum declaradas na classe (pode ser vazio). */
+  formEnumProperties: string;
 }
 
 function validators(field: FieldDefinition): string[] {
@@ -33,6 +38,16 @@ function validators(field: FieldDefinition): string[] {
 }
 
 function formControlType(field: FieldDefinition): string {
+  if (isLookupField(field)) {
+    return 'LookupItem | null';
+  }
+
+  if (isEnumField(field)) {
+    const enumClass = field.enumClass ?? 'string';
+
+    return field.optional ? `${enumClass} | null` : enumClass;
+  }
+
   if (isDateField(field)) {
     return 'Date | null';
   }
@@ -49,6 +64,20 @@ function formControlType(field: FieldDefinition): string {
 }
 
 function formGroupLine(field: FieldDefinition): string {
+  if (isLookupField(field)) {
+    return `${field.name}: new FormControl<LookupItem | null>(null, [${validators(field).join(', ')}])`;
+  }
+
+  if (isEnumField(field)) {
+    if (field.optional) {
+      return `${field.name}: new FormControl<${field.enumClass} | null>(null, [])`;
+    }
+
+    const firstValue = field.enumValues?.[0]?.name ?? 'null';
+
+    return `${field.name}: [${field.enumClass}.${firstValue}, [${validators(field).join(', ')}]]`;
+  }
+
   const validatorsExpr = `[${validators(field).join(', ')}]`;
 
   if (isDateField(field)) {
@@ -90,7 +119,21 @@ function inputHtml(field: FieldDefinition): string {
   }
 }
 
-function fieldBlock(field: FieldDefinition, columnClass: string, indent: number, step: number): string {
+function lookupHtml(field: FieldDefinition, context: LookupRenderContext): string {
+  const reference = resolveLookupReference(field, context);
+
+  return `<${reference.selector} formControlName="${field.name}"></${reference.selector}>`;
+}
+
+function enumHtml(field: FieldDefinition): string {
+  const options = `${strings.camelize(field.enumClass ?? field.name)}Options`;
+  const clear = field.optional ? ' [showClear]="true"' : '';
+  const placeholder = tsString(`Selecione ${field.label.toLowerCase()}`);
+
+  return `<p-select id="${field.name}" inputId="${field.name}" formControlName="${field.name}" appendTo="body" [options]="${options}" optionLabel="name" optionValue="code"${clear} placeholder="${placeholder}" [invalid]="isInvalid('${field.name}')"></p-select>`;
+}
+
+function fieldBlock(field: FieldDefinition, columnClass: string, indent: number, step: number, context: LookupRenderContext): string {
   const pad = ' '.repeat(indent);
   const pad2 = ' '.repeat(indent + step);
   const pad3 = ' '.repeat(indent + step * 2);
@@ -107,10 +150,11 @@ ${pad}</div>`;
   }
 
   const requiredMark = field.optional ? '' : '<span class="text-red-500 font-bold">*</span>';
+  const control = isLookupField(field) ? lookupHtml(field, context) : isEnumField(field) ? enumHtml(field) : inputHtml(field);
 
   return `${pad}<div class="${columnClass}">
 ${pad2}<label htmlFor="${field.name}">${tsString(field.label)}${requiredMark}</label>
-${pad2}${inputHtml(field)}
+${pad2}${control}
 ${errors}
 ${pad}</div>`;
 }
@@ -126,14 +170,17 @@ ${pad}</div>`;
 }
 
 /** Gera os trechos dependentes da definição de campos para os formulários. */
-export function generateFormCode(fields: FieldDefinition[], variant: FormType): FormCode {
+export function generateFormCode(fields: FieldDefinition[], variant: FormType, context: LookupRenderContext): FormCode {
   const columnClass = variant === 'page' ? 'col-12 md:col-6' : 'col-12';
   const fieldIndent = variant === 'page' ? 20 : 10;
   const step = variant === 'page' ? 4 : 2;
+  const lookupsEnabled = context.lookupsEnabled;
 
   const formTypeLines = fields.map((field) => `  ${field.name}: FormControl<${formControlType(field)}>;`).join('\n');
   const formGroupLines = fields.map((field) => `    ${formGroupLine(field)},`).join('\n');
-  const formFieldBlocks = fields.map((field) => fieldBlock(field, columnClass, fieldIndent, step)).join('\n');
+  const formFieldBlocks = fields
+    .map((field) => fieldBlock(field, columnClass, fieldIndent, step, context))
+    .join('\n');
   const formSkeletonBlocks = fields.map(() => skeletonBlock(columnClass, fieldIndent, step)).join('\n');
 
   const needsValidators = fields.some((field) => validators(field).length > 0);
@@ -148,13 +195,40 @@ export function generateFormCode(fields: FieldDefinition[], variant: FormType): 
 
   const primeImports: string[] = [];
   const primeModules: string[] = [];
+  const extraImports: string[] = [];
+  const enumProperties: string[] = [];
+  const seenModules = new Set<string>();
+  const seenExtra = new Set<string>();
 
   const addPrime = (module: string, path: string): void => {
+    if (seenModules.has(module)) {
+      return;
+    }
+
+    seenModules.add(module);
     primeImports.push(`import { ${module} } from '${path}';`);
     primeModules.push(`    ${module},`);
   };
 
-  if (fields.some(isStringField)) {
+  const addModule = (module: string): void => {
+    if (seenModules.has(module)) {
+      return;
+    }
+
+    seenModules.add(module);
+    primeModules.push(`    ${module},`);
+  };
+
+  const addExtra = (line: string): void => {
+    if (seenExtra.has(line)) {
+      return;
+    }
+
+    seenExtra.add(line);
+    extraImports.push(line);
+  };
+
+  if (fields.some((field) => isStringField(field) && field.type !== 'textarea')) {
     addPrime('InputTextModule', 'primeng/inputtext');
   }
 
@@ -174,6 +248,34 @@ export function generateFormCode(fields: FieldDefinition[], variant: FormType): 
     addPrime('DatePickerModule', 'primeng/datepicker');
   }
 
+  if (fields.some(isEnumField)) {
+    addPrime('SelectModule', 'primeng/select');
+  }
+
+  for (const field of fields) {
+    if (isLookupField(field) && lookupsEnabled) {
+      const reference = resolveLookupReference(field, context);
+
+      addExtra(`import { ${reference.componentClass} } from '${reference.importPath}';`);
+      addModule(reference.componentClass);
+      continue;
+    }
+
+    if (isEnumField(field) && field.enumClass && field.enumFile) {
+      addExtra(`import { ${field.enumClass}, ${field.enumClass}Options } from '../../enums/${field.enumFile}';`);
+      const propertyName = `${strings.camelize(field.enumClass)}Options`;
+      const propertyLine = `  ${propertyName}: { code: ${field.enumClass}, name: string }[] = ${field.enumClass}Options;`;
+
+      if (!enumProperties.includes(propertyLine)) {
+        enumProperties.push(propertyLine);
+      }
+    }
+  }
+
+  if (fields.some((field) => isLookupField(field) && lookupsEnabled)) {
+    addExtra(`import { LookupItem } from '${context.toAppDeep}core/models/lookup-item';`);
+  }
+
   return {
     formTypeLines,
     formGroupLines,
@@ -182,5 +284,7 @@ export function generateFormCode(fields: FieldDefinition[], variant: FormType): 
     formFormsImport: `import { ${formsSymbols.join(', ')} } from '@angular/forms';`,
     formPrimeImports: primeImports.join('\n'),
     formImportModules: primeModules.join('\n'),
+    formExtraImports: extraImports.length ? `\n${extraImports.join('\n')}` : '',
+    formEnumProperties: enumProperties.length ? `${enumProperties.join('\n')}\n` : '',
   };
 }

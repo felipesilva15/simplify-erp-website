@@ -16,28 +16,39 @@
     },
     "plural": {
       "type": "string",
-      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+      "default": "",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
+      "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
     },
     "label-plural": {
       "type": "string",
-      "description": "Rótulo plural em pt-BR exibido no menu (ex.: Tipos de parceiro)."
+      "default": "",
+      "description": "Rótulo plural em pt-BR exibido no menu (ex.: Tipos de parceiro).",
+      "x-prompt": "Rótulo plural exibido no menu (vazio = derivado)"
     },
     "module-label": {
       "type": "string",
-      "description": "Rótulo do grupo de menu do módulo (ex.: Terceiro)."
+      "default": "",
+      "description": "Rótulo do grupo de menu do módulo (ex.: Terceiro).",
+      "x-prompt": "Rótulo do grupo de menu (vazio = derivado)"
     },
     "menu-icon": {
       "type": "string",
-      "description": "Ícone PrimeIcons do item de menu (ex.: pi pi-star)."
+      "default": "pi pi-star",
+      "description": "Ícone PrimeIcons do item de menu (ex.: pi pi-star).",
+      "x-prompt": "Ícone PrimeIcons (ex.: pi pi-star)"
     },
     "permission-key": {
       "type": "string",
-      "description": "Chave base de permissão (ex.: partnerTypes)."
+      "default": "",
+      "description": "Chave base de permissão (ex.: partnerTypes).",
+      "x-prompt": "Chave base de permissão (vazio = derivado)"
     },
     "force": {
       "type": "boolean",
       "default": false,
-      "description": "Mantido por consistência; não sobrescreve o menu."
+      "description": "Mantido por consistência; não sobrescreve o menu.",
+      "x-prompt": "Forçar (sem efeito no menu)?"
     }
   },
   "required": ["module", "name"]

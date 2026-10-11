@@ -1,4 +1,4 @@
 import { BaseEntity } from '<%= toApp %>core/models/base-entity';
-
+<%= modelImports %>
 export interface <%= className %> extends BaseEntity {
 <%= modelFields %>}

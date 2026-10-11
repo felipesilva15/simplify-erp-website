@@ -16,17 +16,33 @@
     },
     "plural": {
       "type": "string",
-      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+      "default": "",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
+      "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
+    },
+    "with-export": {
+      "type": "boolean",
+      "default": false,
+      "description": "Implementa ExportableService (método export) no service.",
+      "x-prompt": "Implementar exportação (ExportableService)?"
+    },
+    "skip-lookup": {
+      "type": "boolean",
+      "default": false,
+      "description": "Não implementa LookupService (método search) no service.",
+      "x-prompt": "Não implementar lookup (LookupService) no service?"
     },
     "skip-tests": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera arquivos de teste."
+      "description": "Não gera arquivos de teste.",
+      "x-prompt": "Pular arquivos de teste?"
     },
     "force": {
       "type": "boolean",
       "default": false,
-      "description": "Sobrescreve arquivos existentes."
+      "description": "Sobrescreve arquivos existentes.",
+      "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
   "required": ["module", "name"]

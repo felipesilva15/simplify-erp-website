@@ -3,6 +3,15 @@ import { appendArrayItem, escapeRegExp } from './text';
 import { readText, writeText } from './tree';
 import { NormalizedOptions } from './types';
 
+/** Dados mínimos para registrar um módulo no `app.routes.ts`. */
+export interface ModuleRegistration {
+  sourceRoot: string;
+  /** Módulo em kebab-case (pode conter `/`). */
+  module: string;
+  /** Constante exportada pelo arquivo `<módulo>.routes.ts`. */
+  moduleRoutesConst: string;
+}
+
 function buildRouteEntry(options: NormalizedOptions, indent: number): string {
   const pad = ' '.repeat(indent);
   const inner = ' '.repeat(indent + 4);
@@ -26,18 +35,35 @@ function createModuleRoutesFile(options: NormalizedOptions): string {
   ].join('\n');
 }
 
+/** Localiza o índice do `[` que abre o array de rotas do módulo. */
+function findModuleArrayIndex(content: string, moduleRoutesConst: string): number {
+  const declaration = content.indexOf(`const ${moduleRoutesConst}`);
+  const searchFrom = declaration === -1 ? 0 : declaration;
+  const assignment = content.indexOf('= [', searchFrom);
+
+  if (assignment === -1) {
+    return -1;
+  }
+
+  return content.indexOf('[', assignment);
+}
+
 /** Registra o módulo no array de rotas filhas do layout principal. */
-function registerModuleInAppRoutes(tree: Tree, context: SchematicContext, options: NormalizedOptions): void {
-  const path = `${options.sourceRoot}/app/app.routes.ts`;
+export function registerModuleInAppRoutes(
+  tree: Tree,
+  context: SchematicContext,
+  registration: ModuleRegistration,
+): Tree {
+  const path = `${registration.sourceRoot}/app/app.routes.ts`;
   const content = readText(tree, path);
 
   if (content === null) {
-    context.logger.warn(`app.routes.ts não encontrado em ${path}; registre o módulo "${options.module}" manualmente.`);
-    return;
+    context.logger.warn(`app.routes.ts não encontrado em ${path}; registre o módulo "${registration.module}" manualmente.`);
+    return tree;
   }
 
-  if (new RegExp(`path:\\s*'${escapeRegExp(options.module)}'`).test(content)) {
-    return;
+  if (new RegExp(`path:\\s*'${escapeRegExp(registration.module)}'`).test(content)) {
+    return tree;
   }
 
   const layoutIndex = content.indexOf('MainLayout');
@@ -45,20 +71,22 @@ function registerModuleInAppRoutes(tree: Tree, context: SchematicContext, option
 
   if (childrenIndex === -1) {
     context.logger.warn(
-      `Não foi possível registrar o módulo "${options.module}" em ${path}; faça-o manualmente.`,
+      `Não foi possível registrar o módulo "${registration.module}" em ${path}; faça-o manualmente.`,
     );
-    return;
+    return tree;
   }
 
   const bracketIndex = content.indexOf('[', childrenIndex);
   const entry = [
     '            {',
-    `                path: '${options.module}',`,
-    `                loadChildren: () => import('./features/${options.module}/${options.module}.routes').then(r => r.${options.moduleRoutesConst})`,
+    `                path: '${registration.module}',`,
+    `                loadChildren: () => import('./features/${registration.module}/${registration.module}.routes').then(r => r.${registration.moduleRoutesConst})`,
     '            }',
   ].join('\n');
 
   writeText(tree, path, appendArrayItem(content, bracketIndex, entry));
+
+  return tree;
 }
 
 /**
@@ -72,7 +100,11 @@ export function registerResourceRoutes(options: NormalizedOptions): Rule {
 
     if (content === null) {
       writeText(tree, path, createModuleRoutesFile(options));
-      registerModuleInAppRoutes(tree, context, options);
+      registerModuleInAppRoutes(tree, context, {
+        sourceRoot: options.sourceRoot,
+        module: options.module,
+        moduleRoutesConst: options.moduleRoutesConst,
+      });
 
       return tree;
     }
@@ -82,17 +114,12 @@ export function registerResourceRoutes(options: NormalizedOptions): Rule {
       return tree;
     }
 
-    const exportIndex = content.indexOf(options.moduleRoutesConst);
-
-    if (exportIndex === -1) {
-      context.logger.warn(`Não foi possível localizar "${options.moduleRoutesConst}" em ${path}; registre a rota manualmente.`);
-      return tree;
-    }
-
-    const bracketIndex = content.indexOf('[', content.indexOf('= [', exportIndex));
+    const bracketIndex = findModuleArrayIndex(content, options.moduleRoutesConst);
 
     if (bracketIndex === -1) {
-      context.logger.warn(`Não foi possível localizar o array de rotas em ${path}; registre a rota manualmente.`);
+      context.logger.warn(
+        `Não foi possível localizar o array de rotas de "${options.moduleRoutesConst}" em ${path}; registre a rota manualmente.`,
+      );
       return tree;
     }
 

@@ -3,7 +3,7 @@ import { parseFields } from './fields';
 import { MODULE_LABELS } from './module-labels';
 import { constantCase, humanize, pluralize, singularize } from './names';
 import { readText } from './tree';
-import { BaseSchema, FieldDefinition, FormType, NormalizedOptions } from './types';
+import { BaseSchema, FieldDefinition, FormType, NormalizedModuleOptions, NormalizedOptions } from './types';
 import { readSourceRoot } from './workspace';
 
 /** Esqueleto mínimo gerado quando `--fields` não é informado. */
@@ -41,13 +41,16 @@ export function normalizeOptions(schema: BaseSchema, tree: Tree): NormalizedOpti
     const available = tree.getDir(featuresRoot).subdirs.sort();
 
     throw new SchematicsException(
-      `Módulo "${module}" não encontrado em ${featuresRoot}. Módulos disponíveis: ${available.join(', ') || '(nenhum)'}.`,
+      `Módulo "${module}" não encontrado em ${featuresRoot}. ` +
+        `Crie-o com o schematic "module" (ng g ./schematics/collection.json:module --name=${module}) ` +
+        `ou use um dos módulos disponíveis: ${available.join(', ') || '(nenhum)'}.`,
     );
   }
 
   const resource = schema.plural ? strings.dasherize(schema.plural.trim()) : pluralize(singular);
   const className = strings.classify(singular);
-  const parsedFields = parseFields(schema.fields);
+  const detectLookups = schema['detect-lookups'] !== false;
+  const parsedFields = parseFields(schema.fields, detectLookups);
   const fields = parsedFields.length > 0 ? parsedFields : DEFAULT_FIELDS;
   const formType: FormType = schema['form-type'] === 'page' ? 'page' : 'dialog';
 
@@ -74,10 +77,47 @@ export function normalizeOptions(schema: BaseSchema, tree: Tree): NormalizedOpti
     skipRoutes: schema['skip-routes'] === true,
     skipLookup: schema['skip-lookup'] === true,
     skipTests: schema['skip-tests'] === true,
+    detectLookups,
+    placeholder: schema.placeholder?.trim() ?? '',
+    lookupPlaceholder: schema['lookup-placeholder']?.trim() ?? '',
     force: schema.force === true,
     dryRun: schema['dry-run'] === true,
     sourceRoot,
     moduleSegments: module.split('/').length,
     featureDir: `${moduleDir}/${resource}`,
+  };
+}
+
+/** Valida as opções e resolve os caminhos do schematic `module`. */
+export function normalizeModuleOptions(schema: BaseSchema, tree: Tree): NormalizedModuleOptions {
+  const module = strings.dasherize((schema.name ?? schema.module ?? '').trim());
+
+  if (!module) {
+    throw new SchematicsException('Informe o nome do módulo com --name=<módulo>.');
+  }
+
+  const MODULE_PATTERN = /^[a-z0-9]+(?:[/-][a-z0-9]+)*$/;
+
+  if (!MODULE_PATTERN.test(module)) {
+    throw new SchematicsException(
+      `Nome de módulo inválido: "${schema.name}". Use kebab-case (ex.: catalog) ou aninhado (ex.: financial/accounts).`,
+    );
+  }
+
+  const sourceRoot = readSourceRoot((path) => readText(tree, path));
+  const moduleDir = `${sourceRoot}/app/features/${module}`;
+
+  return {
+    module,
+    moduleDir,
+    routesPath: `${moduleDir}/${module.split('/').pop()}.routes.ts`,
+    moduleRoutesConst: `${constantCase(module)}_ROUTES`,
+    moduleLabel: schema['module-label']?.trim() || MODULE_LABELS[module] || humanize(module),
+    menuIcon: schema['menu-icon']?.trim() || 'pi pi-folder',
+    skipMenu: schema['skip-menu'] === true,
+    skipRoutes: schema['skip-routes'] === true,
+    force: schema.force === true,
+    sourceRoot,
+    moduleSegments: module.split('/').length,
   };
 }

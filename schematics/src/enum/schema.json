@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "SimplifyErpEnum",
+  "title": "Gera os arquivos de enumeração declarados em --fields",
+  "type": "object",
+  "properties": {
+    "module": {
+      "type": "string",
+      "description": "Módulo/feature de destino, em kebab-case (ex.: catalog).",
+      "x-prompt": "Módulo (ex.: catalog)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Recurso no singular, em kebab-case (ex.: product-category).",
+      "x-prompt": "Recurso no singular (ex.: product-category)"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Campos com enum no formato nome:enum[:Rótulo][:Classe]:VALOR=Rótulo|VALOR=Rótulo.",
+      "x-prompt": "Campos (ex.: applicability:enum:Aplicabilidade:PRODUCT=Produtos|SERVICE=Serviços)"
+    },
+    "plural": {
+      "type": "string",
+      "default": "",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
+      "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
+    },
+    "force": {
+      "type": "boolean",
+      "default": false,
+      "description": "Sobrescreve arquivos existentes.",
+      "x-prompt": "Sobrescrever arquivos existentes?"
+    }
+  },
+  "required": ["module", "name", "fields"]
+}

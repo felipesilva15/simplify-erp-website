@@ -4,7 +4,7 @@ import { createRunner, createTree } from '../testing/helpers';
 const runner = createRunner();
 
 describe('service schematic', () => {
-  it('gera o service com os métodos do contrato CRUD', async () => {
+  it('gera o service com os métodos do contrato CRUD e LookupService (sem export por padrão)', async () => {
     const tree = createTree();
     const result = await runner.runSchematic('service', { module: 'third-party', name: 'partner-type' }, tree);
 
@@ -12,13 +12,50 @@ describe('service schematic', () => {
       '/src/app/features/third-party/partner-types/services/partner-type-service.ts',
     );
 
-    expect(service).toContain('export class PartnerTypeService implements CrudService<PartnerType>, LookupService, ExportableService');
+    expect(service).toContain('export class PartnerTypeService implements CrudService<PartnerType>, LookupService');
+    expect(service).not.toContain('ExportableService');
+    expect(service).not.toContain('export(params: ExportRequestParams)');
     expect(service).toContain("environment.baseUrlApi + '/third-party/partner-types'");
     expect(service).toContain('edit(id: number): Observable<ApiResponse<PartnerType>>');
     expect(service).toContain('create(payload: Partial<PartnerType>)');
     expect(service).toContain('search(params: LookupFilter)');
-    expect(service).toContain('export(params: ExportRequestParams)');
     expect(result.exists('/src/app/features/third-party/partner-types/services/partner-type-service.spec.ts')).toBe(true);
+  });
+
+  it('implementa ExportableService somente com --with-export', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'service',
+      { module: 'third-party', name: 'partner-type', 'with-export': true },
+      tree,
+    );
+
+    const service = result.readContent(
+      '/src/app/features/third-party/partner-types/services/partner-type-service.ts',
+    );
+
+    expect(service).toContain(
+      'export class PartnerTypeService implements CrudService<PartnerType>, LookupService, ExportableService',
+    );
+    expect(service).toContain('export(params: ExportRequestParams)');
+    expect(service).toContain("import { ExportableService } from '../../../../core/contracts/exportable-service';");
+  });
+
+  it('não implementa LookupService com --skip-lookup', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'service',
+      { module: 'third-party', name: 'partner-type', 'skip-lookup': true },
+      tree,
+    );
+
+    const service = result.readContent(
+      '/src/app/features/third-party/partner-types/services/partner-type-service.ts',
+    );
+
+    expect(service).toContain('export class PartnerTypeService implements CrudService<PartnerType> {');
+    expect(service).not.toContain('LookupService');
+    expect(service).not.toContain('search(params: LookupFilter)');
   });
 
   it('não gera spec com --skip-tests', async () => {

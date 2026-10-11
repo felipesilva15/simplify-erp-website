@@ -66,18 +66,28 @@ export function findMatchingIndex(text: string, openIndex: number): number {
 
 /**
  * Acrescenta um item ao final de um array identificado pelo índice do `[`.
- * Garante a vírgula no último elemento anterior e preserva a linha do `]`.
+ * Garante a vírgula no último elemento anterior (quando já houver itens) e
+ * preserva a linha do `]`. Lida tanto com arrays vazios (`[` + `]` em linhas
+ * separadas ou na mesma linha) quanto com o fechamento alinhado em sua linha.
  */
 export function appendArrayItem(text: string, openIndex: number, itemBlock: string): string {
   const closeIndex = findMatchingIndex(text, openIndex);
-  const closeLineStart = text.lastIndexOf('\n', closeIndex) + 1;
+  const hasItems = text.slice(openIndex + 1, closeIndex).trim().length > 0;
+  const lineStart = text.lastIndexOf('\n', closeIndex) + 1;
+  const beforeCloseOnLine = text.slice(lineStart, closeIndex);
+  const ownLine = beforeCloseOnLine.trim() === '';
 
-  let head = text.slice(0, closeLineStart);
-  const tail = text.slice(closeLineStart);
-  const trimmed = head.replace(/\s+$/, '');
+  let head = ownLine ? text.slice(0, lineStart) : text.slice(0, closeIndex);
+  const tail = ownLine ? text.slice(lineStart) : text.slice(closeIndex);
+  const trimmedHead = head.replace(/\s+$/, '');
 
-  if (trimmed.length > 0 && !trimmed.endsWith(',')) {
-    head = `${trimmed},${head.slice(trimmed.length)}`;
+  if (hasItems && !trimmedHead.endsWith(',')) {
+    head = `${trimmedHead},${head.slice(trimmedHead.length)}`;
+  }
+
+  if (!ownLine) {
+    const indent = /^[ \t]*/.exec(beforeCloseOnLine)?.[0] ?? '';
+    return `${head}\n${itemBlock}\n${indent}${tail}`;
   }
 
   return `${head}${itemBlock}\n${tail}`;

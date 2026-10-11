@@ -16,48 +16,89 @@
     },
     "fields": {
       "type": "string",
-      "description": "Campos no formato nome:tipo[:Rótulo], separados por vírgula."
+      "default": "",
+      "description": "Campos separados por vírgula: nome[?]:tipo[:Rótulo][:extras]. Campos terminados em _id viram lookup.",
+      "x-prompt": "Campos (ex.: name:string:Nome,active:boolean:Ativo; vazio = mínimo)"
     },
     "plural": {
       "type": "string",
-      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+      "default": "",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
+      "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
     },
     "label": {
       "type": "string",
-      "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro)."
+      "default": "",
+      "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro).",
+      "x-prompt": "Rótulo singular (vazio = derivado)"
     },
     "label-plural": {
       "type": "string",
-      "description": "Rótulo plural em pt-BR (ex.: Tipos de parceiro)."
+      "default": "",
+      "description": "Rótulo plural em pt-BR (ex.: Tipos de parceiro).",
+      "x-prompt": "Rótulo plural (vazio = derivado)"
     },
     "module-label": {
       "type": "string",
-      "description": "Rótulo do módulo usado no breadcrumb (ex.: Terceiro)."
+      "default": "",
+      "description": "Rótulo do módulo usado no breadcrumb (ex.: Terceiro).",
+      "x-prompt": "Rótulo do módulo (vazio = derivado)"
     },
     "permission-key": {
       "type": "string",
-      "description": "Chave base de permissão (ex.: partnerTypes)."
+      "default": "",
+      "description": "Chave base de permissão (ex.: partnerTypes).",
+      "x-prompt": "Chave base de permissão (vazio = derivado)"
+    },
+    "placeholder": {
+      "type": "string",
+      "default": "",
+      "description": "Texto do placeholder de busca (vazio = derivado dos campos de texto).",
+      "x-prompt": "Placeholder de busca (vazio = derivado dos campos de texto)"
+    },
+    "detect-lookups": {
+      "type": "boolean",
+      "default": true,
+      "description": "Trata campos terminados em _id como lookup automaticamente.",
+      "x-prompt": "Tratar campos *_id como lookup automaticamente?"
     },
     "form-type": {
       "type": "string",
       "enum": ["dialog", "page"],
       "default": "dialog",
-      "description": "Formato do formulário associado (define o uso de <router-outlet>)."
+      "description": "Formato do formulário associado (define o uso de <router-outlet>).",
+      "x-prompt": {
+        "message": "Formato do formulário associado:",
+        "type": "list",
+        "items": [
+          { "value": "dialog", "label": "Dialog (modal)" },
+          { "value": "page", "label": "Página" }
+        ]
+      }
     },
     "with-export": {
       "type": "boolean",
       "default": false,
-      "description": "Inclui as opções de exportação na listagem."
+      "description": "Inclui as opções de exportação na listagem.",
+      "x-prompt": "Incluir opções de exportação?"
+    },
+    "skip-lookup": {
+      "type": "boolean",
+      "default": false,
+      "description": "Trata campos *_id como number (sem componente de lookup).",
+      "x-prompt": "Tratar campos *_id como number (sem lookup)?"
     },
     "skip-tests": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera arquivos de teste."
+      "description": "Não gera arquivos de teste.",
+      "x-prompt": "Pular arquivos de teste?"
     },
     "force": {
       "type": "boolean",
       "default": false,
-      "description": "Sobrescreve arquivos existentes."
+      "description": "Sobrescreve arquivos existentes.",
+      "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
   "required": ["module", "name"]

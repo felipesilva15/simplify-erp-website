@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "SimplifyErpModule",
+  "title": "Cria a estrutura base de um módulo (feature)",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Módulo/feature em kebab-case (ex.: catalog).",
+      "x-prompt": "Módulo/feature em kebab-case (ex.: catalog)"
+    },
+    "module-label": {
+      "type": "string",
+      "default": "",
+      "description": "Rótulo do grupo de menu do módulo (ex.: Catálogo).",
+      "x-prompt": "Rótulo do grupo de menu (ex.: Catálogo)"
+    },
+    "menu-icon": {
+      "type": "string",
+      "default": "pi pi-folder",
+      "description": "Ícone PrimeIcons do grupo de menu (ex.: pi pi-folder).",
+      "x-prompt": "Ícone PrimeIcons do grupo de menu (ex.: pi pi-folder)"
+    },
+    "skip-menu": {
+      "type": "boolean",
+      "default": false,
+      "description": "Não adiciona o grupo de menu do módulo.",
+      "x-prompt": "Não adicionar o grupo de menu?"
+    },
+    "skip-routes": {
+      "type": "boolean",
+      "default": false,
+      "description": "Não registra o módulo no app.routes.ts.",
+      "x-prompt": "Não registrar o módulo no app.routes.ts?"
+    },
+    "force": {
+      "type": "boolean",
+      "default": false,
+      "description": "Sobrescreve arquivos existentes.",
+      "x-prompt": "Sobrescrever arquivos existentes?"
+    }
+  },
+  "required": ["name"]
+}

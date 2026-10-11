@@ -236,4 +236,162 @@ describe('crud schematic', () => {
       runner.runSchematic('crud', { module: 'third-party', name: 'partner_type!' }, tree),
     ).rejects.toThrow(/Nome de recurso inválido/);
   });
+
+  it('gera enum, importa no model e liga em list/form', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      {
+        module: 'catalog',
+        name: 'product-category',
+        fields:
+          'name:string:Nome,applicability:enum:Aplicabilidade:ProductApplicability:PRODUCT=Produtos|SERVICE=Serviços|BOTH=Ambos',
+      },
+      tree,
+    );
+
+    const dir = resourceDir('catalog', 'product-categories');
+
+    expect(result.exists(`${dir}/enums/product-applicability.ts`)).toBe(true);
+
+    const enumFile = result.readContent(`${dir}/enums/product-applicability.ts`);
+    expect(enumFile).toContain('export enum ProductApplicability {');
+    expect(enumFile).toContain("Product = 'PRODUCT',");
+    expect(enumFile).toContain("[ProductApplicability.Product]: 'Produtos',");
+
+    const model = result.readContent(`${dir}/models/product-category.ts`);
+    expect(model).toContain("import { ProductApplicability } from '../enums/product-applicability';");
+    expect(model).toContain('applicability: ProductApplicability;');
+
+    const list = result.readContent(`${dir}/pages/product-category-list/product-category-list.page.ts`);
+    expect(list).toContain(
+      "import { ProductApplicabilityLabels, ProductApplicabilityOptions } from '../../enums/product-applicability';",
+    );
+    expect(list).toContain('type: ColumnType.Enum, enumOptionLabels: ProductApplicabilityLabels');
+    expect(list).toContain('type: ColumnType.Enum, options: ProductApplicabilityOptions');
+
+    const form = result.readContent(`${dir}/pages/product-category-form/product-category-form.dialog.ts`);
+    expect(form).toContain("import { SelectModule } from 'primeng/select';");
+    expect(form).toContain(
+      "import { ProductApplicability, ProductApplicabilityOptions } from '../../enums/product-applicability';",
+    );
+    expect(form).toContain(
+      'productApplicabilityOptions: { code: ProductApplicability, name: string }[] = ProductApplicabilityOptions;',
+    );
+    expect(form).toContain('applicability: [ProductApplicability.Product, [Validators.required]]');
+
+    const formHtml = result.readContent(`${dir}/pages/product-category-form/product-category-form.dialog.html`);
+    expect(formHtml).toContain('formControlName="applicability"');
+    expect(formHtml).toContain('[options]="productApplicabilityOptions"');
+  });
+
+  it('trata campos terminados em _id como lookup (same-module) e não os coloca em cols', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      {
+        module: 'third-party',
+        name: 'partner',
+        fields: 'name:string:Nome,state_id:number:Estado:geography,city:string:Cidade',
+      },
+      tree,
+    );
+
+    const dir = resourceDir('third-party', 'partners');
+
+    const model = result.readContent(`${dir}/models/partner.ts`);
+    expect(model).toContain('state_id: number;');
+
+    const list = result.readContent(`${dir}/pages/partner-list/partner-list.page.ts`);
+    expect(list).toContain("import { StateLookupComponent } from '../../../../../features/geography/states/components/state-lookup/state-lookup.component';");
+    expect(list).toContain(
+      "{ name: 'state_id', label: 'Estado', type: ColumnType.Lookup, component: StateLookupComponent },",
+    );
+    expect(list).not.toContain("{ field: 'state_id'");
+
+    const form = result.readContent(`${dir}/pages/partner-form/partner-form.dialog.ts`);
+    expect(form).toContain("import { LookupItem } from '../../../../../core/models/lookup-item';");
+    expect(form).toContain('state_id: new FormControl<LookupItem | null>(null, [Validators.required])');
+    expect(form).toContain('StateLookupComponent');
+
+    const formHtml = result.readContent(`${dir}/pages/partner-form/partner-form.dialog.html`);
+    expect(formHtml).toContain('<app-state-lookup formControlName="state_id"></app-state-lookup>');
+  });
+
+  it('resolve lookup para o próprio recurso (self reference)', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      {
+        module: 'catalog',
+        name: 'product-category',
+        fields: 'name:string:Nome,parent_category_id:number:Categoria pai::product-category',
+      },
+      tree,
+    );
+
+    const dir = resourceDir('catalog', 'product-categories');
+    const form = result.readContent(`${dir}/pages/product-category-form/product-category-form.dialog.ts`);
+    expect(form).toContain(
+      "import { ProductCategoryLookupComponent } from '../../components/product-category-lookup/product-category-lookup.component';",
+    );
+
+    const formHtml = result.readContent(`${dir}/pages/product-category-form/product-category-form.dialog.html`);
+    expect(formHtml).toContain('<app-product-category-lookup formControlName="parent_category_id"></app-product-category-lookup>');
+  });
+
+  it('marca campos opcionais com ? no model e sem Validators.required no form', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      { module: 'third-party', name: 'partner-type', fields: 'name?:string:Nome,active:boolean:Ativo' },
+      tree,
+    );
+
+    const dir = resourceDir('third-party', 'partner-types');
+    const model = result.readContent(`${dir}/models/partner-type.ts`);
+    expect(model).toContain('name?: string;');
+
+    const form = result.readContent(`${dir}/pages/partner-type-form/partner-type-form.dialog.ts`);
+    expect(form).toContain("name: ['', [Validators.maxLength(255)]]");
+    expect(form).not.toContain("name: ['', [Validators.required");
+  });
+
+  it('permite sobrescrever o placeholder de busca', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      {
+        module: 'third-party',
+        name: 'partner-type',
+        fields: 'name:string:Nome',
+        placeholder: 'Buscar por nome do parceiro',
+      },
+      tree,
+    );
+
+    const listHtml = result.readContent(
+      '/src/app/features/third-party/partner-types/pages/partner-type-list/partner-type-list.page.html',
+    );
+    expect(listHtml).toContain("[searchPlaceholder]=\"'Buscar por nome do parceiro'\"");
+
+    const lookupHtml = result.readContent(
+      '/src/app/features/third-party/partner-types/components/partner-type-lookup/partner-type-lookup.component.html',
+    );
+    expect(lookupHtml).toContain('placeholder="Buscar por nome do parceiro"');
+  });
+
+  it('mantém campos _id como number quando --detect-lookups=false', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      { module: 'third-party', name: 'partner', fields: 'name:string:Nome,state_id:number:Estado', 'detect-lookups': false },
+      tree,
+    );
+
+    const dir = resourceDir('third-party', 'partners');
+    const list = result.readContent(`${dir}/pages/partner-list/partner-list.page.ts`);
+    expect(list).toContain("{ field: 'state_id', header: 'Estado', sortable: true, type: ColumnType.Decimal },");
+    expect(list).not.toContain('ColumnType.Lookup');
+  });
 });

@@ -17,7 +17,7 @@ import { DialogRefreshService } from '<%= toAppDeep %>shared/services/dialog-ref
 import { DynamicDialogService } from '<%= toAppDeep %>shared/services/dynamic-dialog-service';
 import { FormDialogUi } from '<%= toAppDeep %>shared/ui/form-dialog/form-dialog.ui';
 import { <%= className %> } from '../../models/<%= name %>';
-import { <%= serviceClass %> } from '../../services/<%= name %>-service';
+import { <%= serviceClass %> } from '../../services/<%= name %>-service';<%= formExtraImports %>
 
 interface FormType {
 <%= formTypeLines %>
@@ -71,7 +71,7 @@ export class <%= formClass %> implements OnInit {
 
   id: WritableSignal<number> = signal<number>(0);
   mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
-
+<%= formEnumProperties %>
   constructor() {
     const routeParam: string | null = this.activatedRoute.snapshot.paramMap.get('id');
     const routeId = routeParam === null ? Number.NaN : Number(routeParam);

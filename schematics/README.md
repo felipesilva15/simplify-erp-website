@@ -56,7 +56,8 @@ privada e não publicada, então use o caminho acima.
 
 | Schematic | Descrição |
 | --- | --- |
-| `crud` | Gera o CRUD completo (model + service + lookup + listagem + formulário + rotas + menu e, opcionalmente, exportação). |
+| `module` | Cria a estrutura base de um módulo (pasta, `<module>.routes.ts` vazio, registro no `app.routes.ts` e grupo de menu vazio). |
+| `crud` | Gera o CRUD completo (model + service + enum + lookup + listagem + formulário + rotas + menu e, opcionalmente, exportação). |
 | `model` | Gera apenas `models/<recurso>.ts`. |
 | `service` | Gera apenas `services/<recurso>-service.ts` (+ spec). |
 | `list` | Gera apenas a página de listagem. |
@@ -64,9 +65,24 @@ privada e não publicada, então use o caminho acima.
 | `routes` | Gera `<recurso>s.routes.ts` e registra o recurso no arquivo de rotas do módulo. |
 | `menu` | Adiciona a entrada do recurso no menu (`src/app/core/config/menu.ts`). |
 | `lookup` | Gera apenas o componente de lookup. |
+| `enum` | Gera os arquivos de enumeração declarados em `--fields`. |
 | `export` | Adiciona as opções de exportação a uma listagem **já existente**. |
 
-Todos aceitam `--module`, `--name` e as opções comuns abaixo.
+Todos aceitam `--module`, `--name` (exceto `module`, que usa apenas `--name`) e as
+opções comuns abaixo.
+
+### Criando um novo módulo
+
+Use o schematic `module` antes do `crud` quando o módulo ainda não existir:
+
+```bash
+npx ng generate ./schematics/collection.json:module --name=catalog
+npx ng generate ./schematics/collection.json:crud --module=catalog --name=product-category
+```
+
+O `module` cria `src/app/features/<module>/<module>.routes.ts` com um array de
+rotas vazio, registra o módulo no `app.routes.ts` e adiciona um grupo de menu
+vazio. É idempotente (não duplica registros).
 
 ---
 
@@ -78,13 +94,16 @@ Todos aceitam `--module`, `--name` e as opções comuns abaixo.
 | --- | --- | --- | --- |
 | `--module` | string | — | **Obrigatório.** Módulo/feature de destino em kebab-case (ex.: `third-party`). Deve existir em `src/app/features/<module>`. |
 | `--name` | string | — | **Obrigatório.** Recurso no **singular** em kebab-case (ex.: `partner-type`). |
-| `--fields` | string | `name:string` | Campos no formato `nome:tipo[:Rótulo]`, separados por vírgula. |
+| `--fields` | string | `name:string` | Campos separados por vírgula (ver seção 5). |
 | `--plural` | string | derivado | Plural do recurso. Sobrescreve a pluralização automática. |
 | `--label` | string | derivado | Rótulo singular em pt-BR (ex.: `Tipo de parceiro`). |
 | `--label-plural` | string | derivado | Rótulo plural em pt-BR (ex.: `Tipos de parceiro`). |
 | `--module-label` | string | mapa/derivado | Rótulo do grupo no menu e breadcrumb (ex.: `Terceiro`). |
 | `--menu-icon` | string | `pi pi-star` | Ícone PrimeIcons do item de menu. |
 | `--permission-key` | string | derivado | Chave base de permissão (ex.: `partnerTypes`). |
+| `--placeholder` | string | derivado | Placeholder de busca da listagem (padrão: `Buscar por ID, <campos de texto>...`). |
+| `--lookup-placeholder` | string | = `--placeholder` | Placeholder do componente de lookup. |
+| `--detect-lookups` | boolean | `true` | Trata campos terminados em `_id` como lookup automaticamente. |
 | `--force` | boolean | `false` | Sobrescreve arquivos existentes. |
 | `--dry-run` | boolean | `false` | Executa sem gravar (nativo do CLI). |
 
@@ -93,14 +112,31 @@ Todos aceitam `--module`, `--name` e as opções comuns abaixo.
 | Opção | Tipo | Padrão | Descrição |
 | --- | --- | --- | --- |
 | `--form-type` | `dialog` \| `page` | `dialog` | Formato do formulário. |
-| `--with-export` | boolean | `false` | Inclui as opções de exportação na listagem. |
+| `--with-export` | boolean | `false` | Inclui as opções de exportação na listagem **e** implementa `ExportableService` no service. |
 | `--skip-menu` | boolean | `false` | Não adiciona a entrada no menu. |
 | `--skip-routes` | boolean | `false` | Não gera nem registra o arquivo de rotas. |
-| `--skip-lookup` | boolean | `false` | Não gera o componente de lookup. |
+| `--skip-lookup` | boolean | `false` | Não gera o componente de lookup e o service não implementa `LookupService`. |
 | `--skip-tests` | boolean | `false` | Não gera arquivos `*.spec.ts`. |
 
-`--form-type` e `--module`/`--name` possuem `x-prompt`: se omitidos, o CLI pergunta
-interativamente.
+### Exclusivas do `module`
+
+| Opção | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `--name` | string | — | **Obrigatório.** Nome do módulo em kebab-case (ex.: `catalog`). |
+| `--module-label` | string | mapa/derivado | Rótulo do grupo de menu. |
+| `--menu-icon` | string | `pi pi-folder` | Ícone PrimeIcons do grupo de menu. |
+| `--skip-menu` | boolean | `false` | Não adiciona o grupo de menu. |
+| `--skip-routes` | boolean | `false` | Não registra o módulo no `app.routes.ts`. |
+
+### Exclusivas do `enum`
+
+| Opção | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `--fields` | string | — | **Obrigatório.** Campos `enum` no formato descrito na seção 5. |
+
+Todas as opções possuem `x-prompt`: sem `--defaults` e com um terminal interativo,
+o CLI pergunta pelas opções não informadas (`--defaults` pula as que têm valor
+padrão; `--no-interactive` desliga os prompts).
 
 ---
 
@@ -109,11 +145,13 @@ interativamente.
 Gramática:
 
 ```
-campo:tipo[:Rótulo]   (campos separados por vírgula)
+nome[?]:tipo[:Rótulo][:extras]   (campos separados por vírgula)
 ```
 
-- `?` ao final do nome marca o campo como **opcional** (ex.: `email?:string`).
-- Tipos aceitos:
+- `?` após o **nome** marca o campo como **opcional** (ex.: `email?:string`). No
+  model o campo vira `email?: string` e o formulário **não** recebe
+  `Validators.required`.
+- Tipos primitivos:
 
 | Tipo | Model | Controle do formulário |
 | --- | --- | --- |
@@ -123,17 +161,53 @@ campo:tipo[:Rótulo]   (campos separados por vírgula)
 | `boolean` | `boolean` | `<p-toggleswitch>` |
 | `date`, `datetime` | `Date` | `<p-datepicker>` |
 
-Exemplo:
+### Lookup (`_id`)
 
-```bash
---fields="name:string:Nome,email:email,age:integer:Idade,active:boolean:Ativo,joined_at:date"
+Campos terminados em `_id` são tratados como lookup automaticamente
+(`--detect-lookups=false` desativa). O recurso referenciado é derivado do nome
+(`state_id` → `state`) e o módulo padrão é o do próprio recurso.
+
+```
+nome_id:lookup[:Rótulo][:módulo][:recurso]
 ```
 
-> **Limitação:** `--fields` só cobre tipos primitivos. Campos relacionais (lookups)
-> devem ser adicionados manualmente após a geração.
+- `:módulo` referencia um recurso de outro módulo (ex.: `state_id:number:Estado:geography`).
+- `:recurso` (após `::`) força o recurso referenciado — útil para **auto-referência**
+  (ex.: `parent_category_id:number:Categoria pai::product-category`).
+
+Um campo de lookup:
+- vira `number` no model;
+- é **omitido** das colunas da listagem;
+- adiciona um filtro `{ type: ColumnType.Lookup, component: <Ref>LookupComponent }`;
+- no formulário usa `FormControl<LookupItem | null>` e o componente
+  `<app-<ref>-lookup>`.
+
+### Enum
+
+```
+nome:enum[:Rótulo][:NomeDaClasse]:VALOR=Rótulo|VALOR=Rótulo
+```
+
+Gera `enums/<nome-da-classe>.ts` com o `enum`, `<Classe>Labels` e `<Classe>Options`
+(o formato é idêntico ao de `product-applicability.ts`). No model o campo usa o
+tipo do enum; na listagem vira `ColumnType.Enum` (com `enumOptionLabels`); no
+formulário vira um `<p-select>` obrigatório/opcional.
+
+Exemplo completo:
+
+```bash
+--fields="name:string:Nome,email?:email,active:boolean:Ativo,\
+applicability:enum:Aplicabilidade:ProductApplicability:PRODUCT=Produtos|SERVICE=Serviços,\
+state_id:number:Estado:geography,\
+parent_category_id:number:Categoria pai::product-category,\
+due_date:date:Vencimento"
+```
 
 Sem `--fields`, é gerado o esqueleto mínimo com um único campo `name:string`
 ("Nome") — isso evita uma interface `FormType` vazia.
+
+> Campos relacionais não previstos pela gramática (lookups com nomes que não
+> seguem `<recurso>_id`) devem ser ajustados manualmente após a geração.
 
 ---
 
@@ -179,6 +253,7 @@ Para `--module=third-party --name=partner-type`:
 ```
 src/app/features/third-party/partner-types/
 ├── models/partner-type.ts
+├── enums/<classe>.ts                     # apenas para campos enum
 ├── services/partner-type-service.ts
 ├── services/partner-type-service.spec.ts
 ├── components/partner-type-lookup/
@@ -218,8 +293,12 @@ Além disso, são atualizados:
 - As edições em rotas e menu são **cirúrgicas e idempotentes**: rodar o mesmo
   schematic duas vezes não duplica entradas. Elas só tocam o ponto de inserção,
   preservando a formatação existente.
-- Arquivos gerados que **já existem** são preservados (com aviso) por padrão. Use
-  `--force` para sobrescrevê-los.
+- Arquivos gerados que **já existem** são preservados (com aviso) por padrão. Se o
+  conteúdo gerado for **idêntico** ao existente, nada é reportado (silencioso) —
+  re-execuções não geram ruído nem em recursos com vários arquivos.
+- Use `--force` para sobrescrever arquivos existentes com conteúdo diferente.
+- Arquivos de enum são gerados de forma idempotente pelo model, list, form, crud e
+  pelo schematic `enum` (o mesmo arquivo só é escrito uma vez).
 - O schematic `export` detecta se a exportação já foi adicionada e não duplica.
 
 ---
@@ -250,12 +329,14 @@ schematics/
     ├── utils/
     │   ├── options.ts       # validação e derivação de nomes
     │   ├── names.ts         # pluralize/singularize/humanize/constantCase
-    │   ├── fields.ts        # parse de --fields + codegen de model/list
+    │   ├── fields.ts        # parse de --fields + codegen de model/list + lookup/enum
     │   ├── form-codegen.ts  # codegen do formulário (dialog/page)
+    │   ├── service-code.ts  # codegen condicional do service (LookupService/ExportableService)
+    │   ├── enums.ts         # geração idempotente dos arquivos de enum
     │   ├── context.ts       # contexto entregue aos templates
     │   ├── generate.ts      # applyTemplateSource + preservação de arquivos
-    │   ├── menu.ts          # patch idempotente do menu
-    │   ├── module-routes.ts # patch idempotente das rotas do módulo
+    │   ├── menu.ts          # patch idempotente do menu (+ grupo vazio)
+    │   ├── module-routes.ts # patch idempotente das rotas do módulo/app.routes
     │   ├── export-menu.ts   # blocos de exportação
     │   ├── text.ts          # helpers de parsing/inserção de texto
     │   └── ...
@@ -273,7 +354,8 @@ schematics/
 ## 11. Pontos de atenção
 
 - **Módulo precisa existir** em `src/app/features/<module>`; caso contrário o
-  schematic falha listando os módulos disponíveis.
+  schematic falha listando os módulos disponíveis. Use o schematic `module` para
+  criá-lo.
 - **`--fields` é sequencial e sem validação de domínio:** ajuste labels, validadores
   e máscaras manualmente quando necessário.
 - **Permissões:** mantenha o padrão do projeto. O menu e as rotas usam `.edit`; as
@@ -283,6 +365,9 @@ schematics/
   `partnerTypes` (correto) e `productsCategories`/`productsBrands`. O schematic
   gera a forma correta (`<plural>camelizado`); se o backend usar outro padrão,
   sobrescreva com `--permission-key`.
+- **Service condicional:** por padrão o service implementa `CrudService` e
+  `LookupService` (com `search`). `ExportableService` (com `export`) só é
+  implementado com `--with-export`; `LookupService` é omitido com `--skip-lookup`.
 - **Serviços de CRUDs recentes** no app podem estar incompletos
   (`Method not implemented`); a geração segue o padrão completo do
   `state-service`.

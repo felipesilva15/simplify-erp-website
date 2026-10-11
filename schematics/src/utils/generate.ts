@@ -55,6 +55,13 @@ export function generateFiles(rule: Rule, targetPaths: string[], force: boolean)
 
     for (const [path, content] of preserved) {
       if (finalTree.exists(path)) {
+        const generated = finalTree.read(path);
+
+        // Conteúdo idêntico: nada a preservar e nenhum aviso.
+        if (generated && generated.toString('utf-8') === content.toString('utf-8')) {
+          continue;
+        }
+
         finalTree.overwrite(path, content);
         context.logger.warn(
           `Arquivo já existente e mantido sem alterações: ${path}. Use --force para sobrescrever.`,

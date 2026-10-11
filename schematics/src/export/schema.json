@@ -16,12 +16,15 @@
     },
     "plural": {
       "type": "string",
-      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+      "default": "",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
+      "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
     },
     "force": {
       "type": "boolean",
       "default": false,
-      "description": "Mantido por consistência; a operação é idempotente."
+      "description": "Mantido por consistência; a operação é idempotente.",
+      "x-prompt": "Forçar (sem efeito; operação idempotente)?"
     }
   },
   "required": ["module", "name"]

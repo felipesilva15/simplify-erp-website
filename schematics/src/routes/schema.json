@@ -16,26 +16,41 @@
     },
     "plural": {
       "type": "string",
-      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+      "default": "",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
+      "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
     },
     "label": {
       "type": "string",
-      "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro)."
+      "default": "",
+      "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro).",
+      "x-prompt": "Rótulo singular (vazio = derivado)"
     },
     "permission-key": {
       "type": "string",
-      "description": "Chave base de permissão (ex.: partnerTypes)."
+      "default": "",
+      "description": "Chave base de permissão (ex.: partnerTypes).",
+      "x-prompt": "Chave base de permissão (vazio = derivado)"
     },
     "form-type": {
       "type": "string",
       "enum": ["dialog", "page"],
       "default": "dialog",
-      "description": "Formato do formulário associado às rotas."
+      "description": "Formato do formulário associado às rotas.",
+      "x-prompt": {
+        "message": "Formato do formulário associado:",
+        "type": "list",
+        "items": [
+          { "value": "dialog", "label": "Dialog (modal)" },
+          { "value": "page", "label": "Página" }
+        ]
+      }
     },
     "force": {
       "type": "boolean",
       "default": false,
-      "description": "Sobrescreve arquivos existentes."
+      "description": "Sobrescreve arquivos existentes.",
+      "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
   "required": ["module", "name"]

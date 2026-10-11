@@ -34,6 +34,18 @@ function buildGroupBlock(options: NormalizedOptions): string {
   ].join('\n');
 }
 
+/** Bloco de grupo de menu vazio (usado pelo schematic `module`). */
+function buildEmptyGroupBlock(moduleLabel: string, menuIcon: string): string {
+  return [
+    '  {',
+    `    label: '${tsString(moduleLabel)}',`,
+    `    icon: '${menuIcon}',`,
+    '    active: false,',
+    '    items: []',
+    '  }',
+  ].join('\n');
+}
+
 /** Índice do `label:` de um grupo (com `items`) que corresponda ao rótulo. */
 function findGroupLabelIndex(content: string, moduleLabel: string): number {
   const regex = /label:\s*'([^']*)'/g;
@@ -98,6 +110,38 @@ export function addMenuEntry(options: NormalizedOptions): Rule {
     }
 
     writeText(tree, path, updated);
+
+    return tree;
+  };
+}
+
+/**
+ * Garante que exista um grupo de menu para o módulo (vazio), de forma
+ * idempotente. Usado pelo schematic `module`.
+ */
+export function addMenuGroup(sourceRoot: string, moduleLabel: string, menuIcon: string): Rule {
+  return (tree: Tree, context: SchematicContext): Tree => {
+    const path = `${sourceRoot}/app/core/config/menu.ts`;
+    const content = readText(tree, path);
+
+    if (content === null) {
+      context.logger.warn(`Menu não encontrado em ${path}; o grupo de menu não foi adicionado.`);
+      return tree;
+    }
+
+    if (findGroupLabelIndex(content, moduleLabel) !== -1) {
+      context.logger.info(`Grupo de menu "${moduleLabel}" já existe; nada a fazer.`);
+      return tree;
+    }
+
+    const arrayIndex = findMenuArrayIndex(content);
+
+    if (arrayIndex === -1) {
+      context.logger.warn(`Não foi possível localizar o array MENU em ${path}; nenhuma alteração feita.`);
+      return tree;
+    }
+
+    writeText(tree, path, appendArrayItem(content, arrayIndex, buildEmptyGroupBlock(moduleLabel, menuIcon)));
 
     return tree;
   };

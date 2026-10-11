@@ -16,15 +16,33 @@
     },
     "fields": {
       "type": "string",
-      "description": "Campos no formato nome:tipo[:Rótulo], separados por vírgula."
+      "default": "",
+      "description": "Campos separados por vírgula: nome[?]:tipo[:Rótulo][:extras]. Tipos: string, text, textarea, email, number, integer, decimal, currency, percent, boolean, date, datetime, enum, lookup.",
+      "x-prompt": "Campos (ex.: name:string:Nome,active:boolean:Ativo; vazio = mínimo)"
     },
     "plural": {
       "type": "string",
-      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+      "default": "",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
+      "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
     },
     "label": {
       "type": "string",
-      "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro)."
+      "default": "",
+      "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro).",
+      "x-prompt": "Rótulo singular (vazio = derivado)"
+    },
+    "detect-lookups": {
+      "type": "boolean",
+      "default": true,
+      "description": "Trata campos terminados em _id como lookup automaticamente.",
+      "x-prompt": "Tratar campos *_id como lookup automaticamente?"
+    },
+    "skip-lookup": {
+      "type": "boolean",
+      "default": false,
+      "description": "Trata campos *_id como number (sem componente de lookup).",
+      "x-prompt": "Tratar campos *_id como number (sem lookup)?"
     },
     "form-type": {
       "type": "string",
@@ -43,12 +61,14 @@
     "skip-tests": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera arquivos de teste."
+      "description": "Não gera arquivos de teste.",
+      "x-prompt": "Pular arquivos de teste?"
     },
     "force": {
       "type": "boolean",
       "default": false,
-      "description": "Sobrescreve arquivos existentes."
+      "description": "Sobrescreve arquivos existentes.",
+      "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
   "required": ["module", "name"]

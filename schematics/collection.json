@@ -1,6 +1,11 @@
 {
   "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
+    "module": {
+      "description": "Cria a estrutura base de um módulo (pasta, arquivo de rotas, registro no app.routes e grupo de menu).",
+      "factory": "./dist/module/index",
+      "schema": "./dist/module/schema.json"
+    },
     "crud": {
       "description": "Gera um CRUD completo (model, service, listagem, formulário, rotas, menu, lookup e exportação opcional).",
       "factory": "./dist/crud/index",
@@ -45,6 +50,11 @@
       "description": "Adiciona as opções de exportação a uma listagem existente.",
       "factory": "./dist/export/index",
       "schema": "./dist/export/schema.json"
+    },
+    "enum": {
+      "description": "Gera os arquivos de enumeração declarados em --fields.",
+      "factory": "./dist/enum/index",
+      "schema": "./dist/enum/schema.json"
     }
   }
 }

@@ -14,7 +14,7 @@ import { AppTemplate } from '<%= toAppDeep %>shared/directives/app-template';
 import { GenericCrudFormFacade } from '<%= toAppDeep %>shared/facades/generic-crud-form.facade';
 import { FormPageUi } from '<%= toAppDeep %>shared/ui/form-page/form-page.ui';
 import { <%= className %> } from '../../models/<%= name %>';
-import { <%= serviceClass %> } from '../../services/<%= name %>-service';
+import { <%= serviceClass %> } from '../../services/<%= name %>-service';<%= formExtraImports %>
 
 interface FormType {
 <%= formTypeLines %>
@@ -66,7 +66,7 @@ export class <%= formClass %> implements OnInit {
 
   id: WritableSignal<number> = signal<number>(0);
   mode: WritableSignal<FormMode> = signal<FormMode>(FormMode.Create);
-
+<%= formEnumProperties %>
   modeLabel: Signal<string> = computed(() => FormModeLabel[this.mode()]);
   title: Signal<string> = computed(() => this.modeLabel() + ' <%= label.toLowerCase() %>');
   activeBreadcrumbItemLabel: Signal<string> = computed(() => this.modeLabel() + (this.id() ? ` (ID: ${this.id()})` : ''))

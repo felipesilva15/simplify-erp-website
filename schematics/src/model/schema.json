@@ -16,16 +16,27 @@
     },
     "fields": {
       "type": "string",
-      "description": "Campos no formato nome:tipo[:Rótulo], separados por vírgula (ex.: name:string:Nome,active:boolean)."
+      "default": "",
+      "description": "Campos separados por vírgula: nome[?]:tipo[:Rótulo][:extras]. Use '?' para campos opcionais. Campos enum geram o arquivo em enums/.",
+      "x-prompt": "Campos (ex.: name:string:Nome,active:boolean:Ativo; vazio = mínimo)"
     },
     "plural": {
       "type": "string",
-      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+      "default": "",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
+      "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
+    },
+    "detect-lookups": {
+      "type": "boolean",
+      "default": true,
+      "description": "Trata campos terminados em _id como lookup automaticamente.",
+      "x-prompt": "Tratar campos *_id como lookup automaticamente?"
     },
     "force": {
       "type": "boolean",
       "default": false,
-      "description": "Sobrescreve arquivos existentes."
+      "description": "Sobrescreve arquivos existentes.",
+      "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
   "required": ["module", "name"]

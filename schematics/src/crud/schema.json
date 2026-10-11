@@ -16,31 +16,63 @@
     },
     "fields": {
       "type": "string",
-      "description": "Campos no formato nome:tipo[:Rótulo], separados por vírgula (ex.: name:string:Nome,active:boolean:Ativo). Sem eles, gera o esqueleto mínimo."
+      "default": "",
+      "description": "Campos separados por vírgula: nome[?]:tipo[:Rótulo][:extras]. Use '?' para campos opcionais. Tipos: string, text, textarea, email, number, integer, decimal, currency, percent, boolean, date, datetime, enum, lookup. Exemplos: name:string:Nome,active:boolean:Ativo,state_id:lookup:Estado:geography,applicability:enum:Aplicabilidade:ProductApplicability:PRODUCT=Produtos|SERVICE=Serviços. Campos terminados em _id viram lookup automaticamente; para auto-referência informe o recurso após o módulo (ex.: parent_category_id:lookup:Categoria pai::product-category). Sem --fields, gera o esqueleto mínimo (name:string).",
+      "x-prompt": "Campos (ex.: name:string:Nome,active:boolean:Ativo; vazio = mínimo)"
     },
     "plural": {
       "type": "string",
-      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática)."
+      "default": "",
+      "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
+      "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
     },
     "label": {
       "type": "string",
-      "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro)."
+      "default": "",
+      "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro).",
+      "x-prompt": "Rótulo singular (ex.: Tipo de parceiro; vazio = derivado)"
     },
     "label-plural": {
       "type": "string",
-      "description": "Rótulo plural em pt-BR (ex.: Tipos de parceiro)."
+      "default": "",
+      "description": "Rótulo plural em pt-BR (ex.: Tipos de parceiro).",
+      "x-prompt": "Rótulo plural (ex.: Tipos de parceiro; vazio = derivado)"
     },
     "module-label": {
       "type": "string",
-      "description": "Rótulo do módulo usado no menu e breadcrumb (ex.: Terceiro)."
+      "default": "",
+      "description": "Rótulo do módulo usado no menu e breadcrumb (ex.: Terceiro).",
+      "x-prompt": "Rótulo do módulo (ex.: Terceiro; vazio = derivado)"
     },
     "menu-icon": {
       "type": "string",
-      "description": "Ícone PrimeIcons do item de menu (ex.: pi pi-star)."
+      "default": "pi pi-star",
+      "description": "Ícone PrimeIcons do item de menu (ex.: pi pi-star).",
+      "x-prompt": "Ícone PrimeIcons (ex.: pi pi-star)"
     },
     "permission-key": {
       "type": "string",
-      "description": "Chave base de permissão (ex.: partnerTypes)."
+      "default": "",
+      "description": "Chave base de permissão (ex.: partnerTypes).",
+      "x-prompt": "Chave base de permissão (ex.: partnerTypes; vazio = derivado)"
+    },
+    "placeholder": {
+      "type": "string",
+      "default": "",
+      "description": "Texto do placeholder de busca da listagem (vazio = derivado dos campos de texto).",
+      "x-prompt": "Placeholder de busca (vazio = derivado dos campos de texto)"
+    },
+    "lookup-placeholder": {
+      "type": "string",
+      "default": "",
+      "description": "Texto do placeholder do componente de lookup (vazio = o mesmo da listagem).",
+      "x-prompt": "Placeholder do lookup (vazio = o mesmo da listagem)"
+    },
+    "detect-lookups": {
+      "type": "boolean",
+      "default": true,
+      "description": "Trata campos terminados em _id como lookup automaticamente.",
+      "x-prompt": "Tratar campos *_id como lookup automaticamente?"
     },
     "form-type": {
       "type": "string",
@@ -59,32 +91,38 @@
     "with-export": {
       "type": "boolean",
       "default": false,
-      "description": "Inclui as opções de exportação na listagem."
+      "description": "Inclui as opções de exportação na listagem e implementa ExportableService no service.",
+      "x-prompt": "Incluir opções de exportação?"
     },
     "skip-menu": {
       "type": "boolean",
       "default": false,
-      "description": "Não adiciona a entrada no menu."
+      "description": "Não adiciona a entrada no menu.",
+      "x-prompt": "Pular a entrada no menu?"
     },
     "skip-routes": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera nem registra o arquivo de rotas."
+      "description": "Não gera nem registra o arquivo de rotas.",
+      "x-prompt": "Pular rotas?"
     },
     "skip-lookup": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera o componente de lookup."
+      "description": "Não gera o componente de lookup (e o service não implementa LookupService).",
+      "x-prompt": "Pular o componente de lookup?"
     },
     "skip-tests": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera arquivos de teste."
+      "description": "Não gera arquivos de teste.",
+      "x-prompt": "Pular arquivos de teste?"
     },
     "force": {
       "type": "boolean",
       "default": false,
-      "description": "Sobrescreve arquivos existentes."
+      "description": "Sobrescreve arquivos existentes.",
+      "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
   "required": ["module", "name"]
