@@ -29,6 +29,10 @@ export const routes: Routes = [
                 path: 'hr',
                 loadChildren: () => import('./features/hr/hr.routes').then(r => r.HR_ROUTES) 
             },
+            {
+                path: 'catalog',
+                loadChildren: () => import('./features/catalog/catalog.routes').then(r => r.CATALOG_ROUTES) 
+            },
         ],
     },
     {

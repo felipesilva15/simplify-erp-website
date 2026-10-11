@@ -83,14 +83,14 @@ export const MENU: AppMenuItem[] = [
         icon: 'pi pi-chart-pie',
         active: false,
         link: '/catalog/product-categories',
-        permission: 'productsCategories.viewAny'
+        permission: 'productCategories.viewAny'
       },
       {
         label: 'Marcas',
         icon: 'pi pi-at',
         active: false,
         link: '/catalog/product-brands',
-        permission: 'productsBrands.viewAny'
+        permission: 'productBrands.viewAny'
       }
     ]
   },
