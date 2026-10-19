@@ -29,8 +29,10 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { ChildEntityListComponent } from '../../../../../shared/components/child-entity-list/child-entity-list.component';
 import { ChildEntityListFacade } from '../../../../../shared/facades/child-entity-list.facade';
 import { PartnerFormFacade } from '../../facades/partner-form.facade';
-import { CONTACTS_LIST_CONFIG } from '../../../contacts/config/contacts-child-list.config';
+import { CONTACTS_LIST_CONFIG, CONTACTS_LIST_FACADE } from '../../../contacts/config/contacts-child-list.config';
 import { Contact } from '../../../contacts/models/contact';
+import { ADDRESSES_LIST_CONFIG, ADDRESSES_LIST_FACADE } from '../../../../geography/addresses/config/addresses-child-list.config';
+import { Address } from '../../../../geography/addresses/models/address';
 
 interface FormType {
   name: FormControl<string>;
@@ -57,6 +59,7 @@ interface FormType {
   pix_key: FormControl<string>;
   notes: FormControl<string>;
   contacts: FormControl<Contact[] | null>;
+  addresses: FormControl<Address[] | null>;
 }
 
 @Component({
@@ -83,13 +86,21 @@ interface FormType {
 ],
   providers: [
     {
-      provide: ChildEntityListFacade,
+      provide: CONTACTS_LIST_FACADE,
       useFactory: () => new ChildEntityListFacade<Contact>(CONTACTS_LIST_CONFIG),
     },
     {
+      provide: ADDRESSES_LIST_FACADE,
+      useFactory: () => new ChildEntityListFacade<Address>(ADDRESSES_LIST_CONFIG),
+    },
+    {
       provide: PartnerFormFacade,
-      useFactory: (service: PartnerService, contactsFacade: ChildEntityListFacade<Contact>) =>
-        new PartnerFormFacade(service, contactsFacade, {
+      useFactory: (
+        service: PartnerService,
+        contactsFacade: ChildEntityListFacade<Contact>,
+        addressesFacade: ChildEntityListFacade<Address>,
+      ) =>
+        new PartnerFormFacade(service, [contactsFacade, addressesFacade], {
           successMessage: 'Registro salvo!',
           permission: {
             create: 'partners.create',
@@ -97,7 +108,7 @@ interface FormType {
             view: 'partners.view'
           },
         }),
-      deps: [PartnerService, ChildEntityListFacade]
+      deps: [PartnerService, CONTACTS_LIST_FACADE, ADDRESSES_LIST_FACADE]
     }
   ],
   templateUrl: './partner-form.page.html',
@@ -110,6 +121,9 @@ export class PartnerFormPage implements OnInit {
   public facade: PartnerFormFacade = inject(PartnerFormFacade);
   /** Configuração da lista de contatos, entregue ao componente de lista. */
   contactsConfig = CONTACTS_LIST_CONFIG;
+  addressesConfig = ADDRESSES_LIST_CONFIG;
+  contactsFacade = inject<ChildEntityListFacade<Contact>>(CONTACTS_LIST_FACADE);
+  addressesFacade = inject<ChildEntityListFacade<Address>>(ADDRESSES_LIST_FACADE);
   private routeUtilsService: RouteUtilsService = inject(RouteUtilsService);
 
   personType = PersonType;
@@ -146,6 +160,7 @@ export class PartnerFormPage implements OnInit {
     pix_key: ['', []],
     notes: ['', []],
     contacts: new FormControl<Contact[]>([]),
+    addresses: new FormControl<Address[]>([]),
   });
   
   id: WritableSignal<number> = signal<number>(0);

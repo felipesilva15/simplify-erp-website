@@ -1,0 +1,86 @@
+<form class="flex flex-column gap-4 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="submit()">
+  <p-fluid class="grid">
+    <div class="col-12 md:col-6">
+      <label htmlFor="address_type">Tipo<span class="text-red-500 font-bold">*</span></label>
+      <p-select id="address_type" inputId="address_type" formControlName="type" appendTo="body" [options]="addressTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione o tipo" [invalid]="isInvalid('type')"></p-select>
+      <app-form-control-errors [control]="form.get('type')"></app-form-control-errors>
+    </div>
+    <div class="col-12 md:col-6">
+      <label htmlFor="country_id">País<span class="text-red-500 font-bold">*</span></label>
+      <app-country-lookup id="country_id" formControlName="country_id"></app-country-lookup>
+      <app-form-control-errors [control]="form.get('country_id')"></app-form-control-errors>
+    </div>
+
+    @if (isInternational()) {
+      <div class="col-12 md:col-6">
+        <label htmlFor="state_name">Estado/Província</label>
+        <input id="state_name" formControlName="state_name" pInputText [invalid]="isInvalid('state_name')" />
+        <app-form-control-errors [control]="form.get('state_name')"></app-form-control-errors>
+      </div>
+      <div class="col-12 md:col-6">
+        <label htmlFor="city_name">Cidade</label>
+        <input id="city_name" formControlName="city_name" pInputText [invalid]="isInvalid('city_name')" />
+        <app-form-control-errors [control]="form.get('city_name')"></app-form-control-errors>
+      </div>
+      <div class="col-12">
+        <label htmlFor="address_line_1">Endereço<span class="text-red-500 font-bold">*</span></label>
+        <input id="address_line_1" formControlName="address_line_1" pInputText [invalid]="isInvalid('address_line_1')" />
+        <app-form-control-errors [control]="form.get('address_line_1')"></app-form-control-errors>
+      </div>
+      <div class="col-12">
+        <label htmlFor="address_line_2">Complemento do endereço</label>
+        <input id="address_line_2" formControlName="address_line_2" pInputText [invalid]="isInvalid('address_line_2')" />
+        <app-form-control-errors [control]="form.get('address_line_2')"></app-form-control-errors>
+      </div>
+    } @else {
+      <div class="col-12 md:col-6">
+        <label htmlFor="state_id">Estado<span class="text-red-500 font-bold">*</span></label>
+        <app-state-lookup id="state_id" formControlName="state_id"></app-state-lookup>
+        <app-form-control-errors [control]="form.get('state_id')"></app-form-control-errors>
+      </div>
+      <div class="col-12 md:col-6">
+        <label htmlFor="city_id">Cidade<span class="text-red-500 font-bold">*</span></label>
+        <app-city-lookup id="city_id" formControlName="city_id"></app-city-lookup>
+        <app-form-control-errors [control]="form.get('city_id')"></app-form-control-errors>
+      </div>
+      <div class="col-12 md:col-8">
+        <label htmlFor="street">Logradouro<span class="text-red-500 font-bold">*</span></label>
+        <input id="street" formControlName="street" pInputText [invalid]="isInvalid('street')" />
+        <app-form-control-errors [control]="form.get('street')"></app-form-control-errors>
+      </div>
+      <div class="col-12 md:col-4">
+        <label htmlFor="number">Número</label>
+        <input id="number" formControlName="number" pInputText [invalid]="isInvalid('number')" />
+        <app-form-control-errors [control]="form.get('number')"></app-form-control-errors>
+      </div>
+      <div class="col-12 md:col-4">
+        <label htmlFor="district">Bairro</label>
+        <input id="district" formControlName="district" pInputText [invalid]="isInvalid('district')" />
+        <app-form-control-errors [control]="form.get('district')"></app-form-control-errors>
+      </div>
+      <div class="col-12 md:col-4">
+        <label htmlFor="postal_code">CEP</label>
+        <input id="postal_code" formControlName="postal_code" pInputText [invalid]="isInvalid('postal_code')" />
+        <app-form-control-errors [control]="form.get('postal_code')"></app-form-control-errors>
+      </div>
+      <div class="col-12 md:col-4">
+        <label htmlFor="complement">Complemento</label>
+        <input id="complement" formControlName="complement" pInputText [invalid]="isInvalid('complement')" />
+        <app-form-control-errors [control]="form.get('complement')"></app-form-control-errors>
+      </div>
+    }
+
+    <div class="col-12">
+      <label htmlFor="notes">Observações</label>
+      <textarea id="notes" formControlName="notes" pTextarea rows="3" autoResize="true"></textarea>
+      <app-form-control-errors [control]="form.get('notes')"></app-form-control-errors>
+    </div>
+    <div class="col-12">
+      <div class="flex align-items-center gap-3">
+        <p-toggleswitch formControlName="is_primary" inputId="is_primary" />
+        <label htmlFor="is_primary">Endereço principal</label>
+      </div>
+      <app-form-control-errors [control]="form.get('is_primary')"></app-form-control-errors>
+    </div>
+  </p-fluid>
+</form>

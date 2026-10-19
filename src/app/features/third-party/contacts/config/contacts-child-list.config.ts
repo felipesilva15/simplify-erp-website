@@ -1,7 +1,9 @@
+import { InjectionToken } from '@angular/core';
 import { ChildEntityListConfig } from '../../../../core/models/child-entity-list-config';
 import { ChildEntityViewMode } from '../../../../core/enums/child-entity-view-mode';
 import { ColumnType } from '../../../../core/enums/column-type';
 import { DialogSize } from '../../../../core/enums/dialog-size';
+import { ChildEntityListFacade } from '../../../../shared/facades/child-entity-list.facade';
 import { ContactFormComponent } from '../components/contact-form/contact-form.component';
 import { Contact } from '../models/contact';
 import { PhonePipe } from '../../../../shared/pipes/phone-pipe';
@@ -35,3 +37,7 @@ export const CONTACTS_LIST_CONFIG: ChildEntityListConfig<Contact> = {
     dialogSize: DialogSize.Small,
     removeConfirmMessage: (contact: Contact) => `Deseja realmente remover o contato "${contact.name}"?`,
 };
+
+export const CONTACTS_LIST_FACADE = new InjectionToken<ChildEntityListFacade<Contact>>(
+    'CONTACTS_LIST_FACADE'
+);

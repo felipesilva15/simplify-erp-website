@@ -1,6 +1,5 @@
 import { FormGroup } from '@angular/forms';
 import { ApiResponse } from '../../../../core/models/api-response';
-import { Contact } from '../../contacts/models/contact';
 import { ChildEntityListFacade } from '../../../../shared/facades/child-entity-list.facade';
 import { CrudService } from '../../../../core/contracts/crud-service';
 import { Partner } from '../models/partner';
@@ -16,7 +15,7 @@ import { GenericCrudFormFacade } from '../../../../shared/facades/generic-crud-f
 export class PartnerFormFacade extends GenericCrudFormFacade<Partner> {
     constructor(
         service: CrudService<Partner>,
-        private contactsFacade: ChildEntityListFacade<Contact>,
+        private childFacades: ChildEntityListFacade<any>[],
         config?: ConstructorParameters<typeof GenericCrudFormFacade<Partner>>[1],
     ) {
         super(service, config);
@@ -27,7 +26,7 @@ export class PartnerFormFacade extends GenericCrudFormFacade<Partner> {
      * segue para o banner genérico de `serverErrors`.
      */
     protected override isHandledServerErrorPath(path: string): boolean {
-        return this.contactsFacade.handlesErrorPath(path);
+        return this.childFacades.some(facade => facade.handlesErrorPath(path));
     }
 
     /** Repasse dos erros da API para a lista de contatos. */
@@ -35,13 +34,15 @@ export class PartnerFormFacade extends GenericCrudFormFacade<Partner> {
         const errors = response.errors;
 
         if (errors) {
-            // Apenas os caminhos desta lista; o resto é responsabilidade do
-            // banner genérico do facade do pai.
-            const contactsErrors = Object.fromEntries(
-                Object.entries(errors).filter(([path]) => path.split('.')[0] === 'contacts')
-            );
+            this.childFacades.forEach((facade) => {
+                // Apenas os caminhos desta lista; o resto é responsabilidade
+                // do banner genérico do facade do pai.
+                const childErrors = Object.fromEntries(
+                    Object.entries(errors).filter(([path]) => path.split('.')[0] === facade.arrayKey)
+                );
 
-            this.contactsFacade.applyServerErrors(contactsErrors);
+                facade.applyServerErrors(childErrors);
+            });
         }
 
         super.applyServerErrors(form, response);

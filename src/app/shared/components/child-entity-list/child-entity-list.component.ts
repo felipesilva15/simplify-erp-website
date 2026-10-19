@@ -4,6 +4,7 @@ import {
     computed,
     inject,
     input,
+    OnInit,
     Signal,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -48,11 +49,29 @@ import { SummaryTableComponent } from './summary-table/summary-table.component';
     host: { class: 'flex flex-column' },
     templateUrl: './child-entity-list.component.html',
 })
-export class ChildEntityListComponent<T = unknown> implements ControlValueAccessor {
-private changeHandler: (value: unknown[]) => void = () => {};
+export class ChildEntityListComponent<T = unknown> implements ControlValueAccessor, OnInit {
+  private changeHandler: (value: unknown[]) => void = () => {};
   private touchHandler: () => void = () => {};
 
-  facade: ChildEntityListFacade<T> = inject<ChildEntityListFacade<T>>(ChildEntityListFacade);
+  facadeInput = input<ChildEntityListFacade<T> | null>(null, { alias: 'facade' });
+
+  private injectedFacade = inject<ChildEntityListFacade<T> | null>(ChildEntityListFacade, { optional: true });
+
+  private resolvedFacade: ChildEntityListFacade<T> | null = null;
+
+  get facade(): ChildEntityListFacade<T> {
+    if (!this.resolvedFacade) {
+      this.resolvedFacade = this.facadeInput() ?? this.injectedFacade;
+    }
+
+    if (!this.resolvedFacade) {
+      throw new Error(
+        'Nenhum ChildEntityListFacade fornecido. Passe [facade] no template ou forneça ChildEntityListFacade no injector.'
+      );
+    }
+
+    return this.resolvedFacade;
+  }
 
     /** Modos de visualização suportados, expostos para o `@switch` do template. */
     readonly ChildEntityViewMode = ChildEntityViewMode;
@@ -86,7 +105,7 @@ private changeHandler: (value: unknown[]) => void = () => {};
         itemErrorCount: (index: number) => this.facade.itemErrorCount(index),
     }));
 
-    constructor() {
+    ngOnInit(): void {
         this.facade.registerOnChange((value: unknown[]) => this.changeHandler(value));
     }
 

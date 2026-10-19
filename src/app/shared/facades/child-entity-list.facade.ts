@@ -132,6 +132,10 @@ export class ChildEntityListFacade<T> implements ChildItemEditor<T> {
         return this.config.columns;
     }
 
+    get arrayKey(): string {
+        return this.config.arrayKey;
+    }
+
     // ---- Integração com o formulário pai (ControlValueAccessor) -----------------
 
     registerOnChange(handler: (value: unknown[]) => void): void {

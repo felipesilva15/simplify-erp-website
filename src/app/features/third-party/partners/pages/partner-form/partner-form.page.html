@@ -147,7 +147,11 @@
                 </app-collapsible-section>
 
                 <app-collapsible-section title="Contatos">
-                    <app-child-entity-list formControlName="contacts" [config]="contactsConfig"></app-child-entity-list>
+                    <app-child-entity-list formControlName="contacts" [config]="contactsConfig" [facade]="contactsFacade"></app-child-entity-list>
+                </app-collapsible-section>
+
+                <app-collapsible-section title="Endereços">
+                    <app-child-entity-list formControlName="addresses" [config]="addressesConfig" [facade]="addressesFacade"></app-child-entity-list>
                 </app-collapsible-section>
 
                 <p-fluid class="grid">
