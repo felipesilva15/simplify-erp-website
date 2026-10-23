@@ -4,5 +4,9 @@ export const CATALOG_ROUTES: Routes = [
     {
         path: 'product-categories',
         loadChildren: () => import('./product-categories/product-categories.routes').then(r => r.PRODUCT_CATEGORIES_ROUTES)
+    },
+    {
+        path: 'product-brands',
+        loadChildren: () => import('./product-brands/product-brands.routes').then(r => r.PRODUCT_BRANDS_ROUTES)
     }
 ];
