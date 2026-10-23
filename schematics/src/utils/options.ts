@@ -73,6 +73,7 @@ export function normalizeOptions(schema: BaseSchema, tree: Tree): NormalizedOpti
     formType,
     fields,
     withExport: schema['with-export'] === true,
+    withLog: schema['with-log'] === true,
     skipMenu: schema['skip-menu'] === true,
     skipRoutes: schema['skip-routes'] === true,
     skipLookup: schema['skip-lookup'] === true,

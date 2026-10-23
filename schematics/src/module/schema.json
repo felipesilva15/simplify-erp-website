@@ -24,14 +24,12 @@
     "skip-menu": {
       "type": "boolean",
       "default": false,
-      "description": "Não adiciona o grupo de menu do módulo.",
-      "x-prompt": "Não adicionar o grupo de menu?"
+      "description": "Não adiciona o grupo de menu do módulo."
     },
     "skip-routes": {
       "type": "boolean",
       "default": false,
-      "description": "Não registra o módulo no app.routes.ts.",
-      "x-prompt": "Não registrar o módulo no app.routes.ts?"
+      "description": "Não registra o módulo no app.routes.ts."
     },
     "force": {
       "type": "boolean",

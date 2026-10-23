@@ -57,7 +57,7 @@ privada e não publicada, então use o caminho acima.
 | Schematic | Descrição |
 | --- | --- |
 | `module` | Cria a estrutura base de um módulo (pasta, `<module>.routes.ts` vazio, registro no `app.routes.ts` e grupo de menu vazio). |
-| `crud` | Gera o CRUD completo (model + service + enum + lookup + listagem + formulário + rotas + menu e, opcionalmente, exportação). |
+| `crud` | Gera o CRUD completo (model + service + enum + lookup + listagem + formulário + rotas + menu e, opcionalmente, exportação e log de atividades). |
 | `model` | Gera apenas `models/<recurso>.ts`. |
 | `service` | Gera apenas `services/<recurso>-service.ts` (+ spec). |
 | `list` | Gera apenas a página de listagem. |
@@ -113,6 +113,7 @@ vazio. É idempotente (não duplica registros).
 | --- | --- | --- | --- |
 | `--form-type` | `dialog` \| `page` | `dialog` | Formato do formulário. |
 | `--with-export` | boolean | `false` | Inclui as opções de exportação na listagem **e** implementa `ExportableService` no service. |
+| `--with-log` | boolean | `false` | Implementa `LogableService` (método `activityLogs`) no service. |
 | `--skip-menu` | boolean | `false` | Não adiciona a entrada no menu. |
 | `--skip-routes` | boolean | `false` | Não gera nem registra o arquivo de rotas. |
 | `--skip-lookup` | boolean | `false` | Não gera o componente de lookup e o service não implementa `LookupService`. |
@@ -134,9 +135,11 @@ vazio. É idempotente (não duplica registros).
 | --- | --- | --- | --- |
 | `--fields` | string | — | **Obrigatório.** Campos `enum` no formato descrito na seção 5. |
 
-Todas as opções possuem `x-prompt`: sem `--defaults` e com um terminal interativo,
-o CLI pergunta pelas opções não informadas (`--defaults` pula as que têm valor
-padrão; `--no-interactive` desliga os prompts).
+As opções `--skip-*` **não** possuem `x-prompt`: elas só devem ser usadas
+explicitamente na linha de comando. Todas as demais opções possuem `x-prompt` e
+são perguntadas **somente quando o valor não é passado** (com um terminal
+interativo e sem `--defaults`/`--no-interactive`), usando o valor padrão como
+resposta sugerida.
 
 ---
 
@@ -331,7 +334,7 @@ schematics/
     │   ├── names.ts         # pluralize/singularize/humanize/constantCase
     │   ├── fields.ts        # parse de --fields + codegen de model/list + lookup/enum
     │   ├── form-codegen.ts  # codegen do formulário (dialog/page)
-    │   ├── service-code.ts  # codegen condicional do service (LookupService/ExportableService)
+    │   ├── service-code.ts  # codegen condicional do service (LookupService/ExportableService/LogableService)
     │   ├── enums.ts         # geração idempotente dos arquivos de enum
     │   ├── context.ts       # contexto entregue aos templates
     │   ├── generate.ts      # applyTemplateSource + preservação de arquivos
@@ -367,7 +370,8 @@ schematics/
   sobrescreva com `--permission-key`.
 - **Service condicional:** por padrão o service implementa `CrudService` e
   `LookupService` (com `search`). `ExportableService` (com `export`) só é
-  implementado com `--with-export`; `LookupService` é omitido com `--skip-lookup`.
+  implementado com `--with-export`, `LogableService` (com `activityLogs`) só é
+  implementado com `--with-log` e `LookupService` é omitido com `--skip-lookup`.
 - **Serviços de CRUDs recentes** no app podem estar incompletos
   (`Method not implemented`); a geração segue o padrão completo do
   `state-service`.

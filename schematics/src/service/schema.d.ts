@@ -5,6 +5,12 @@ export interface ServiceSchema {
   name: string;
   /** Plural do recurso em kebab-case. */
   plural?: string;
+  /** Implementa `ExportableService` (método `export`). */
+  'with-export'?: boolean;
+  /** Implementa `LogableService` (método `activityLogs`). */
+  'with-log'?: boolean;
+  /** Não implementa `LookupService` (método `search`). */
+  'skip-lookup'?: boolean;
   /** Não gera arquivos de teste. */
   'skip-tests'?: boolean;
   /** Sobrescreve arquivos existentes. */

@@ -26,17 +26,21 @@
       "description": "Implementa ExportableService (método export) no service.",
       "x-prompt": "Implementar exportação (ExportableService)?"
     },
+    "with-log": {
+      "type": "boolean",
+      "default": false,
+      "description": "Implementa LogableService (método activityLogs) no service.",
+      "x-prompt": "Implementar LogableService (activityLogs)?"
+    },
     "skip-lookup": {
       "type": "boolean",
       "default": false,
-      "description": "Não implementa LookupService (método search) no service.",
-      "x-prompt": "Não implementar lookup (LookupService) no service?"
+      "description": "Não implementa LookupService (método search) no service."
     },
     "skip-tests": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera arquivos de teste.",
-      "x-prompt": "Pular arquivos de teste?"
+      "description": "Não gera arquivos de teste."
     },
     "force": {
       "type": "boolean",

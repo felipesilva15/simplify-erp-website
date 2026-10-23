@@ -41,8 +41,7 @@
     "skip-tests": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera arquivos de teste.",
-      "x-prompt": "Pular arquivos de teste?"
+      "description": "Não gera arquivos de teste."
     },
     "force": {
       "type": "boolean",

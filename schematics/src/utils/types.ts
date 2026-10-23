@@ -56,6 +56,8 @@ export interface BaseSchema {
   'form-type'?: FormType;
   /** Gera as opções de exportação na listagem e no service. */
   'with-export'?: boolean;
+  /** Implementa `LogableService` (método `activityLogs`) no service. */
+  'with-log'?: boolean;
   /** Não adiciona a entrada no menu. */
   'skip-menu'?: boolean;
   /** Não gera/registra o arquivo de rotas. */
@@ -113,6 +115,7 @@ export interface NormalizedOptions {
   formType: FormType;
   fields: FieldDefinition[];
   withExport: boolean;
+  withLog: boolean;
   skipMenu: boolean;
   skipRoutes: boolean;
   skipLookup: boolean;

@@ -7,7 +7,7 @@
       "schema": "./dist/module/schema.json"
     },
     "crud": {
-      "description": "Gera um CRUD completo (model, service, listagem, formulário, rotas, menu, lookup e exportação opcional).",
+      "description": "Gera um CRUD completo (model, service, listagem, formulário, rotas, menu, lookup e exportação/log opcionais).",
       "factory": "./dist/crud/index",
       "schema": "./dist/crud/schema.json"
     },

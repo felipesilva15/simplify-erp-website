@@ -94,29 +94,31 @@
       "description": "Inclui as opções de exportação na listagem e implementa ExportableService no service.",
       "x-prompt": "Incluir opções de exportação?"
     },
+    "with-log": {
+      "type": "boolean",
+      "default": false,
+      "description": "Implementa LogableService (método activityLogs) no service.",
+      "x-prompt": "Implementar LogableService (activityLogs)?"
+    },
     "skip-menu": {
       "type": "boolean",
       "default": false,
-      "description": "Não adiciona a entrada no menu.",
-      "x-prompt": "Pular a entrada no menu?"
+      "description": "Não adiciona a entrada no menu."
     },
     "skip-routes": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera nem registra o arquivo de rotas.",
-      "x-prompt": "Pular rotas?"
+      "description": "Não gera nem registra o arquivo de rotas."
     },
     "skip-lookup": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera o componente de lookup (e o service não implementa LookupService).",
-      "x-prompt": "Pular o componente de lookup?"
+      "description": "Não gera o componente de lookup (e o service não implementa LookupService)."
     },
     "skip-tests": {
       "type": "boolean",
       "default": false,
-      "description": "Não gera arquivos de teste.",
-      "x-prompt": "Pular arquivos de teste?"
+      "description": "Não gera arquivos de teste."
     },
     "force": {
       "type": "boolean",

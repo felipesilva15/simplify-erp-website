@@ -19,10 +19,16 @@ const EXPORT_METHOD = `  export(params: ExportRequestParams): Observable<Blob> {
     return this.http.get(\`\${this.baseUrl}/export\`, { withCredentials: true, params: httpParams, responseType: 'blob' });
   }`;
 
+const ACTIVITY_LOGS_METHOD = `  activityLogs(id: number, params?: ListRequestParams): Observable<ApiResponse<ActivityLog[]>> {
+    const httpParams: HttpParams = this.queryBuilder.buildHttpParams(params);
+    return this.http.get<ApiResponse<ActivityLog[]>>(\`\${this.baseUrl}/\${id}/activity-logs\`, { withCredentials: true, params: httpParams });
+  }`;
+
 /**
  * Monta os trechos condicionais do service: `LookupService`/`search` só existem
- * quando o lookup é gerado (`!--skip-lookup`) e `ExportableService`/`export` só
- * existem com `--with-export`.
+ * quando o lookup é gerado (`!--skip-lookup`), `ExportableService`/`export` só
+ * existem com `--with-export` e `LogableService`/`activityLogs` só existem com
+ * `--with-log`.
  */
 export function buildServiceCode(options: NormalizedOptions): ServiceCode {
   const toApp = '../'.repeat(options.moduleSegments + 3);
@@ -36,6 +42,13 @@ export function buildServiceCode(options: NormalizedOptions): ServiceCode {
     imports.push(`import { LookupItem } from '${toApp}core/models/lookup-item';`);
     interfaces.push('LookupService');
     methods.push(SEARCH_METHOD);
+  }
+
+  if (options.withLog) {
+    imports.push(`import { LogableService } from '${toApp}core/contracts/logable-service';`);
+    imports.push(`import { ActivityLog } from '${toApp}core/models/activity-log';`);
+    interfaces.push('LogableService');
+    methods.push(ACTIVITY_LOGS_METHOD);
   }
 
   if (options.withExport) {

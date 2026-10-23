@@ -180,8 +180,24 @@ describe('crud schematic', () => {
     expect(listHtml).not.toContain('<router-outlet />');
   });
 
-  it('inclui exportação na listagem com --with-export', async () => {
+  it('repassa --with-log ao service e implementa LogableService', async () => {
     const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      { module: 'third-party', name: 'partner-type', 'with-log': true, 'with-export': true },
+      tree,
+    );
+
+    const service = result.readContent(
+      '/src/app/features/third-party/partner-types/services/partner-type-service.ts',
+    );
+    expect(service).toContain(
+      'export class PartnerTypeService implements CrudService<PartnerType>, LookupService, LogableService, ExportableService',
+    );
+    expect(service).toContain('activityLogs(id: number, params?: ListRequestParams)');
+  });
+
+  it('inclui exportação na listagem com --with-export', async () => {    const tree = createTree();
     const result = await runner.runSchematic(
       'crud',
       { module: 'third-party', name: 'partner-type', 'with-export': true },

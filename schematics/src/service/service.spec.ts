@@ -15,6 +15,8 @@ describe('service schematic', () => {
     expect(service).toContain('export class PartnerTypeService implements CrudService<PartnerType>, LookupService');
     expect(service).not.toContain('ExportableService');
     expect(service).not.toContain('export(params: ExportRequestParams)');
+    expect(service).not.toContain('LogableService');
+    expect(service).not.toContain('activityLogs(id: number');
     expect(service).toContain("environment.baseUrlApi + '/third-party/partner-types'");
     expect(service).toContain('edit(id: number): Observable<ApiResponse<PartnerType>>');
     expect(service).toContain('create(payload: Partial<PartnerType>)');
@@ -39,6 +41,29 @@ describe('service schematic', () => {
     );
     expect(service).toContain('export(params: ExportRequestParams)');
     expect(service).toContain("import { ExportableService } from '../../../../core/contracts/exportable-service';");
+  });
+
+  it('implementa LogableService somente com --with-log', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'service',
+      { module: 'third-party', name: 'partner-type', 'with-log': true },
+      tree,
+    );
+
+    const service = result.readContent(
+      '/src/app/features/third-party/partner-types/services/partner-type-service.ts',
+    );
+
+    expect(service).toContain(
+      'export class PartnerTypeService implements CrudService<PartnerType>, LookupService, LogableService',
+    );
+    expect(service).toContain("import { LogableService } from '../../../../core/contracts/logable-service';");
+    expect(service).toContain("import { ActivityLog } from '../../../../core/models/activity-log';");
+    expect(service).toContain(
+      'activityLogs(id: number, params?: ListRequestParams): Observable<ApiResponse<ActivityLog[]>>',
+    );
+    expect(service).toContain('`${this.baseUrl}/${id}/activity-logs`');
   });
 
   it('não implementa LookupService com --skip-lookup', async () => {
