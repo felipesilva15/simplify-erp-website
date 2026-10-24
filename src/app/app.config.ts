@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, DEFAULT_CURRENCY_CODE, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
@@ -11,6 +11,11 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { TRANSLATION } from './core/config/translation';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MASK_ALIASES } from './core/config/masks-aliases';
+
+import ptBr from '@angular/common/locales/pt';
+import { registerLocaleData } from '@angular/common';
+
+registerLocaleData(ptBr);
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,6 +34,8 @@ export const appConfig: ApplicationConfig = {
     provideEnvironmentNgxMask({
       validation: true,
       maskAliases: MASK_ALIASES
-    })
+    }),
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
+    { provide: DEFAULT_CURRENCY_CODE, useValue: 'BRL' }
   ]
 };
