@@ -18,6 +18,8 @@ import { ExportRequestParams } from '../../core/models/export-request-params';
 
 export interface CrudListFacadeConfig {
     exportMenu?: ExportMenuItem[];
+    beforeDelete?: (entity: any) => boolean | string | Promise<boolean | string>;
+    beforeDeleteDefaultMessage?: string;
 }
 
 export class CrudListFacade<T extends BaseEntity> {
@@ -129,6 +131,36 @@ export class CrudListFacade<T extends BaseEntity> {
     async delete(entity: T): Promise<void> {
         if (!this.canDelete()) {
             return;
+        }
+
+        if (this.config.beforeDelete) {
+            try {
+                const result = await this.config.beforeDelete(entity);
+                if (result === false) {
+                    this.toastService.show({
+                        title: 'Não é possível excluir',
+                        message: this.config.beforeDeleteDefaultMessage || 'Esta operação não é permitida para este registro.',
+                        severity: 'warn'
+                    });
+                    return;
+                }
+                if (typeof result === 'string') {
+                    this.toastService.show({
+                        title: 'Não é possível excluir',
+                        message: result,
+                        severity: 'warn'
+                    });
+                    return;
+                }
+            } catch (e: any) {
+                const message = e?.message || 'Erro ao validar exclusão.';
+                this.toastService.show({
+                    title: 'Erro',
+                    message,
+                    severity: 'error'
+                });
+                return;
+            }
         }
 
         const confirmed = await this.confirmService.confirm({
