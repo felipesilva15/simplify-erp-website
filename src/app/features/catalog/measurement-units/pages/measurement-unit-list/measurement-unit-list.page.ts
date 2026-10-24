@@ -52,7 +52,14 @@ const exportMenu: ExportMenuItem[] = [
         view: 'measurementUnits.view',
         delete: 'measurementUnits.delete'
       }, {
-        exportMenu: exportMenu
+        exportMenu: exportMenu,
+        beforeDelete: (entity) => {
+          if (entity.is_system) {
+            return 'Não é possível excluir uma unidade de medida controlada pelo sistema.';
+          }
+
+          return true
+        },
       }),
       deps: [
         MeasurementUnitService
