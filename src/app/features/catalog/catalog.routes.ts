@@ -8,5 +8,9 @@ export const CATALOG_ROUTES: Routes = [
     {
         path: 'product-brands',
         loadChildren: () => import('./product-brands/product-brands.routes').then(r => r.PRODUCT_BRANDS_ROUTES)
+    },
+    {
+        path: 'measurement-units',
+        loadChildren: () => import('./measurement-units/measurement-units.routes').then(r => r.MEASUREMENT_UNITS_ROUTES)
     }
 ];

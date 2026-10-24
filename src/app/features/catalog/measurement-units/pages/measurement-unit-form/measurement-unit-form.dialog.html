@@ -1,0 +1,88 @@
+<app-form-dialog [facade]="facade">
+  <ng-template appTemplate="content">
+    @if (!facade.loading()) {
+      <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <p-fluid class="grid">
+          <div class="col-12">
+            <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
+            <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+            <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
+          </div>
+          <div class="col-12 md:col-6">
+            <label htmlFor="category">Categoria<span class="text-red-500 font-bold">*</span></label>
+            <p-select id="category" inputId="category" formControlName="category" appendTo="body" [options]="measurementUnitCategoryOptions" optionLabel="name" optionValue="code" placeholder="Selecione a categoria" [invalid]="isInvalid('category')"></p-select>
+            <app-form-control-errors [control]="form.get('category')"></app-form-control-errors>
+          </div>
+          <div class="col-6 md:col-3">
+            <label htmlFor="code">Código<span class="text-red-500 font-bold">*</span></label>
+            <input id="code" formControlName="code" pInputText required [invalid]="isInvalid('code')" />
+            <app-form-control-errors [control]="form.get('code')"></app-form-control-errors>
+          </div>
+          <div class="col-6 md:col-3">
+            <label htmlFor="symbol">Símbolo<span class="text-red-500 font-bold">*</span></label>
+            <input id="symbol" formControlName="symbol" pInputText required [invalid]="isInvalid('symbol')" />
+            <app-form-control-errors [control]="form.get('symbol')"></app-form-control-errors>
+          </div>
+          <div class="col-12">
+            <label htmlFor="base_unit_id">Unidade de medida base</label>
+            <app-measurement-unit-lookup formControlName="base_unit_id"></app-measurement-unit-lookup>
+            <app-form-control-errors [control]="form.get('base_unit_id')"></app-form-control-errors>
+          </div>
+          <div class="col-6 md:col-4">
+            <label htmlFor="conversion_factor">Fator de conversão</label>
+            <p-inputnumber inputId="conversion_factor" formControlName="conversion_factor" [min]="0" [max]="10000000000" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="8" [showButtons]="true" [invalid]="isInvalid('conversion_factor')" />
+            <app-form-control-errors [control]="form.get('conversion_factor')"></app-form-control-errors>
+          </div>
+          <div class="col-6 md:col-4">
+            <label htmlFor="decimal_places">Casas decimais</label>
+            <p-inputnumber inputId="decimal_places" formControlName="decimal_places" [min]="0" [max]="8" [showButtons]="true" [invalid]="isInvalid('decimal_places')" />
+            <app-form-control-errors [control]="form.get('decimal_places')"></app-form-control-errors>
+          </div>
+          <div class="col-12 md:col-4">
+            <label htmlFor="external_code">Código externo</label>
+            <input id="external_code" formControlName="external_code" pInputText [invalid]="isInvalid('external_code')" />
+            <app-form-control-errors [control]="form.get('external_code')"></app-form-control-errors>
+          </div>
+        </p-fluid>
+      </form>
+    } @else {
+      <p-fluid class="grid">
+          <div class="col-12">
+            <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+            <p-skeleton width="100%" height="39px"></p-skeleton>
+          </div>
+          <div class="col-12 md:col-6">
+            <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+            <p-skeleton width="100%" height="39px"></p-skeleton>
+          </div>
+          <div class="col-12 md:col-3">
+            <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+            <p-skeleton width="100%" height="39px"></p-skeleton>
+          </div>
+          <div class="col-12 md:col-3">
+            <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+            <p-skeleton width="100%" height="39px"></p-skeleton>
+          </div>
+          <div class="col-12">
+            <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+            <p-skeleton width="100%" height="39px"></p-skeleton>
+          </div>
+          <div class="col-12 md:col-4">
+            <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+            <p-skeleton width="100%" height="39px"></p-skeleton>
+          </div>
+          <div class="col-12 md:col-4">
+            <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+            <p-skeleton width="100%" height="39px"></p-skeleton>
+          </div>
+          <div class="col-12 md:col-4">
+            <p-skeleton height="16px" width="20%" class="mb-2"></p-skeleton>
+            <p-skeleton width="100%" height="39px"></p-skeleton>
+          </div>
+      </p-fluid>
+    }
+  </ng-template>
+  <ng-template appTemplate="footer">
+    <p-button label="Salvar" icon="pi pi-save" [disabled]="form.disabled || facade.loading()" [loading]="facade.saving()" (onClick)="onSubmit()" />
+  </ng-template>
+</app-form-dialog>

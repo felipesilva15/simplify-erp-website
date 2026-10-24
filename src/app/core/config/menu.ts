@@ -91,6 +91,13 @@ export const MENU: AppMenuItem[] = [
         active: false,
         link: '/catalog/product-brands',
         permission: 'productBrands.viewAny'
+      },
+      {
+        label: 'Unidades de medida',
+        icon: 'pi pi-calculator',
+        active: false,
+        link: '/catalog/measurement-units',
+        permission: 'measurementUnits.viewAny'
       }
     ]
   },
