@@ -76,44 +76,44 @@
 
                 <app-collapsible-section title="Dados complementares">
                     <p-fluid class="grid">
-                        <div class="col-12 md:col-6">
+                        <div class="col-12 md:col-6 lg:col-3">
                             <label htmlFor="partner_since">Parceiro desde</label>
                             <p-datepicker id="partner_since" inputId="partner_since" pInputMask="99/99/9999" formControlName="partner_since" appendTo="body" dateFormat="dd/mm/yy" [iconDisplay]="'input'" [showIcon]="true"     [invalid]="isInvalid('partner_since')"></p-datepicker>
                             <app-form-control-errors [control]="form.get('partner_since')"></app-form-control-errors>
                         </div>
-                        <div class="col-12 md:col-6">
+                        <div class="col-12 md:col-6 lg:col-3">
                             <label htmlFor="birth_date">Data de nascimento</label>
                             <p-datepicker id="birth_date" inputId="birth_date" pInputMask="99/99/9999" formControlName="birth_date" appendTo="body" dateFormat="dd/mm/yy" [iconDisplay]="'input'" [showIcon]="true"  [invalid]="isInvalid('birth_date')"></p-datepicker>
                             <app-form-control-errors [control]="form.get('birth_date')"></app-form-control-errors>
                         </div>
-                        <div class="col-12 md:col-6">
+                        <div class="col-12 md:col-6 lg:col-3">
                             <label htmlFor="gender">
                                 Gênero@if (form.get('gender')?.hasValidator(validatorRequired)) {<span class="text-red-500 font-bold">*</span>}
                             </label>
                             <p-select id="gender" inputId="gender" formControlName="gender" appendTo="body" [options]="genderOptions" optionLabel="name" optionValue="code" [showClear]="true" placeholder="Selecione o gênero" [invalid]="isInvalid('gender')"></p-select>
                             <app-form-control-errors [control]="form.get('gender')"></app-form-control-errors>
                         </div>
-                        <div class="col-12 md:col-6">
+                        <div class="col-12 md:col-6 lg:col-3">
                             <label htmlFor="marital_status">Estado civil</label>
                             <p-select id="marital_status" inputId="marital_status" formControlName="marital_status" appendTo="body" [options]="maritalStatusOptions" optionLabel="name" optionValue="code" placeholder="Selecione o estado civil" [invalid]="isInvalid('marital_status')"></p-select>
                             <app-form-control-errors [control]="form.get('marital_status')"></app-form-control-errors>
                         </div>
-                        <div class="col-12 md:col-6">
+                        <div class="col-12 md:col-6 lg:col-3">
                             <label htmlFor="father_name">Nome do pai</label>
                             <input id="father_name" formControlName="father_name" pInputText [invalid]="isInvalid('father_name')" />
                             <app-form-control-errors [control]="form.get('father_name')"></app-form-control-errors>
                         </div>
-                        <div class="col-12 md:col-6">
+                        <div class="col-12 md:col-6 lg:col-3">
                             <label htmlFor="father_document">Documento do pai</label>
                             <input id="father_document" formControlName="father_document" pInputText [invalid]="isInvalid('father_document')" />
                             <app-form-control-errors [control]="form.get('father_document')"></app-form-control-errors>
                         </div>
-                        <div class="col-12 md:col-6">
+                        <div class="col-12 md:col-6 lg:col-3">
                             <label htmlFor="mother_name">Nome da mãe</label>
                             <input id="mother_name" formControlName="mother_name" pInputText [invalid]="isInvalid('mother_name')" />
                             <app-form-control-errors [control]="form.get('mother_name')"></app-form-control-errors>
                         </div>
-                        <div class="col-12 md:col-6">
+                        <div class="col-12 md:col-6 lg:col-3">
                             <label htmlFor="mother_document">Documento da mãe</label>
                             <input id="mother_document" formControlName="mother_document" pInputText [invalid]="isInvalid('mother_document')" />
                             <app-form-control-errors [control]="form.get('mother_document')"></app-form-control-errors>
