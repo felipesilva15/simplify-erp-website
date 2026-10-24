@@ -1,7 +1,7 @@
 <div class="flex flex-column gap-4 animation-duration-300 fadein form-dialog">
     <div class="flex flex-column">
         @if (facade && facade.hasWarnings()) {
-            <div class="flex flex-column w-full mb-3">
+            <div class="flex flex-column w-full mt-1 mb-3">
                 @for (warning of facade.warnings(); track $index) {
                     <p-message icon="pi pi-exclamation-triangle" severity="warn">{{ warning }}</p-message>
                 }

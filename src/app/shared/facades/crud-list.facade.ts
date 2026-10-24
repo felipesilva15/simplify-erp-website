@@ -4,6 +4,7 @@ import { finalize, Observable } from 'rxjs';
 import { CrudService } from '../../core/contracts/crud-service';
 import { PermissionService } from '../../core/auth/services/permission-service';
 import { ConfirmDialogService } from '../services/confirm-dialog-service';
+import { ToastService } from '../services/toast-service';
 import { ApiResponse } from '../../core/models/api-response';
 import { BaseEntity } from '../../core/models/base-entity';
 import { ListRequestParams } from '../../core/models/list-request-params';
@@ -22,6 +23,7 @@ export interface CrudListFacadeConfig {
 export class CrudListFacade<T extends BaseEntity> {
     private permissionService: PermissionService = inject(PermissionService);
     private confirmService: ConfirmDialogService = inject(ConfirmDialogService);
+    private toastService: ToastService = inject(ToastService);
 
     private _response: WritableSignal<ApiResponse<T[]> | null> = signal<ApiResponse<T[]> | null>(null);
     private _data: WritableSignal<T[]> = signal<T[]>([]);
@@ -142,10 +144,31 @@ export class CrudListFacade<T extends BaseEntity> {
 
         this.service.delete(entity.id)
             .subscribe({
-                next: () => {
+                next: (res: unknown) => {
                     this._data.update(list =>
                         list.filter(item => item['id'] !== entity.id)
                     );
+
+                    const apiResponse = res as ApiResponse<T> | undefined;
+                    const message = apiResponse?.message || 'Registro excluído com sucesso.';
+
+                    this.toastService.show({
+                        title: 'Sucesso',
+                        message,
+                        severity: 'success'
+                    });
+                },
+                error: (err: any) => {
+                    const apiResponse = err?.error as ApiResponse<T> | undefined;
+                    const message = apiResponse?.message || err?.message || 'Erro ao excluir registro.';
+
+                    this._error.set(message);
+
+                    this.toastService.show({
+                        title: 'Erro',
+                        message,
+                        severity: 'error'
+                    });
                 }
             });
     }
