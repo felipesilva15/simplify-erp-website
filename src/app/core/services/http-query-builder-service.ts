@@ -20,7 +20,7 @@ export class HttpQueryBuilderService {
         value.forEach((value: any) => {
           params = params.append(`${paramKey}[]`, value);
         })
-      } else {
+      } else if (value !== undefined) {
         params = params.append(paramKey, value);
       }
     });
