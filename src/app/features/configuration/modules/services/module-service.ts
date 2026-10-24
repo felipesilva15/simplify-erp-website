@@ -11,7 +11,7 @@ import { ListRequestParams } from '../../../../core/models/list-request-params';
   providedIn: 'root',
 })
 export class ModuleService {
-  private readonly baseUrl: string = environment.baseUrlApi + '/core/modules';
+  private readonly baseUrl: string = environment.baseUrlApi + '/security/modules';
   
   private http: HttpClient = inject(HttpClient)
   private queryBuilder: HttpQueryBuilderService = inject(HttpQueryBuilderService)
