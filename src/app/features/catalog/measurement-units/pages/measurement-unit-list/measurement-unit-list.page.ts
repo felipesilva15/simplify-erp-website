@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { MenuItem } from 'primeng/api';
@@ -18,7 +18,6 @@ import { MeasurementUnit } from '../../models/measurement-unit';
 import { MeasurementUnitService } from '../../services/measurement-unit-service';
 import { MeasurementUnitLookupComponent } from '../../components/measurement-unit-lookup/measurement-unit-lookup.component';
 import { MeasurementUnitCategoryLabels, MeasurementUnitCategoryOptions } from '../../enums/measurement-unit-category';
-import { DecimalPipe } from '@angular/common';
 
 const exportMenu: ExportMenuItem[] = [
   {
@@ -69,7 +68,7 @@ const exportMenu: ExportMenuItem[] = [
   templateUrl: './measurement-unit-list.page.html',
   styleUrl: './measurement-unit-list.page.scss',
 })
-export class MeasurementUnitListPage implements OnInit, AfterViewInit {
+export class MeasurementUnitListPage implements OnInit {
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
@@ -82,7 +81,18 @@ export class MeasurementUnitListPage implements OnInit, AfterViewInit {
     { label: 'Unidades de medida' },
     { label: 'Listar', routerLink: '/catalog/measurement-units' }
   ];
-  cols: TableColumn<MeasurementUnit>[] = [];
+  cols: TableColumn<MeasurementUnit>[] = [
+    { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },
+    { field: 'name', header: 'Nome', sortable: true, type: ColumnType.Text },
+    { field: 'category', header: 'Categoria', sortable: true, type: ColumnType.Enum, enumOptionLabels: MeasurementUnitCategoryLabels },
+    { field: 'code', header: 'Código', sortable: true, type: ColumnType.Text },
+    { field: 'symbol', header: 'Símbolo', sortable: true, type: ColumnType.Text },
+    { field: 'conversion_factor', header: 'Fator de conversão', sortable: true, type: ColumnType.Decimal, pipeArgs: ['1.2-8'] },
+    { field: 'decimal_places', header: 'Casas decimais', sortable: true, type: ColumnType.Integer },
+    { field: 'external_code', header: 'Código externo', sortable: true, type: ColumnType.Text },
+    { field: 'is_active', header: 'Ativo', sortable: true, type: ColumnType.Boolean },
+    { field: 'is_system', header: 'Sistêmico', sortable: true, type: ColumnType.Boolean },
+  ];
   filterDefinition: FilterFieldDefinition[] = [
     { name: 'id', label: 'ID', type: ColumnType.Integer },
     { name: 'name', label: 'Nome', type: ColumnType.Text },
@@ -121,20 +131,5 @@ export class MeasurementUnitListPage implements OnInit, AfterViewInit {
     this.dialogRefreshService.saved$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.facade.load());
-  }
-
-  ngAfterViewInit(): void {
-    this.cols = [
-      { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },
-      { field: 'name', header: 'Nome', sortable: true, type: ColumnType.Text },
-      { field: 'category', header: 'Categoria', sortable: true, type: ColumnType.Enum, enumOptionLabels: MeasurementUnitCategoryLabels },
-      { field: 'code', header: 'Código', sortable: true, type: ColumnType.Text },
-      { field: 'symbol', header: 'Símbolo', sortable: true, type: ColumnType.Text },
-      { field: 'conversion_factor', header: 'Fator de conversão', sortable: true, type: ColumnType.Decimal, pipe: new DecimalPipe('pt-BR'), pipeArgs: ['1.2-8'] },
-      { field: 'decimal_places', header: 'Casas decimais', sortable: true, type: ColumnType.Decimal, pipeArgs: [0, 8] },
-      { field: 'external_code', header: 'Código externo', sortable: true, type: ColumnType.Text },
-      { field: 'is_active', header: 'Ativo', sortable: true, type: ColumnType.Boolean },
-      { field: 'is_system', header: 'Sistêmico', sortable: true, type: ColumnType.Boolean },
-    ];
   }
 }

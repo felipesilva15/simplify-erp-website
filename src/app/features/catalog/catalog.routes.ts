@@ -12,5 +12,9 @@ export const CATALOG_ROUTES: Routes = [
     {
         path: 'measurement-units',
         loadChildren: () => import('./measurement-units/measurement-units.routes').then(r => r.MEASUREMENT_UNITS_ROUTES)
+    },
+    {
+        path: 'products',
+        loadChildren: () => import('./products/products.routes').then(r => r.PRODUCTS_ROUTES)
     }
 ];
