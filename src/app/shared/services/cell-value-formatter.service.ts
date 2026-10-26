@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe, PercentPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { inject, Injectable, LOCALE_ID, PipeTransform } from '@angular/core';
 import { ColumnType } from '../../core/enums/column-type';
 
@@ -37,6 +37,7 @@ export class CellValueFormatterService {
   private datePipe = new DatePipe(this.locale);
   private currencyPipe = new CurrencyPipe(this.locale);
   private percentPipe = new PercentPipe(this.locale);
+  private decimalPipe = new DecimalPipe(this.locale);
 
   format(record: unknown, definition: CellDefinition): string {
     const value: unknown = this.resolve(record, definition.field) ?? '';
@@ -63,6 +64,9 @@ export class CellValueFormatterService {
 
       case ColumnType.Enum:
         return definition.enumOptionLabels?.[value as string] ?? String(value);
+
+      case ColumnType.Decimal:
+        return this.decimalPipe.transform(value as number, (definition.pipeArgs?.[0] as string | undefined ?? '1.2-2')) ?? '';
 
       default:
         return String(value);
