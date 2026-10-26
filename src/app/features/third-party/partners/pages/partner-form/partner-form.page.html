@@ -118,6 +118,11 @@
                             <input id="mother_document" formControlName="mother_document" pInputText [invalid]="isInvalid('mother_document')" />
                             <app-form-control-errors [control]="form.get('mother_document')"></app-form-control-errors>
                         </div>
+                        <div class="col-12">
+                            <label htmlFor="notes">Observações</label>
+                            <textarea id="notes" pTextarea formControlName="notes" rows="4" [invalid]="isInvalid('notes')"></textarea>
+                            <app-form-control-errors [control]="form.get('notes')"></app-form-control-errors>
+                        </div>
                     </p-fluid>
                 </app-collapsible-section>
 
@@ -132,16 +137,6 @@
                             <label htmlFor="pix_key">Chave PIX</label>
                             <input id="pix_key" formControlName="pix_key" pInputText [invalid]="isInvalid('pix_key')" />
                             <app-form-control-errors [control]="form.get('pix_key')"></app-form-control-errors>
-                        </div>
-                    </p-fluid>
-                </app-collapsible-section>
-
-                <app-collapsible-section title="Observações">
-                    <p-fluid class="grid">
-                        <div class="col-12">
-                            <label htmlFor="notes">Observações</label>
-                            <textarea id="notes" pTextarea formControlName="notes" rows="4" [invalid]="isInvalid('notes')"></textarea>
-                            <app-form-control-errors [control]="form.get('notes')"></app-form-control-errors>
                         </div>
                     </p-fluid>
                 </app-collapsible-section>

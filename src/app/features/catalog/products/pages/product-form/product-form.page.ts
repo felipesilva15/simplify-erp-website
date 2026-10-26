@@ -24,6 +24,8 @@ import { MeasurementUnitLookupComponent } from '../../../measurement-units/compo
 import { ProductCategoryLookupComponent } from '../../../product-categories/components/product-category-lookup/product-category-lookup.component';
 import { ProductBrandLookupComponent } from '../../../product-brands/components/product-brand-lookup/product-brand-lookup.component';
 import { LookupItem } from '../../../../../core/models/lookup-item';
+import { CollapsibleSectionComponent } from '../../../../../shared/components/collapsible-section/collapsible-section.component';
+import { ProductType } from '../../enums/product-type';
 
 interface FormType {
   item_type_code: FormControl<ItemTypeCode>;
@@ -35,15 +37,15 @@ interface FormType {
   product_brand_id: FormControl<LookupItem | null>;
   description: FormControl<string>;
   notes: FormControl<string>;
-  price: FormControl<number>;
-  cost: FormControl<number>;
-  net_weight: FormControl<number>;
-  gross_weight: FormControl<number>;
-  width: FormControl<number>;
-  height: FormControl<number>;
-  length: FormControl<number>;
-  minimum_stock: FormControl<number>;
-  maximum_stock: FormControl<number>;
+  price: FormControl<number | null>;
+  cost: FormControl<number | null>;
+  net_weight: FormControl<number | null>;
+  gross_weight: FormControl<number | null>;
+  width: FormControl<number | null>;
+  height: FormControl<number | null>;
+  length: FormControl<number | null>;
+  minimum_stock: FormControl<number | null>;
+  maximum_stock: FormControl<number | null>;
   is_active: FormControl<boolean>;
 }
 
@@ -66,8 +68,9 @@ interface FormType {
     FormPageUi,
     AppTemplate,
     FormControlErrorsComponent,
-    SkeletonModule
-  ],
+    SkeletonModule,
+    CollapsibleSectionComponent
+],
   providers: [
     {
       provide: GenericCrudFormFacade<Product>,
@@ -78,6 +81,12 @@ interface FormType {
             create: 'products.create',
             update: 'products.update',
             view: 'products.view'
+          },
+          beforeSubmit: (payload: Partial<Product>) => {
+            return {
+              ...payload,
+              type: ProductType.Product,
+            };
           }
         }),
       deps: [ProductService]
@@ -96,24 +105,24 @@ export class ProductFormPage implements OnInit {
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
     item_type_code: [ItemTypeCode.MerchandiseForResale, [Validators.required]],
-    sku: ['', [Validators.required, Validators.maxLength(255)]],
-    gtin: ['', [Validators.required, Validators.maxLength(255)]],
+    sku: ['', [Validators.required, Validators.maxLength(40)]],
+    gtin: ['', [Validators.maxLength(14)]],
     name: ['', [Validators.required, Validators.maxLength(255)]],
     measurement_unit_id: new FormControl<LookupItem | null>(null, [Validators.required]),
-    product_category_id: new FormControl<LookupItem | null>(null, [Validators.required]),
-    product_brand_id: new FormControl<LookupItem | null>(null, [Validators.required]),
-    description: ['', [Validators.required, Validators.maxLength(512)]],
-    notes: ['', [Validators.required, Validators.maxLength(512)]],
-    price: [0, [Validators.required]],
-    cost: [0, [Validators.required]],
-    net_weight: [0, [Validators.required]],
-    gross_weight: [0, [Validators.required]],
-    width: [0, [Validators.required]],
-    height: [0, [Validators.required]],
-    length: [0, [Validators.required]],
-    minimum_stock: [0, [Validators.required]],
-    maximum_stock: [0, [Validators.required]],
-    is_active: [false, [Validators.required]],
+    product_category_id: new FormControl<LookupItem | null>(null, []),
+    product_brand_id: new FormControl<LookupItem | null>(null, []),
+    description: ['', [Validators.maxLength(1024)]],
+    notes: ['', [Validators.maxLength(4096)]],
+    price: new FormControl<number | null>({ value: null, disabled: false }, [Validators.required, Validators.min(0), Validators.max(100000000000000)]),
+    cost: new FormControl<number | null>({ value: null, disabled: false }, [Validators.required, Validators.min(0), Validators.max(100000000000000)]),
+    net_weight: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(999999999.999)]),
+    gross_weight: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(999999999.999)]),
+    width: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(99999999.9999)]),
+    height: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(99999999.9999)]),
+    length: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(99999999.9999)]),
+    minimum_stock: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(100000000000000)]),
+    maximum_stock: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(100000000000000)]),
+    is_active: [true, [Validators.required]],
   });
 
   id: WritableSignal<number> = signal<number>(0);

@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { ColumnType } from '../../../../../core/enums/column-type';
 import { ExportExtension } from '../../../../../core/enums/export-extension';
@@ -41,7 +41,6 @@ const exportMenu: ExportMenuItem[] = [
   imports: [
     ListPageUi,
     CrudListComponent,
-    RouterOutlet,
     AppTemplate
   ],
   providers: [
