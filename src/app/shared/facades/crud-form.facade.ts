@@ -5,7 +5,7 @@ import { BaseEntity } from "../../core/models/base-entity";
 import { FormMode } from "../../core/enums/form-mode";
 import { CrudService } from "../../core/contracts/crud-service";
 import { CrudFormConfig } from "../../core/models/crud-form-config";
-import { FormGroup } from "@angular/forms";
+import { AbstractControl, FormGroup } from "@angular/forms";
 import { PermissionService } from "../../core/auth/services/permission-service";
 import { finalize, Observable, take, tap } from "rxjs";
 import { ApiResponse } from "../../core/models/api-response";
@@ -15,6 +15,7 @@ import { ApiMetaOption } from '../../core/enums/api-meta-option';
 import { ApiMetaType } from '../../core/types/api-meta-type';
 import { FormPageFacade } from '../../core/contracts/form-page-facade';
 import { ActivityLog } from '../../core/models/activity-log';
+import { serializeDecimals, toDecimal } from '../forms/decimal-control';
 
 export abstract class CrudFormFacade<
     T extends BaseEntity,
@@ -162,6 +163,14 @@ export abstract class CrudFormFacade<
             }),
             finalize(() => this._saving.set(false))
         );
+    }
+
+    protected toDecimal(value: unknown, scale: number): string | null | unknown {
+        return toDecimal(value, scale);
+    }
+
+    protected serializeDecimals<P = unknown>(control: AbstractControl | null | undefined, value: P): P {
+        return serializeDecimals(control, value);
     }
 
     // hooks

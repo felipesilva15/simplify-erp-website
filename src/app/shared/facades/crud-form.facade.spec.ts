@@ -15,6 +15,7 @@ import { Mocked } from 'vitest';
 import { of, Observable, throwError } from 'rxjs';
 import { ApiResponse } from '../../core/models/api-response';
 import { LookupItem } from '../../core/models/lookup-item';
+import { DecimalControl } from '../forms/decimal-control';
 
 interface TestEntity extends BaseEntity {
   name: string;
@@ -387,12 +388,39 @@ describe('GenericCrudFormFacade', () => {
       expect(mockCrudService.create).toHaveBeenCalledWith({
         id: null,
         name: 'Unwrap Test',
-        category: { code: 'C1', active: true },
+        category: 'cat1',
         subObj: {
-          subLookup: { code: 'C1', active: true },
+          subLookup: 'cat1',
           otherValue: 'xyz',
         },
         tags: [{ id: 'T1' }, { id: 'T2' }],
+      });
+    });
+  });
+  describe('serializeDecimals', () => {
+    it('should serialize DecimalControl values to strings with formatted scale on submit', async () => {
+      form.addControl('price', new DecimalControl(2, 1499.59));
+      form.addControl('weight', new DecimalControl(4, 1499.59));
+      form.addControl('cost', new DecimalControl(3, 0));
+      form.addControl('optionalDecimal', new DecimalControl(2, null));
+
+      form.patchValue({
+        name: 'Decimal Test',
+      });
+
+      mockCrudService.create.mockReturnValue(of({ success: true, message: '', data: {} as any }));
+
+      const result$ = facade.submit(form);
+      await new Promise((resolve) => result$.subscribe(resolve));
+
+      expect(mockCrudService.create).toHaveBeenCalledWith({
+        id: null,
+        name: 'Decimal Test',
+        category: null,
+        price: '1499.59',
+        weight: '1499.5900',
+        cost: '0.000',
+        optionalDecimal: null,
       });
     });
   });

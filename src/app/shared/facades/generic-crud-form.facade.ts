@@ -36,6 +36,7 @@ export class GenericCrudFormFacade<T extends BaseEntity> extends CrudFormFacade<
         });
         
         payload = this.unwrapLookups(payload);
+        payload = this.serializeDecimals(form, payload);
 
         if (this.config?.beforeSubmit) {
             payload = this.config.beforeSubmit(payload);
