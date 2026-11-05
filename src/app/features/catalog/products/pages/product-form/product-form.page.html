@@ -50,12 +50,12 @@
                         </div>
                         <div class="col-12 md:col-6">
                             <label htmlFor="price">Preço<span class="text-red-500 font-bold">*</span></label>
-                            <p-inputnumber inputId="price" formControlName="price" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" required [invalid]="isInvalid('price')" />
+                            <p-inputnumber inputId="price" formControlName="price" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="2" required [invalid]="isInvalid('price')" />
                             <app-form-control-errors [control]="form.get('price')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
                             <label htmlFor="cost">Custo<span class="text-red-500 font-bold">*</span></label>
-                            <p-inputnumber inputId="cost" formControlName="cost" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" required [invalid]="isInvalid('cost')" />
+                            <p-inputnumber inputId="cost" formControlName="cost" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="2" required [invalid]="isInvalid('cost')" />
                             <app-form-control-errors [control]="form.get('cost')"></app-form-control-errors>
                         </div>
                     </p-fluid>
@@ -63,38 +63,38 @@
                 <app-collapsible-section title="Armazenamento e estoque">
                     <p-fluid class="grid">
                         <div class="col-12 md:col-6">
-                            <label htmlFor="net_weight">Peso líquido</label>
-                            <p-inputnumber inputId="net_weight" formControlName="net_weight" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="3" [invalid]="isInvalid('net_weight')" />
-                            <app-form-control-errors [control]="form.get('net_weight')"></app-form-control-errors>
+                            <label htmlFor="gross_weight">Peso bruto</label>
+                            <p-inputnumber inputId="gross_weight" formControlName="gross_weight" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="3" [invalid]="isInvalid('gross_weight')" />
+                            <app-form-control-errors [control]="form.get('gross_weight')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="gross_weight">Peso bruto</label>
-                            <p-inputnumber inputId="gross_weight" formControlName="gross_weight" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="3" [invalid]="isInvalid('gross_weight')" />
-                            <app-form-control-errors [control]="form.get('gross_weight')"></app-form-control-errors>
+                            <label htmlFor="net_weight">Peso líquido</label>
+                            <p-inputnumber inputId="net_weight" formControlName="net_weight" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="3" [invalid]="isInvalid('net_weight')" />
+                            <app-form-control-errors [control]="form.get('net_weight')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
                             <label htmlFor="width">Altura</label>
-                            <p-inputnumber inputId="width" formControlName="width" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('width')" />
+                            <p-inputnumber inputId="width" formControlName="width" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('width')" />
                             <app-form-control-errors [control]="form.get('width')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
                             <label htmlFor="height">Largura</label>
-                            <p-inputnumber inputId="height" formControlName="height" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('height')" />
+                            <p-inputnumber inputId="height" formControlName="height" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('height')" />
                             <app-form-control-errors [control]="form.get('height')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
                             <label htmlFor="length">Comprimento</label>
-                            <p-inputnumber inputId="length" formControlName="length" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('length')" />
+                            <p-inputnumber inputId="length" formControlName="length" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('length')" />
                             <app-form-control-errors [control]="form.get('length')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
                             <label htmlFor="minimum_stock">Estoque mínimo</label>
-                            <p-inputnumber inputId="minimum_stock" formControlName="minimum_stock" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('minimum_stock')" />
+                            <p-inputnumber inputId="minimum_stock" formControlName="minimum_stock" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('minimum_stock')" />
                             <app-form-control-errors [control]="form.get('minimum_stock')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
                             <label htmlFor="maximum_stock">Estoque máximo</label>
-                            <p-inputnumber inputId="maximum_stock" formControlName="maximum_stock" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('maximum_stock')" />
+                            <p-inputnumber inputId="maximum_stock" formControlName="maximum_stock" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('maximum_stock')" />
                             <app-form-control-errors [control]="form.get('maximum_stock')"></app-form-control-errors>
                         </div>
                     </p-fluid>

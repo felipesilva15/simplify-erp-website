@@ -26,6 +26,7 @@ import { ProductBrandLookupComponent } from '../../../product-brands/components/
 import { LookupItem } from '../../../../../core/models/lookup-item';
 import { CollapsibleSectionComponent } from '../../../../../shared/components/collapsible-section/collapsible-section.component';
 import { ProductType } from '../../enums/product-type';
+import { DecimalControl, DecimalFormControl } from '../../../../../shared/forms/decimal-control';
 
 interface FormType {
   item_type_code: FormControl<ItemTypeCode>;
@@ -37,15 +38,15 @@ interface FormType {
   product_brand_id: FormControl<LookupItem | null>;
   description: FormControl<string>;
   notes: FormControl<string>;
-  price: FormControl<number | null>;
-  cost: FormControl<number | null>;
-  net_weight: FormControl<number | null>;
-  gross_weight: FormControl<number | null>;
-  width: FormControl<number | null>;
-  height: FormControl<number | null>;
-  length: FormControl<number | null>;
-  minimum_stock: FormControl<number | null>;
-  maximum_stock: FormControl<number | null>;
+  price: DecimalFormControl;
+  cost: DecimalFormControl;
+  net_weight: DecimalFormControl;
+  gross_weight: DecimalFormControl;
+  width: DecimalFormControl;
+  height: DecimalFormControl;
+  length: DecimalFormControl;
+  minimum_stock: DecimalFormControl;
+  maximum_stock: DecimalFormControl;
   is_active: FormControl<boolean>;
 }
 
@@ -113,15 +114,15 @@ export class ProductFormPage implements OnInit {
     product_brand_id: new FormControl<LookupItem | null>(null, []),
     description: ['', [Validators.maxLength(1024)]],
     notes: ['', [Validators.maxLength(4096)]],
-    price: new FormControl<number | null>({ value: null, disabled: false }, [Validators.required, Validators.min(0), Validators.max(100000000000000)]),
-    cost: new FormControl<number | null>({ value: null, disabled: false }, [Validators.required, Validators.min(0), Validators.max(100000000000000)]),
-    net_weight: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(999999999.999)]),
-    gross_weight: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(999999999.999)]),
-    width: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(99999999.9999)]),
-    height: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(99999999.9999)]),
-    length: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(99999999.9999)]),
-    minimum_stock: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(100000000000000)]),
-    maximum_stock: new FormControl<number | null>({ value: null, disabled: false }, [Validators.min(0), Validators.max(100000000000000)]),
+    price: new DecimalControl(2, { value: null, disabled: false }, [Validators.required, Validators.min(0), Validators.max(100000000000000)]),
+    cost: new DecimalControl(2, { value: null, disabled: false }, [Validators.required, Validators.min(0), Validators.max(100000000000000)]),
+    net_weight: new DecimalControl(3, { value: null, disabled: false }, [Validators.min(0), Validators.max(999999999.999)]),
+    gross_weight: new DecimalControl(3, { value: null, disabled: false }, [Validators.min(0), Validators.max(999999999.999)]),
+    width: new DecimalControl(4, { value: null, disabled: false }, [Validators.min(0), Validators.max(99999999.9999)]),
+    height: new DecimalControl(4, { value: null, disabled: false }, [Validators.min(0), Validators.max(99999999.9999)]),
+    length: new DecimalControl(4, { value: null, disabled: false }, [Validators.min(0), Validators.max(99999999.9999)]),
+    minimum_stock: new DecimalControl(4, { value: null, disabled: false }, [Validators.min(0), Validators.max(100000000000000)]),
+    maximum_stock: new DecimalControl(4, { value: null, disabled: false }, [Validators.min(0), Validators.max(100000000000000)]),
     is_active: [true, [Validators.required]],
   });
 
