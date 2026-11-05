@@ -1,4 +1,7 @@
 import { BaseEntity } from '../../../../core/models/base-entity';
+import { MeasurementUnit } from '../../measurement-units/models/measurement-unit';
+import { ProductBrand } from '../../product-brands/models/product-brand';
+import { ProductCategory } from '../../product-categories/models/product-category';
 import { ItemTypeCode } from '../enums/item-type-code';
 import { ProductType } from '../enums/product-type';
 
@@ -22,5 +25,8 @@ export interface Product extends BaseEntity {
     length?: number;
     minimum_stock?: number;
     maximum_stock?: number;
+    category?: ProductCategory;
+    brand?: ProductBrand;
+    measurement_unit: MeasurementUnit;
     is_active: boolean;
 }
