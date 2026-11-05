@@ -7,7 +7,7 @@ import { CrudService } from "../../../../core/contracts/crud-service";
 import { ListRequestParams } from "../../../../core/models/list-request-params";
 import { FormMode } from "../../../../core/enums/form-mode";
 import { CrudFormFacade } from "../../../../shared/facades/crud-form.facade";
-import { ModuleService } from "../../../configuration/modules/services/module-service";
+import { ModuleService } from "../../modules/services/module-service";
 import { Role } from "../models/role";
 import { RolePermissionState } from "../models/role-permission-state";
 import { RoleService } from "../services/role-service";

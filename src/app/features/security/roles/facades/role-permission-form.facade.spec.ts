@@ -15,8 +15,8 @@ import { RolePermission } from '../models/role-permission';
 import { RolePermissionState } from '../models/role-permission-state';
 import { RolePermissionFormFacade } from './role-permission-form.facade';
 import { RoleService } from '../services/role-service';
-import { ModuleService } from '../../../configuration/modules/services/module-service';
-import { Module } from '../../../configuration/modules/models/module';
+import { ModuleService } from '../../modules/services/module-service';
+import { Module } from '../../modules/models/module';
 
 describe('RolePermissionFormFacade', () => {
   let facade: RolePermissionFormFacade;
