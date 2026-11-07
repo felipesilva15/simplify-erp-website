@@ -53,17 +53,17 @@
         <input id="number" formControlName="number" pInputText [invalid]="isInvalid('number')" />
         <app-form-control-errors [control]="form.get('number')"></app-form-control-errors>
       </div>
-      <div class="col-12 md:col-4">
+      <div class="col-12 md:col-8">
         <label htmlFor="district">Bairro</label>
         <input id="district" formControlName="district" pInputText [invalid]="isInvalid('district')" />
         <app-form-control-errors [control]="form.get('district')"></app-form-control-errors>
       </div>
       <div class="col-12 md:col-4">
         <label htmlFor="postal_code">CEP</label>
-        <input id="postal_code" formControlName="postal_code" pInputText [invalid]="isInvalid('postal_code')" />
+        <input id="postal_code" formControlName="postal_code" mask="CEP" pInputText [invalid]="isInvalid('postal_code')" />
         <app-form-control-errors [control]="form.get('postal_code')"></app-form-control-errors>
       </div>
-      <div class="col-12 md:col-4">
+      <div class="col-12">
         <label htmlFor="complement">Complemento</label>
         <input id="complement" formControlName="complement" pInputText [invalid]="isInvalid('complement')" />
         <app-form-control-errors [control]="form.get('complement')"></app-form-control-errors>

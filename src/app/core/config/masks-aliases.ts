@@ -2,6 +2,7 @@ export const MASK_ALIASES: Record<string, string> = {
   PHONE_BR: '(00) 0000-0000||(00) 00000-0000',
   ONLY_PHONE_NUMBER_BR: '(00) 0000-0000',
   DOCUMENT: '000.000.000-00||AA.AAA.AAA/AAAA-AA||XXXXXXXXXXXXXXXXXXXX',
+  CEP: '00000-000',
 };
 
 export const MASK_PATTERN: Record<string, { pattern: RegExp }> = {

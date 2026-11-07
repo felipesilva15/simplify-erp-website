@@ -15,6 +15,7 @@ import { StateLookupComponent } from '../../../states/components/state-lookup/st
 import { CityLookupComponent } from '../../../cities/components/city-lookup/city-lookup.component';
 import { AddressType, AddressTypeOptions } from '../../enums/address-type';
 import { Address } from '../../models/address';
+import { NgxMaskDirective } from 'ngx-mask';
 
 const POSTAL_CODE_PATTERN = /^\d{5}-?\d{3}$/;
 const BRAZIL_ISO_CODE = 'BR';
@@ -32,7 +33,8 @@ const BRAZIL_ISO_CODE = 'BR';
     CountryLookupComponent,
     StateLookupComponent,
     CityLookupComponent,
-  ],
+    NgxMaskDirective
+],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './address-form.component.html',
 })
