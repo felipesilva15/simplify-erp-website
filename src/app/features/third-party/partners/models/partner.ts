@@ -6,6 +6,7 @@ import { MaritalStatus } from "../enums/marital-status";
 import { PersonType } from "../enums/person-type";
 import { PixType } from "../enums/pix-type";
 import { TaxpayerType } from "../enums/taxpayer-type";
+import { Profession } from "../../../hr/professions/models/profession";
 
 export interface Partner extends BaseEntity{
     id: number;
@@ -23,7 +24,8 @@ export interface Partner extends BaseEntity{
     municipal_registration?: string;
     suframa_registration?: string;
     marital_status?: MaritalStatus;
-    cbo?: string;
+    profession_id?: number;
+    profession?: Profession;
     gender?: Gender;
     birth_date?: Date;
     father_name?: string;

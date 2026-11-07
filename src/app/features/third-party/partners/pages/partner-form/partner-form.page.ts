@@ -33,6 +33,7 @@ import { CONTACTS_LIST_CONFIG, CONTACTS_LIST_FACADE } from '../../../contacts/co
 import { Contact } from '../../../contacts/models/contact';
 import { ADDRESSES_LIST_CONFIG, ADDRESSES_LIST_FACADE } from '../../../../geography/addresses/config/addresses-child-list.config';
 import { Address } from '../../../../geography/addresses/models/address';
+import { ProfessionLookupComponent } from '../../../../hr/professions/components/profession-lookup/profession-lookup.component';
 
 interface FormType {
   name: FormControl<string>;
@@ -48,7 +49,7 @@ interface FormType {
   municipal_registration: FormControl<string>;
   suframa_registration: FormControl<string>;
   marital_status: FormControl<MaritalStatus | null>;
-  cbo: FormControl<LookupItem | null>;
+  profession_id: FormControl<LookupItem | null>;
   gender: FormControl<Gender | null>;
   birth_date: FormControl<Date | null>;
   father_name: FormControl<string>;
@@ -80,6 +81,7 @@ interface FormType {
     TextareaModule,
     CollapsibleSectionComponent,
     PartnerTypeLookupComponent,
+    ProfessionLookupComponent,
     NgxMaskDirective,
     InputMaskModule,
     ChildEntityListComponent,
@@ -149,7 +151,7 @@ export class PartnerFormPage implements OnInit {
     municipal_registration: ['', [Validators.maxLength(15)]],
     suframa_registration: ['', [Validators.maxLength(9)]],
     marital_status: new FormControl<MaritalStatus | null>(null),
-    cbo: new FormControl<LookupItem | null>(null),
+    profession_id: new FormControl<LookupItem | null>(null),
     gender: new FormControl<Gender | null>(null),
     birth_date: new FormControl<Date | null>(null),
     father_name: ['', [Validators.maxLength(120)]],

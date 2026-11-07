@@ -19,6 +19,7 @@ import { PartnerTypeLookupComponent } from '../../../partner-types/components/pa
 import { ExportMenuItem } from '../../../../../core/models/export-menu-item';
 import { ExportExtension } from '../../../../../core/enums/export-extension';
 import { ExportFormat } from '../../../../../core/enums/export-format';
+import { ProfessionLookupComponent } from '../../../../hr/professions/components/profession-lookup/profession-lookup.component';
 
 const partnerExportMenu: ExportMenuItem[] = [
   {
@@ -83,6 +84,7 @@ export class PartnerListPage implements AfterViewInit {
     { name: 'taxpayer_type', label: 'Contribuinte', type: ColumnType.Enum, options: TaxpayerTypeOptions },
     { name: 'pix_type', label: 'Tipo chave PIX', type: ColumnType.Enum, options: PixTypeOptions },
     { name: 'pix_key', label: 'Chave PIX', type: ColumnType.Text },
+    { name: 'profession_id', label: 'Profissão', type: ColumnType.Lookup, component: ProfessionLookupComponent },
   ]
   tableMenu: TableMenuItem<Partner>[] = [
     { 
