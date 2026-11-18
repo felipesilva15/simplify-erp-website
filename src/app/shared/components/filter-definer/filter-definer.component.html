@@ -14,7 +14,7 @@
                     <p-select [options]="fields()" optionLabel="label" id="field" formControlName="field" (onChange)="onChangeField()" ></p-select>
                 </div>
                 <div class="col-12 md:col-3">
-                    <p-select [options]="FilterOperatorOptions" optionLabel="name" optionValue="code" id="operator" formControlName="operator"></p-select>
+                    <p-select [options]="filterOperatorOptions()" optionLabel="name" optionValue="code" id="operator" formControlName="operator"></p-select>
                 </div>
                 <div class="col-12 md:col-4">
                     @if (selectedField) {

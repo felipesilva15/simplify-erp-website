@@ -1,5 +1,5 @@
 import { ColumnType } from './../../../core/enums/column-type';
-import { FilterOperator, FilterOperatorOptions, FilterOperatorLabels } from './../../../core/enums/filter-operator';
+import { FilterOperator, FilterOperatorOptions, FilterOperatorLabels, FilterOperatorOption, getFilterOperatorOptionsByColumnType } from './../../../core/enums/filter-operator';
 import { Component, inject, input, InputSignal, model, ModelSignal, OnInit, output, signal, WritableSignal } from '@angular/core';
 import { RequestFiltersType } from '../../../core/types/request-filters-type';
 import { FilterFieldDefinition } from '../../../core/models/filter-field-definition';
@@ -73,7 +73,7 @@ export class FilterDefinerComponent implements OnInit {
 
   apply = output<RequestFiltersType | undefined>();
 
-  FilterOperatorOptions = FilterOperatorOptions;
+  filterOperatorOptions: WritableSignal<FilterOperatorOption[]> = signal<FilterOperatorOption[]>([]);
   FilterOperatorLabels = FilterOperatorLabels;
   ColumnType = ColumnType;
 
@@ -92,6 +92,7 @@ export class FilterDefinerComponent implements OnInit {
       value: null
     });
     this.form.markAsPristine();
+    this.filterOperatorOptions.set(getFilterOperatorOptionsByColumnType(this.fields()[0].type));
   }
 
   ngOnInit(): void {
@@ -226,6 +227,8 @@ export class FilterDefinerComponent implements OnInit {
     if (this.oldSelectedField() && this.selectedField?.name == this.oldSelectedField()?.name) {
       return;
     }
+
+    this.filterOperatorOptions.set(getFilterOperatorOptionsByColumnType(this.selectedField?.type ?? ColumnType.Text));
 
     this.form.patchValue({ value: null });
     this.form.markAsPristine();
