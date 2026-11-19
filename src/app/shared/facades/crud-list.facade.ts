@@ -16,10 +16,14 @@ import { ExportFormat } from '../../core/enums/export-format';
 import { ExportMenuItem } from '../../core/models/export-menu-item';
 import { ExportRequestParams } from '../../core/models/export-request-params';
 
+export const ALL_RECORDS_PER_PAGE = 100;
+
 export interface CrudListFacadeConfig {
     exportMenu?: ExportMenuItem[];
     beforeDelete?: (entity: any) => boolean | string | Promise<boolean | string>;
     beforeDeleteDefaultMessage?: string;
+    fixedFilters?: RequestFiltersType;
+    fetchAll?: boolean;
 }
 
 export class CrudListFacade<T extends BaseEntity> {
@@ -35,6 +39,8 @@ export class CrudListFacade<T extends BaseEntity> {
     private _requestParams: WritableSignal<ListRequestParams | undefined> = signal<ListRequestParams | undefined>(undefined);
     private _totalRecords: WritableSignal<number> = signal<number>(0);
     private _exportMenu: WritableSignal<ExportMenuItem[]> = signal<ExportMenuItem[]>([]);
+    private _fixedFilters: WritableSignal<RequestFiltersType> = signal<RequestFiltersType>({});
+    private _fetchAll: WritableSignal<boolean> = signal<boolean>(false);
 
     response = this._response.asReadonly();
     data = this._data.asReadonly();
@@ -44,6 +50,8 @@ export class CrudListFacade<T extends BaseEntity> {
     requestParams = this._requestParams.asReadonly();
     totalRecords = this._totalRecords.asReadonly();
     exportMenu = this._exportMenu.asReadonly();
+    fixedFilters = this._fixedFilters.asReadonly();
+    fetchAll = this._fetchAll.asReadonly();
 
     constructor(
         private service: CrudService<T>,
@@ -51,6 +59,14 @@ export class CrudListFacade<T extends BaseEntity> {
         private config: CrudListFacadeConfig = {}
     ) {
         this._exportMenu.set(config.exportMenu ?? []);
+        this._fixedFilters.set(this.cloneFilters(config.fixedFilters ?? {}));
+        this._fetchAll.set(config.fetchAll ?? false);
+
+        if (this._fetchAll()) {
+            this._requestParams.set({ page: 1, per_page: ALL_RECORDS_PER_PAGE });
+        } else if (this.hasFixedFilters()) {
+            this._requestParams.set({ filters: this.cloneFilters(this._fixedFilters()) });
+        }
     }
 
     load(): void {
@@ -81,20 +97,22 @@ export class CrudListFacade<T extends BaseEntity> {
     }
 
     applyFilters(filters: RequestFiltersType | undefined): void {
+        const mergedFilters = this.mergeFilters(filters);
+
         this._requestParams.update((p: ListRequestParams | undefined) => {
             if (!p) {
                 p = {};
             }
 
-            if (filters) {
-                p.filters = filters;
+            if (mergedFilters) {
+                p.filters = mergedFilters;
             } else {
                 delete p.filters;
             }
 
             p.page = 1;
-            
-            return p; 
+
+            return p;
         })
         this.load();
     }
@@ -242,16 +260,45 @@ export class CrudListFacade<T extends BaseEntity> {
     }
 
     exportCustom(format: ExportFormat, extension: ExportExtension, handler: (params: ExportRequestParams) => Observable<Blob>): void {
+        const currentParams = this._requestParams() ?? {};
+        const mergedFilters = this.mergeFilters(currentParams.filters);
         const params: ExportRequestParams = {
-            ...(this._requestParams() ?? {}),
+            ...currentParams,
             format,
             extension,
         };
+
+        if (mergedFilters && Object.keys(mergedFilters).length) {
+            params.filters = mergedFilters;
+        }
 
         handler(params).subscribe({
             next: (blob: Blob) => this.downloadBlob(blob, extension),
             error: () => this._error.set('Erro ao exportar dados.')
         });
+    }
+
+    private mergeFilters(filters?: RequestFiltersType): RequestFiltersType | undefined {
+        if (this._fetchAll()) {
+            return filters && Object.keys(filters).length ? filters : undefined;
+        }
+
+        if (!this.hasFixedFilters()) {
+            return filters;
+        }
+
+        return { ...(filters ?? {}), ...this.cloneFilters(this._fixedFilters()) };
+    }
+
+    private hasFixedFilters(): boolean {
+        return Object.keys(this._fixedFilters()).length > 0;
+    }
+
+    private cloneFilters(filters: RequestFiltersType): RequestFiltersType {
+        return Object.entries(filters).reduce<RequestFiltersType>((result, [name, conditions]) => {
+            result[name] = { ...conditions };
+            return result;
+        }, {});
     }
 
     private downloadBlob(blob: Blob, extension: ExportExtension): void {

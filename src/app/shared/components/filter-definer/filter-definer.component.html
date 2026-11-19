@@ -11,7 +11,7 @@
         <form [formGroup]="form">
             <p-fluid class="grid">
                 <div class="col-12 md:col-4">
-                    <p-select [options]="fields()" optionLabel="label" id="field" formControlName="field" (onChange)="onChangeField()" ></p-select>
+                    <p-select [options]="selectableFields()" optionLabel="label" id="field" formControlName="field" (onChange)="onChangeField()" ></p-select>
                 </div>
                 <div class="col-12 md:col-3">
                     <p-select [options]="filterOperatorOptions()" optionLabel="name" optionValue="code" id="operator" formControlName="operator"></p-select>
@@ -61,6 +61,25 @@
             </p-fluid>
         </form>
     </div>
+    @if (lockedFilters().length) {
+        <div class="mb-3">
+            <h3>Filtros fixos</h3>
+            <p class="text-sm text-color-secondary mt-0">Definidos pela aplicação e não podem ser alterados.</p>
+            <div class="flex flex-column gap-1">
+                @for (filter of lockedFilters(); track $index) {
+                    <div class="flex flex-row gap-2 align-items-center">
+                        <i class="pi pi-lock text-color-secondary"></i>
+                        <span>{{ filter.label }}</span>
+                        <span>{{ filter.operatorLabel }}</span>
+                        <p-tag [value]="filter.formattedValue" />
+                    </div>
+                    @if ($index + 1 < lockedFilters().length) {
+                        <p-divider class="my-0" />
+                    }
+                }
+            </div>
+        </div>
+    }
     <div>
         <h3>Filtros aplicados</h3>
         <div class="flex flex-column gap-1">

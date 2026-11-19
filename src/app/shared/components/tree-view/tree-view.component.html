@@ -1,0 +1,69 @@
+<p-treetable
+    [value]="nodes()"
+    [columns]="columns()"
+    [selectionMode]="selectionMode()"
+    [(selectionKeys)]="selectionKeys"
+    [dataKey]="dataKey()"
+    compareSelectionBy="equals"
+    [scrollable]="scrollable()"
+    [scrollHeight]="scrollHeight()"
+    [tableStyle]="{ 'min-width': minWidth() }"
+    [loading]="loading()"
+    [showLoader]="false"
+    [contextMenu]="contextMenu()"
+    (onContextMenuSelect)="onContextMenuSelect($event)"
+>
+    <ng-template #header let-columns>
+        <tr>
+            @for (col of columns; track $index) {
+                <th [ttSortableColumn]="col.field" [ttSortableColumnDisabled]="!col.sortable">
+                    <div class="flex align-items-center gap-2">
+                        {{ col.header }}
+                        @if (col.sortable) {
+                            <p-treeTableSortIcon [field]="col.field" />
+                        }
+                    </div>
+                </th>
+            }
+        </tr>
+    </ng-template>
+    <ng-template #body let-rowNode let-rowData="rowData" let-columns="columns">
+        <tr
+            [ttRow]="rowNode"
+            [ttSelectableRow]="rowNode"
+            [ttContextMenuRow]="rowNode"
+            [classList]="levelColors()[rowData['level']]"
+        >
+            @for (col of columns; let first = $first; track $index) {
+                <td>
+                    @if (col.template) {
+                        <ng-container *ngTemplateOutlet="col.template; context: { $implicit: rowData, node: rowNode, first: first }" />
+                    } @else {
+                        <div class="flex align-items-center gap-2">
+                            @if (first) {
+                                @if (selectionMode() === 'checkbox') {
+                                    <p-treetable-checkbox [value]="rowNode" />
+                                }
+                                <p-treetable-toggler [rowNode]="rowNode" />
+                            }
+                            @if (col.type === ColumnType.Boolean) {
+                                @if (isTruthyValue(rowData, col)) {
+                                    <i class="pi pi-check" pTooltip="Sim"></i>
+                                }
+                            } @else {
+                                <span>{{ formatValue(rowData, col) }}</span>
+                            }
+                        </div>
+                    }
+                </td>
+            }
+        </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+        <tr>
+            <td [attr.colspan]="columns().length">
+                <div class="flex justify-content-center">{{ emptyMessage() }}</div>
+            </td>
+        </tr>
+    </ng-template>
+</p-treetable>

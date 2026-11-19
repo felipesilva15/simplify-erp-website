@@ -1,3 +1,11 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { provideNgxMask } from 'ngx-mask';
+import { beforeEach, vi } from 'vitest';
+import { PermissionService } from './app/core/auth/services/permission-service';
+
 /**
  * Polyfills globais do ambiente de testes (jsdom).
  *
@@ -21,3 +29,21 @@ class ResizeObserverMock {
 if (!('ResizeObserver' in globalThis)) {
     globalThis.ResizeObserver = ResizeObserverMock;
 }
+
+/**
+ * O `ToastService` é resolvido em root e depende do `MessageService` do
+ * PrimeNG. Fornecemos um mock padrão para que os testes que não verificam
+ * notificações não precisem repetir essa configuração.
+ */
+beforeEach(() => {
+    TestBed.configureTestingModule({
+        providers: [
+            provideHttpClient(),
+            provideHttpClientTesting(),
+            provideNgxMask(),
+            { provide: PermissionService, useValue: { has: () => true, hasAny: () => true } },
+            { provide: MessageService, useValue: { add: vi.fn(), clear: vi.fn() } },
+            { provide: ConfirmationService, useValue: { confirm: vi.fn(), close: vi.fn() } }
+        ]
+    });
+});

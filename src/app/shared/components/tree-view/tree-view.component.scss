@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .p-treetable {
+  .p-treetable-tbody > tr > td {
+    vertical-align: middle;
+  }
+}

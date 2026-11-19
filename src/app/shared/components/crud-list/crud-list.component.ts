@@ -7,9 +7,8 @@ import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MenuItem } from 'primeng/api';
 import { Menu, MenuModule } from 'primeng/menu';
-import { ButtonModule } from 'primeng/button';
 import { CurrencyPipe, DatePipe, NgTemplateOutlet, PercentPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -23,14 +22,11 @@ import { FilterFieldDefinition } from '../../../core/models/filter-field-definit
 import { ExportMenuItem } from '../../../core/models/export-menu-item';
 import { CellValueFormatterService } from '../../services/cell-value-formatter.service';
 import { MOBILE_MEDIA_QUERY } from '../../../core/services/breakpoint.service';
-import { InputTextModule } from 'primeng/inputtext';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
+import { ListToolbarComponent } from '../list-toolbar/list-toolbar.component';
 
 @Component({
   selector: 'app-crud-list',
   imports: [
-    RouterLink,
     TableModule,
     SkeletonModule,
     ButtonModule,
@@ -40,11 +36,9 @@ import { InputIconModule } from 'primeng/inputicon';
     CheckboxModule,
     PaginatorModule,
     FormsModule,
-    InputTextModule,
-    IconFieldModule,
-    InputIconModule,
     NgTemplateOutlet,
-    FilterDefinerComponent
+    FilterDefinerComponent,
+    ListToolbarComponent
   ],
   providers: [
     DatePipe,
@@ -108,12 +102,13 @@ export class CrudListComponent<T extends BaseEntity> implements OnInit, OnDestro
     }
 
     this.filterFieldDefinition.update((definitions: FilterFieldDefinition[]) => {
-      definitions.push(
+      const existing = new Set(definitions.map(definition => definition.name));
+      const defaults: FilterFieldDefinition[] = [
         { name: 'created_at', label: 'Criado em', type: ColumnType.Datetime },
         { name: 'updated_at', label: 'Atualizado em', type: ColumnType.Datetime },
-      );
+      ].filter(definition => !existing.has(definition.name));
 
-      return definitions;
+      return defaults.length ? [...definitions, ...defaults] : definitions;
     });
 
     this.searchInput$

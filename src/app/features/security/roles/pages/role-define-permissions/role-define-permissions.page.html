@@ -8,34 +8,15 @@
             <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
                 <p-fluid class="grid">
                     <div class="col-12">
-                        <p-treetable [value]="treeNode" [columns]="cols" selectionMode="checkbox" [(selectionKeys)]="selectionKeys" dataKey="key" [scrollable]="true" [tableStyle]="{ 'min-width': '50rem' }">
-                            <ng-template #header let-columns>
-                                <tr>
-                                    @for (col of columns; track col) {
-                                        <th>
-                                            {{ col.header }}
-                                        </th>
-                                    }
-                                </tr>
-                            </ng-template>
-                            <ng-template #body let-rowNode let-rowData="rowData" let-columns="columns">
-                                <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" [classList]="colors[rowData['level']]">
-                                    @for (col of columns; let first = $first; track col) {
-                                        <td>
-                                            @if (first) {
-                                                <div class="flex align-items-center gap-2" >
-                                                    <p-treetable-toggler [rowNode]="rowNode" />
-                                                    <p-treetable-checkbox [value]="rowNode" />
-                                                    <span>{{ rowData[col.field] }}</span>
-                                                </div>
-                                            } @else {
-                                                {{ rowData[col.field] }}
-                                            }
-                                        </td>
-                                    }
-                                </tr>
-                            </ng-template>
-                        </p-treetable>
+                        <app-tree-view
+                            [nodes]="treeNode"
+                            [columns]="cols"
+                            [(selectionKeys)]="selectionKeys"
+                            selectionMode="checkbox"
+                            [levelColors]="colors"
+                            [scrollable]="true"
+                            minWidth="50rem"
+                        />
                     </div>
                     <div class="col-12">
                         <div class="flex justify-content-end gap-2">

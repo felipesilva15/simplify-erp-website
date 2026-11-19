@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { PermissionService } from '../../../../../core/auth/services/permission-service';
 
 import { RoleDefinePermissionsPage } from './role-define-permissions.page';
 
@@ -8,7 +10,11 @@ describe('RoleDefinePermissionsPage', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RoleDefinePermissionsPage]
+      imports: [RoleDefinePermissionsPage],
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => null } } } },
+        { provide: PermissionService, useValue: { has: () => true, hasAny: () => true } }
+      ]
     })
     .compileComponents();
 

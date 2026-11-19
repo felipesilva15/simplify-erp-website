@@ -23,6 +23,7 @@ function createMockFacade() {
     loading: vi.fn().mockReturnValue(false),
     filterDefinitionVisible: vi.fn().mockReturnValue(false),
     requestParams: vi.fn().mockReturnValue(undefined),
+    fixedFilters: vi.fn().mockReturnValue({}),
     exportMenu: vi.fn().mockReturnValue([]),
     canCreate: vi.fn().mockReturnValue(true),
     load: vi.fn(),

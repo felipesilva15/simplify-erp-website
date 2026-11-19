@@ -6,8 +6,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouteUtilsService } from '../../../../../core/services/route-utils-service';
 import { MenuItem, TreeNode } from 'primeng/api';
 import { RoleService } from '../../services/role-service';
-import { TreeTableModule } from 'primeng/treetable';
 import { AppTemplate } from '../../../../../shared/directives/app-template';
+import { TreeViewComponent } from '../../../../../shared/components/tree-view/tree-view.component';
+import { TreeTableColumn } from '../../../../../core/models/tree-table-column';
 import { TreeNodeBuilder } from '../../../../../core/services/tree-node-builder';
 import { Fluid } from "primeng/fluid";
 import { Button } from "primeng/button";
@@ -19,14 +20,9 @@ interface FormType {
   ids: FormControl<number[]>;
 }
 
-interface Column {
-  field: string;
-  header: string;
-}
-
 @Component({
   selector: 'app-role-define-permissions',
-  imports: [FormPageUi, FormsModule, ReactiveFormsModule, TreeTableModule,
+  imports: [FormPageUi, FormsModule, ReactiveFormsModule, TreeViewComponent,
     AppTemplate, Fluid, Button, Skeleton],
   providers: [
     {
@@ -57,7 +53,7 @@ export class RoleDefinePermissionsPage implements OnInit {
   treeNode!: TreeNode[];
   rolePermissionKeys: WritableSignal<string[]> = signal<string[]>([]);
   selectionKeys: Record<string, TreeTableSelecionKey> = {};
-  cols!: Column[];
+  cols!: TreeTableColumn[];
   colors!: Record<number, string>;
 
   breadcrumbItems!: MenuItem[];
@@ -84,8 +80,8 @@ export class RoleDefinePermissionsPage implements OnInit {
     ];
 
     this.cols = [
-      { field: 'label', header: 'Nome' },
-      { field: 'description', header: 'Descrição' }
+      { field: 'label', header: 'Nome', sortable: true },
+      { field: 'description', header: 'Descrição', sortable: true }
     ];
     this.colors = {
       0: 'bg-primary-300',

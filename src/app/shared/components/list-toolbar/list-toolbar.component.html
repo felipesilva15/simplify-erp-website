@@ -1,0 +1,31 @@
+<div class="mb-3 flex flex-row md:justify-content-end justify-content-between flex-wrap align-items-center gap-2">
+    @if (enableSearch()) {
+        <div class="w-full md:w-20rem xl:w-28rem md:mr-auto">
+            <p-iconfield>
+                <p-inputicon class="pi pi-search" />
+                <input pInputText type="text" [fluid]="true"
+                   [placeholder]="searchPlaceholder()"
+                   [ngModel]="searchTerm()"
+                   (ngModelChange)="searchInput.emit($event)"
+                   (keydown.escape)="searchClear.emit()" />
+                @if (searchTerm()) {
+                    <p-inputicon class="pi pi-times cursor-pointer" (click)="searchClear.emit()" />
+                }
+            </p-iconfield>
+        </div>
+    }
+    <div class="flex flex-row flex-wrap gap-2">
+        @if (enableSelection()) {
+            <p-button icon="pi pi-trash" severity="danger" [text]="true" [raised]="true" [disabled]="!selectedCount() || facade().loading()" pTooltip="Deletar registros selecionados" showDelay="600" hideDelay="300" />
+        }
+        @if (exportMenuItems().length && facade().totalRecords() > 0) {
+            <p-button icon="pi pi-file-excel" severity="success" [text]="true" [raised]="true" pTooltip="Exportar dados" [disabled]="facade().loading()" showDelay="600" hideDelay="300" (onClick)="exportClick.emit($event)" />
+        }
+        <p-button icon="pi pi-print" severity="secondary" [text]="true" [raised]="true" pTooltip="Imprimir registros" [disabled]="facade().loading() || true" showDelay="600" hideDelay="300" />
+        <p-button icon="pi pi-refresh" severity="secondary" [text]="true" [raised]="true" pTooltip="Atualizar consulta" [disabled]="facade().loading()" showDelay="600" hideDelay="300" (onClick)="refresh.emit()" />
+    </div>
+    <div class="flex flex-row flex-wrap gap-2">
+        <p-button pRipple label="Filtros" [icon]="facade().requestParams()?.filters ? 'pi pi-filter-fill' : 'pi pi-filter'" [text]="true" severity="secondary" [raised]="true" (onClick)="facade().openFilters()" [disabled]="facade().loading()" />
+        <p-button pRipple label="Incluir" icon="pi pi-plus" [routerLink]="formRoute()" [disabled]="!facade().canCreate() || !formRoute()" [pTooltip]="!formRoute() ? 'Inclusão não configurada para este recurso.' : facade().canCreate() ? '' : 'Você não possui permissão para incluir.'" tooltipPosition="left" />
+    </div>
+</div>

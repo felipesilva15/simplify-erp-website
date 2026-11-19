@@ -6,14 +6,16 @@ import { FilterDefinerComponent } from './filter-definer.component';
 import { ColumnType } from './../../../core/enums/column-type';
 import { FilterOperator, FilterOperatorLabels, FilterOperatorOptions } from './../../../core/enums/filter-operator';
 import { FilterFieldDefinition } from './../../../core/models/filter-field-definition';
+import { RequestFiltersType } from './../../../core/types/request-filters-type';
 import { provideNgxMask } from 'ngx-mask';
 
 @Component({
-  template: '<app-filter-definer [fields]="fields" />',
+  template: '<app-filter-definer [fields]="fields" [fixedFilters]="fixedFilters" />',
   imports: [FilterDefinerComponent],
 })
 class TestHostComponent {
   @ViewChild(FilterDefinerComponent) child!: FilterDefinerComponent;
+  fixedFilters: RequestFiltersType = {};
   fields: FilterFieldDefinition[] = [
     { name: 'name', label: 'Nome', type: ColumnType.Text },
     { name: 'age', label: 'Idade', type: ColumnType.Integer },
@@ -24,6 +26,21 @@ class TestHostComponent {
     { name: 'discount', label: 'Desconto', type: ColumnType.Percent },
     { name: 'value', label: 'Valor', type: ColumnType.Decimal },
   ];
+}
+
+@Component({
+  template: '<app-filter-definer [fields]="fields" [fixedFilters]="fixedFilters" />',
+  imports: [FilterDefinerComponent],
+})
+class FixedFilterHostComponent {
+  @ViewChild(FilterDefinerComponent) child!: FilterDefinerComponent;
+  fields: FilterFieldDefinition[] = [
+    { name: 'parent_category_id', label: 'Categoria pai', type: ColumnType.Integer },
+    { name: 'name', label: 'Nome', type: ColumnType.Text },
+  ];
+  fixedFilters: RequestFiltersType = {
+    parent_category_id: { [FilterOperator.Equal]: null },
+  };
 }
 
 describe('FilterDefinerComponent', () => {
@@ -1047,6 +1064,72 @@ describe('FilterDefinerComponent', () => {
 
       expect(component.filters()).toBeUndefined();
       expect(component.apply.emit).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  // ─── fixed filters ───────────────────────────────────────────────────────────
+
+  describe('fixed filters', () => {
+    const fixedField: FilterFieldDefinition = {
+      name: 'parent_category_id',
+      label: 'Categoria pai',
+      type: ColumnType.Integer
+    };
+    let fixedFixture: ComponentFixture<FixedFilterHostComponent>;
+    let fixedComponent: FilterDefinerComponent;
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [FixedFilterHostComponent],
+        providers: [DatePipe, CurrencyPipe, PercentPipe, provideNgxMask()],
+      })
+        .overrideComponent(FilterDefinerComponent, {
+          remove: { providers: [DatePipe, CurrencyPipe, PercentPipe] },
+        })
+        .compileComponents();
+
+      fixedFixture = TestBed.createComponent(FixedFilterHostComponent);
+      fixedFixture.detectChanges();
+      fixedComponent = fixedFixture.componentInstance.child;
+    });
+
+    it('should expose fixed filters as locked and remove them from the selector', () => {
+      expect(fixedComponent.lockedFields()).toEqual([fixedField]);
+      expect(fixedComponent.selectableFields()).toEqual([mockFields[0]]);
+      expect(fixedComponent.isLocked('parent_category_id')).toBe(true);
+      expect(fixedComponent.isLocked('name')).toBe(false);
+    });
+
+    it('should build a read-only view of fixed filters', () => {
+      expect(fixedComponent.lockedFilters()).toEqual([{
+        name: 'parent_category_id',
+        label: 'Categoria pai',
+        operator: FilterOperator.Equal,
+        operatorLabel: FilterOperatorLabels[FilterOperator.Equal],
+        value: null,
+        type: ColumnType.Integer,
+        formattedValue: 'Vazio',
+      }]);
+    });
+
+    it('should not select a fixed field as the first selectable field', () => {
+      fixedComponent.setBlankForm();
+
+      expect(fixedComponent.selectedField?.name).toBe('name');
+    });
+
+    it('should ignore an attempt to apply a fixed field', () => {
+      fixedComponent.form.patchValue({
+        field: fixedField,
+        operator: FilterOperator.Equal,
+        value: 1,
+      });
+
+      fixedComponent.applyFilter();
+
+      expect(fixedComponent.filters()).toBeUndefined();
+      expect(fixedComponent.appliedFilters()).toEqual([]);
     });
   });
 });

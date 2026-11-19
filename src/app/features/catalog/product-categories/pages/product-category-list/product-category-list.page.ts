@@ -3,10 +3,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { ColumnType } from '../../../../../core/enums/column-type';
+import { FilterOperator } from '../../../../../core/enums/filter-operator';
 import { FilterFieldDefinition } from '../../../../../core/models/filter-field-definition';
-import { TableColumn } from '../../../../../core/models/table-column';
 import { TableMenuItem } from '../../../../../core/models/table-menu-item';
-import { CrudListComponent } from '../../../../../shared/components/crud-list/crud-list.component';
+import { TreeListConfig } from '../../../../../core/models/tree-list-config';
+import { TreeTableColumn } from '../../../../../core/models/tree-table-column';
+import { TreeCrudListComponent } from '../../../../../shared/components/tree-crud-list/tree-crud-list.component';
 import { AppTemplate } from '../../../../../shared/directives/app-template';
 import { CrudListFacade } from '../../../../../shared/facades/crud-list.facade';
 import { DialogRefreshService } from '../../../../../shared/services/dialog-refresh.service';
@@ -19,7 +21,7 @@ import { ProductApplicabilityLabels, ProductApplicabilityOptions } from '../../e
   selector: 'app-product-category-list',
   imports: [
     ListPageUi,
-    CrudListComponent,
+    TreeCrudListComponent,
     RouterOutlet,
     AppTemplate
   ],
@@ -31,6 +33,9 @@ import { ProductApplicabilityLabels, ProductApplicabilityOptions } from '../../e
         update: 'productCategories.update',
         view: 'productCategories.view',
         delete: 'productCategories.delete'
+      }, {
+        fixedFilters: { parent_category_id: { [FilterOperator.Equal]: null } },
+        fetchAll: true
       }),
       deps: [
         ProductCategoryService
@@ -53,16 +58,27 @@ export class ProductCategoryListPage implements OnInit {
     { label: 'Categorias' },
     { label: 'Listar', routerLink: '/catalog/product-categories' }
   ];
-  cols: TableColumn<ProductCategory>[] = [
+  cols: TreeTableColumn[] = [
     { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },
     { field: 'name', header: 'Nome', sortable: true, type: ColumnType.Text },
     { field: 'applicability', header: 'Aplicabilidade', sortable: true, type: ColumnType.Enum, enumOptionLabels: ProductApplicabilityLabels },
     { field: 'is_active', header: 'Ativo', sortable: true, type: ColumnType.Boolean },
   ];
+  treeConfig: TreeListConfig = {
+    idKey: 'id',
+    parentKey: 'parent_category_id',
+    labelKey: 'name',
+    rootFilter: { parent_category_id: { [FilterOperator.Equal]: null } },
+    levelColors: {
+      0: 'bg-primary-300',
+      1: 'bg-primary-100',
+      2: 'bg-primary-50'
+    }
+  };
   filterDefinition: FilterFieldDefinition[] = [
     { name: 'id', label: 'ID', type: ColumnType.Integer },
     { name: 'name', label: 'Nome', type: ColumnType.Text },
-    { name: 'parent_category_id', label: 'CategoriaPai', type: ColumnType.Decimal },
+    { name: 'parent_category_id', label: 'Categoria pai', type: ColumnType.Integer },
     { name: 'applicability', label: 'Aplicabilidade', type: ColumnType.Enum, options: ProductApplicabilityOptions },
     { name: 'is_active', label: 'Ativo', type: ColumnType.Boolean },
   ]

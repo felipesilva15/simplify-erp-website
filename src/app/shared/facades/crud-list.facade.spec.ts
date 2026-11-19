@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { CrudListFacade } from './crud-list.facade';
+import { ALL_RECORDS_PER_PAGE, CrudListFacade } from './crud-list.facade';
 import { PermissionService } from '../../core/auth/services/permission-service';
 import { ConfirmDialogService } from '../services/confirm-dialog-service';
 import { CrudService } from '../../core/contracts/crud-service';
@@ -92,6 +92,87 @@ describe('CrudListFacade', () => {
     });
 
     expect(configuredFacade.exportMenu()).toEqual(exportMenu);
+  });
+
+  describe('fixed filters', () => {
+    const fixedFilters: RequestFiltersType = {
+      parent_category_id: { [FilterOperator.Equal]: null },
+    };
+
+    it('should initialize request params with fixed filters', () => {
+      const configuredFacade = TestBed.runInInjectionContext(() =>
+        new CrudListFacade<TestEntity>(mockCrudService, permissionDef, { fixedFilters })
+      );
+
+      expect(configuredFacade.fixedFilters()).toEqual(fixedFilters);
+      expect(configuredFacade.requestParams()).toEqual({ filters: fixedFilters });
+    });
+
+    it('should merge fixed filters into user filters and preserve them when clearing', () => {
+      mockCrudService.list.mockReturnValue(of({ success: true, message: 'ok', data: [] } as ApiResponse<TestEntity[]>));
+
+      const configuredFacade = TestBed.runInInjectionContext(() =>
+        new CrudListFacade<TestEntity>(mockCrudService, permissionDef, { fixedFilters })
+      );
+
+      configuredFacade.applyFilters({ name: { [FilterOperator.Like]: 'Cat' } });
+
+      expect(configuredFacade.requestParams()).toEqual({
+        page: 1,
+        filters: {
+          name: { [FilterOperator.Like]: 'Cat' },
+          ...fixedFilters,
+        },
+      });
+
+      configuredFacade.applyFilters(undefined);
+
+      expect(configuredFacade.requestParams()).toEqual({
+        page: 1,
+        filters: fixedFilters,
+      });
+    });
+
+    it('should preserve fixed filters on search and lazy load', () => {
+      mockCrudService.list.mockReturnValue(of({ success: true, message: 'ok', data: [] } as ApiResponse<TestEntity[]>));
+
+      const configuredFacade = TestBed.runInInjectionContext(() =>
+        new CrudListFacade<TestEntity>(mockCrudService, permissionDef, { fixedFilters })
+      );
+
+      configuredFacade.applySearch('termo');
+      configuredFacade.applyLazyLoad(2, 10, 'name:asc');
+
+      expect(configuredFacade.requestParams()).toEqual({
+        page: 2,
+        per_page: 10,
+        sorts: 'name:asc',
+        q: 'termo',
+        filters: fixedFilters,
+      });
+    });
+
+    it('should fetch all records and keep fixed filters out of the list request', () => {
+      mockCrudService.list.mockReturnValue(of({ success: true, message: 'ok', data: [] } as ApiResponse<TestEntity[]>));
+
+      const configuredFacade = TestBed.runInInjectionContext(() =>
+        new CrudListFacade<TestEntity>(mockCrudService, permissionDef, { fixedFilters, fetchAll: true })
+      );
+
+      expect(configuredFacade.fetchAll()).toBe(true);
+      expect(configuredFacade.requestParams()).toEqual({
+        page: 1,
+        per_page: ALL_RECORDS_PER_PAGE,
+      });
+
+      configuredFacade.applyFilters({ name: { [FilterOperator.Like]: 'Cat' } });
+
+      expect(configuredFacade.requestParams()).toEqual({
+        page: 1,
+        per_page: ALL_RECORDS_PER_PAGE,
+        filters: { name: { [FilterOperator.Like]: 'Cat' } },
+      });
+    });
   });
 
   describe('load', () => {
@@ -235,6 +316,29 @@ describe('CrudListFacade', () => {
       facade.export(ExportFormat.Completo, ExportExtension.Xlsx);
 
       expect(facade.error()).toBe('Exportação não disponível para este recurso.');
+    });
+
+    it('should include fixed filters in export params', () => {
+      const exportSpy = vi.fn().mockReturnValue(of(new Blob(['data'])));
+      const exportableService = {
+        ...mockCrudService,
+        export: exportSpy,
+      } as unknown as Mocked<ExportableService & CrudService<TestEntity>>;
+
+      const fixedFilters: RequestFiltersType = {
+        parent_category_id: { [FilterOperator.Equal]: null },
+      };
+      const configuredFacade = TestBed.runInInjectionContext(() =>
+        new CrudListFacade<TestEntity>(exportableService, permissionDef, { fixedFilters })
+      );
+
+      vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock');
+      vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+      vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+      configuredFacade.export(ExportFormat.Completo, ExportExtension.Xlsx);
+
+      expect(exportSpy).toHaveBeenCalledWith(expect.objectContaining({ filters: fixedFilters }));
     });
 
     it('should call service export with current request params and trigger download', () => {

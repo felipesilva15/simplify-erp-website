@@ -1,6 +1,6 @@
 import { ColumnType } from './../../../core/enums/column-type';
 import { FilterOperator, FilterOperatorOptions, FilterOperatorLabels, FilterOperatorOption, getFilterOperatorOptionsByColumnType } from './../../../core/enums/filter-operator';
-import { Component, inject, input, InputSignal, model, ModelSignal, OnInit, output, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, input, InputSignal, model, ModelSignal, OnInit, output, signal, WritableSignal } from '@angular/core';
 import { RequestFiltersType } from '../../../core/types/request-filters-type';
 import { FilterFieldDefinition } from '../../../core/models/filter-field-definition';
 import { DrawerModule } from 'primeng/drawer';
@@ -69,11 +69,41 @@ export class FilterDefinerComponent implements OnInit {
   appliedFilters: WritableSignal<RequestFilterViewData[]> = signal<RequestFilterViewData[]>([]);
 
   fields: InputSignal<FilterFieldDefinition[]> = input.required<FilterFieldDefinition[]>();
+  /** Filtros definidos pela aplicação: exibidos como somente leitura. */
+  fixedFilters: InputSignal<RequestFiltersType> = input<RequestFiltersType>({});
   visible: ModelSignal<boolean> = model<boolean>(false);
 
   apply = output<RequestFiltersType | undefined>();
 
+  lockedFields = computed<FilterFieldDefinition[]>(() => {
+    const names = this.lockedFieldNames();
+    return this.fields().filter(field => names.has(field.name));
+  });
+
+  selectableFields = computed<FilterFieldDefinition[]>(() => {
+    const names = this.lockedFieldNames();
+    return this.fields().filter(field => !names.has(field.name));
+  });
+
+  lockedFilters = computed<RequestFilterViewData[]>(() => {
+    const filters: RequestFilterViewData[] = [];
+
+    Object.entries(this.fixedFilters()).forEach(([name, conditions]) => {
+      Object.entries(conditions ?? {}).forEach(([operator, value]) => {
+        const definition = this.fields().find(field => field.name === name);
+        const filter = this.buildFilterViewData(name, operator as FilterOperator, value, definition);
+        filter.formattedValue = value === null || value === undefined
+          ? 'Vazio'
+          : this.formatFilterValue(filter, definition);
+        filters.push(filter);
+      });
+    });
+
+    return this.sortAppliedFilters(filters);
+  });
+
   filterOperatorOptions: WritableSignal<FilterOperatorOption[]> = signal<FilterOperatorOption[]>([]);
+  FilterOperatorOptions = FilterOperatorOptions;
   FilterOperatorLabels = FilterOperatorLabels;
   ColumnType = ColumnType;
 
@@ -86,13 +116,17 @@ export class FilterDefinerComponent implements OnInit {
   oldSelectedField: WritableSignal<FilterFieldDefinition | undefined> = signal<FilterFieldDefinition | undefined>(undefined);
 
   setBlankForm(): void {
+    const firstField = this.selectableFields()[0];
+
     this.form.patchValue({
-      field: this.fields()[0],
+      field: firstField,
       operator: FilterOperator.Equal,
       value: null
     });
     this.form.markAsPristine();
-    this.filterOperatorOptions.set(getFilterOperatorOptionsByColumnType(this.fields()[0].type));
+    this.filterOperatorOptions.set(
+      getFilterOperatorOptionsByColumnType(firstField?.type ?? ColumnType.Text)
+    );
   }
 
   ngOnInit(): void {
@@ -116,6 +150,10 @@ export class FilterDefinerComponent implements OnInit {
       this.form.markAllAsDirty();
       this.form.markAllAsTouched();
 
+      return;
+    }
+
+    if (this.isLocked(this.selectedField?.name)) {
       return;
     }
 
@@ -149,15 +187,13 @@ export class FilterDefinerComponent implements OnInit {
     });
 
     this.appliedFilters.update((f: RequestFilterViewData[]) => {
-      const filter: RequestFilterViewData = {
-        name: this.selectedField?.name ?? '',
-        label: this.selectedField?.label ?? '',
-        operator: this.operator,
-        operatorLabel: this.FilterOperatorLabels[this.operator],
-        value: this.filterValue,
-        type: this.selectedField?.type ?? ColumnType.Text
-      };
-      filter.formattedValue = this.formatFilterValue(filter);
+      const filter = this.buildFilterViewData(
+        this.selectedField?.name ?? '',
+        this.operator,
+        this.filterValue,
+        this.selectedField
+      );
+      filter.formattedValue = this.formatFilterValue(filter, this.selectedField);
 
       f = this.removeFromAppliedFilters(f, this.selectedField?.name ?? '', this.operator);
       f.push(filter);
@@ -223,6 +259,34 @@ export class FilterDefinerComponent implements OnInit {
     return this.fields().find(field => field.name == name)?.label ?? '';
   }
 
+  private lockedFieldNames(): Set<string> {
+    return new Set(
+      Object.entries(this.fixedFilters())
+        .filter(([, conditions]) => Object.keys(conditions ?? {}).length > 0)
+        .map(([name]) => name)
+    );
+  }
+
+  isLocked(name?: string): boolean {
+    return !!name && this.lockedFieldNames().has(name);
+  }
+
+  private buildFilterViewData(
+    name: string,
+    operator: FilterOperator,
+    value: unknown,
+    definition = this.fields().find(field => field.name === name)
+  ): RequestFilterViewData {
+    return {
+      name,
+      label: definition?.label ?? name,
+      operator,
+      operatorLabel: this.FilterOperatorLabels[operator],
+      value,
+      type: definition?.type ?? ColumnType.Text
+    };
+  }
+
   onChangeField(): void {
     if (this.oldSelectedField() && this.selectedField?.name == this.oldSelectedField()?.name) {
       return;
@@ -235,9 +299,9 @@ export class FilterDefinerComponent implements OnInit {
     this.oldSelectedField.set(this.selectedField);
   }
 
-  formatFilterValue(filter: RequestFilterViewData): any {
+  formatFilterValue(filter: RequestFilterViewData, field?: FilterFieldDefinition): any {
     const value = filter.value;
-    
+
     switch (filter.type) {
       case ColumnType.Date:
         return this.datePipe.transform(value, 'dd/MM/yyyy') ?? '';
@@ -260,8 +324,10 @@ export class FilterDefinerComponent implements OnInit {
       case ColumnType.Lookup:
         return (value as LookupItem | null)?.label ?? (value as LookupItem | null)?.key ?? '';
 
-      case ColumnType.Text:
-        return this.selectedField?.mask ? this.ngxMaskPipe.transform(value, this.selectedField.mask) : value;
+      case ColumnType.Text: {
+        const definition = field ?? this.selectedField;
+        return definition?.mask ? this.ngxMaskPipe.transform(value, definition.mask) : value;
+      }
 
       default:
         return value;

@@ -109,9 +109,8 @@ src/
 │   │   ├── auth/               # AuthService e PermissionService
 │   │   └── services/           # startup, loading, query builder, menu, datas, árvore, breakpoint
 │   ├── features/               # módulos de funcionalidade (rotas lazy)
-│   │   ├── security/           # auth (login), users, roles
+│   │   ├── security/           # auth (login), users, roles, modules
 │   │   ├── third-party/        # partners, partner-types, contacts (lista filha 1:N)
-│   │   ├── configuration/      # module-service (consultado para permissões)
 │   │   └── error/              # páginas de erro (403, 404, 500, 502, 503)
 │   ├── layouts/                # shell aplicativo (main layout, navbar, sidebar) e error layout
 │   └── shared/                 # componentes reutilizáveis (crud-list, lookup, child-entity-list, breadcrumb),
