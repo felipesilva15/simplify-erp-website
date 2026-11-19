@@ -37,7 +37,7 @@ export class ProfessionLookupComponent {
 
   registerOnTouched(fn: any): void { }
 
-  setDisabledProfession(isDisabled: boolean): void {
+  setDisabledState(isDisabled: boolean): void {
     if (isDisabled) {
       this.innerControl.disable({ emitEvent: false });
     } else {

@@ -37,7 +37,7 @@ export class CityLookupComponent {
 
   registerOnTouched(fn: any): void { }
 
-  setDisabledCity(isDisabled: boolean): void {
+  setDisabledState(isDisabled: boolean): void {
     if (isDisabled) {
       this.innerControl.disable({ emitEvent: false });
     } else {
