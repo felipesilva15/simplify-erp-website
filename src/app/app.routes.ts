@@ -33,6 +33,10 @@ export const routes: Routes = [
                 path: 'catalog',
                 loadChildren: () => import('./features/catalog/catalog.routes').then(r => r.CATALOG_ROUTES) 
             },
+            {
+                path: 'construction',
+                loadChildren: () => import('./features/construction/construction.routes').then(r => r.CONSTRUCTION_ROUTES)
+            }
         ],
     },
     {

@@ -102,6 +102,20 @@ export const MENU: AppMenuItem[] = [
     ]
   },
   {
+    label: 'Obra',
+    icon: 'pi pi-hammer',
+    active: false,
+    items: [
+      {
+        label: 'Tipos de projeto',
+        icon: 'pi pi-star',
+        active: false,
+        link: '/construction/project-types',
+        permission: 'projectTypes.viewAny'
+      }
+    ]
+  },
+  {
     label: 'RH',
     icon: 'pi pi-id-card',
     active: false,
