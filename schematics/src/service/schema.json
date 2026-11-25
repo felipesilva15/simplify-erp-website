@@ -20,27 +20,39 @@
       "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
       "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
     },
-    "with-export": {
+    "withExport": {
       "type": "boolean",
-      "default": false,
       "description": "Implementa ExportableService (método export) no service.",
       "x-prompt": "Implementar exportação (ExportableService)?"
     },
-    "with-log": {
+    "with-export": {
       "type": "boolean",
-      "default": false,
+      "description": "Alias of --withExport for programmatic calls."
+    },
+    "withLog": {
+      "type": "boolean",
       "description": "Implementa LogableService (método activityLogs) no service.",
       "x-prompt": "Implementar LogableService (activityLogs)?"
     },
+    "with-log": {
+      "type": "boolean",
+      "description": "Alias of --withLog for programmatic calls."
+    },
+    "skipLookup": {
+      "type": "boolean",
+      "description": "Não implementa LookupService (método search) no service."
+    },
     "skip-lookup": {
       "type": "boolean",
-      "default": false,
-      "description": "Não implementa LookupService (método search) no service."
+      "description": "Alias of --skipLookup for programmatic calls."
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "Não gera arquivos de teste."
     },
     "skip-tests": {
       "type": "boolean",
-      "default": false,
-      "description": "Não gera arquivos de teste."
+      "description": "Alias of --skipTests for programmatic calls."
     },
     "force": {
       "type": "boolean",
@@ -49,5 +61,8 @@
       "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
-  "required": ["module", "name"]
+  "required": [
+    "module",
+    "name"
+  ]
 }

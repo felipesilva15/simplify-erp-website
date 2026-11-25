@@ -32,29 +32,41 @@
       "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro).",
       "x-prompt": "Rótulo singular (ex.: Tipo de parceiro; vazio = derivado)"
     },
-    "label-plural": {
+    "labelPlural": {
       "type": "string",
-      "default": "",
       "description": "Rótulo plural em pt-BR (ex.: Tipos de parceiro).",
       "x-prompt": "Rótulo plural (ex.: Tipos de parceiro; vazio = derivado)"
     },
-    "module-label": {
+    "label-plural": {
       "type": "string",
-      "default": "",
+      "description": "Alias of --labelPlural for programmatic calls."
+    },
+    "moduleLabel": {
+      "type": "string",
       "description": "Rótulo do módulo usado no menu e breadcrumb (ex.: Terceiro).",
       "x-prompt": "Rótulo do módulo (ex.: Terceiro; vazio = derivado)"
     },
-    "menu-icon": {
+    "module-label": {
       "type": "string",
-      "default": "pi pi-star",
+      "description": "Alias of --moduleLabel for programmatic calls."
+    },
+    "menuIcon": {
+      "type": "string",
       "description": "Ícone PrimeIcons do item de menu (ex.: pi pi-star).",
       "x-prompt": "Ícone PrimeIcons (ex.: pi pi-star)"
     },
-    "permission-key": {
+    "menu-icon": {
       "type": "string",
-      "default": "",
+      "description": "Alias of --menuIcon for programmatic calls."
+    },
+    "permissionKey": {
+      "type": "string",
       "description": "Chave base de permissão (ex.: partnerTypes).",
       "x-prompt": "Chave base de permissão (ex.: partnerTypes; vazio = derivado)"
+    },
+    "permission-key": {
+      "type": "string",
+      "description": "Alias of --permissionKey for programmatic calls."
     },
     "placeholder": {
       "type": "string",
@@ -62,63 +74,141 @@
       "description": "Texto do placeholder de busca da listagem (vazio = derivado dos campos de texto).",
       "x-prompt": "Placeholder de busca (vazio = derivado dos campos de texto)"
     },
-    "lookup-placeholder": {
+    "lookupPlaceholder": {
       "type": "string",
-      "default": "",
       "description": "Texto do placeholder do componente de lookup (vazio = o mesmo da listagem).",
       "x-prompt": "Placeholder do lookup (vazio = o mesmo da listagem)"
     },
-    "detect-lookups": {
+    "lookup-placeholder": {
+      "type": "string",
+      "description": "Alias of --lookupPlaceholder for programmatic calls."
+    },
+    "detectLookups": {
       "type": "boolean",
-      "default": true,
       "description": "Trata campos terminados em _id como lookup automaticamente.",
       "x-prompt": "Tratar campos *_id como lookup automaticamente?"
     },
-    "form-type": {
+    "detect-lookups": {
+      "type": "boolean",
+      "description": "Alias of --detectLookups for programmatic calls."
+    },
+    "formType": {
       "type": "string",
-      "enum": ["dialog", "page"],
-      "default": "dialog",
+      "enum": [
+        "dialog",
+        "page"
+      ],
       "description": "Formato do formulário.",
       "x-prompt": {
         "message": "Formato do formulário:",
         "type": "list",
         "items": [
-          { "value": "dialog", "label": "Dialog (modal)" },
-          { "value": "page", "label": "Página" }
+          {
+            "value": "dialog",
+            "label": "Dialog (modal)"
+          },
+          {
+            "value": "page",
+            "label": "Página"
+          }
         ]
       }
     },
-    "with-export": {
+    "form-type": {
+      "type": "string",
+      "description": "Alias of --formType for programmatic calls."
+    },
+    "tableType": {
+      "type": "string",
+      "enum": [
+        "table",
+        "tree"
+      ],
+      "description": "Tipo da listagem: 'table' (tabela convencional) ou 'tree' (árvore hierárquica).",
+      "x-prompt": {
+        "message": "Tipo da listagem:",
+        "type": "list",
+        "items": [
+          {
+            "value": "table",
+            "label": "Tabela convencional"
+          },
+          {
+            "value": "tree",
+            "label": "Tree view (árvore)"
+          }
+        ]
+      }
+    },
+    "table-type": {
+      "type": "string",
+      "description": "Alias of --tableType for programmatic calls."
+    },
+    "treeParentField": {
+      "type": "string",
+      "description": "Campo pai usado por --table-type=tree (padrão: campo *_id com prefixo 'parent', senão 'parent_id')."
+    },
+    "tree-parent-field": {
+      "type": "string",
+      "description": "Alias of --treeParentField for programmatic calls."
+    },
+    "treeLabelField": {
+      "type": "string",
+      "description": "Campo usado como rótulo do nó em --table-type=tree (padrão: 'name' ou o primeiro campo de texto)."
+    },
+    "tree-label-field": {
+      "type": "string",
+      "description": "Alias of --treeLabelField for programmatic calls."
+    },
+    "withExport": {
       "type": "boolean",
-      "default": false,
       "description": "Inclui as opções de exportação na listagem e implementa ExportableService no service.",
       "x-prompt": "Incluir opções de exportação?"
     },
-    "with-log": {
+    "with-export": {
       "type": "boolean",
-      "default": false,
+      "description": "Alias of --withExport for programmatic calls."
+    },
+    "withLog": {
+      "type": "boolean",
       "description": "Implementa LogableService (método activityLogs) no service.",
       "x-prompt": "Implementar LogableService (activityLogs)?"
     },
+    "with-log": {
+      "type": "boolean",
+      "description": "Alias of --withLog for programmatic calls."
+    },
+    "skipMenu": {
+      "type": "boolean",
+      "description": "Não adiciona a entrada no menu."
+    },
     "skip-menu": {
       "type": "boolean",
-      "default": false,
-      "description": "Não adiciona a entrada no menu."
+      "description": "Alias of --skipMenu for programmatic calls."
+    },
+    "skipRoutes": {
+      "type": "boolean",
+      "description": "Não gera nem registra o arquivo de rotas."
     },
     "skip-routes": {
       "type": "boolean",
-      "default": false,
-      "description": "Não gera nem registra o arquivo de rotas."
+      "description": "Alias of --skipRoutes for programmatic calls."
+    },
+    "skipLookup": {
+      "type": "boolean",
+      "description": "Não gera o componente de lookup (e o service não implementa LookupService)."
     },
     "skip-lookup": {
       "type": "boolean",
-      "default": false,
-      "description": "Não gera o componente de lookup (e o service não implementa LookupService)."
+      "description": "Alias of --skipLookup for programmatic calls."
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "Não gera arquivos de teste."
     },
     "skip-tests": {
       "type": "boolean",
-      "default": false,
-      "description": "Não gera arquivos de teste."
+      "description": "Alias of --skipTests for programmatic calls."
     },
     "force": {
       "type": "boolean",
@@ -127,5 +217,8 @@
       "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
-  "required": ["module", "name"]
+  "required": [
+    "module",
+    "name"
+  ]
 }

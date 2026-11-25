@@ -32,5 +32,9 @@
       "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
-  "required": ["module", "name", "fields"]
+  "required": [
+    "module",
+    "name",
+    "fields"
+  ]
 }

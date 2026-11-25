@@ -27,6 +27,52 @@ export function buildContext(options: NormalizedOptions): TemplateContext {
   const searchPlaceholder = tsString(rawSearchPlaceholder);
   const lookupPlaceholder = tsString(rawLookupPlaceholder).replace(/"/g, '&quot;');
 
+  const isTree = options.tableType === 'tree';
+  const listColumnsType = isTree ? 'TreeTableColumn' : 'TableColumn';
+  const listComponent = isTree ? 'TreeCrudListComponent' : 'CrudListComponent';
+  const listColumnsModel = isTree ? 'tree-table-column' : 'table-column';
+  const listComponentPath = isTree
+    ? 'tree-crud-list/tree-crud-list.component'
+    : 'crud-list/crud-list.component';
+
+  const treeImports = isTree
+    ? [
+        `import { FilterOperator } from '${toAppDeep}core/enums/filter-operator';`,
+        `import { TreeListConfig } from '${toAppDeep}core/models/tree-list-config';`,
+      ].join('\n')
+    : '';
+
+  const parentKey = options.treeParentField;
+  const rootFilter = `{ ${parentKey}: { [FilterOperator.Equal]: null } }`;
+  const treeConfigLines = isTree
+    ? [
+        '  treeConfig: TreeListConfig = {',
+        "    idKey: 'id',",
+        `    parentKey: '${parentKey}',`,
+        `    labelKey: '${options.treeLabelField}',`,
+        `    rootFilter: ${rootFilter},`,
+        '    levelColors: {',
+        "      0: 'bg-primary-300',",
+        "      1: 'bg-primary-100',",
+        "      2: 'bg-primary-50'",
+        '    }',
+        '  };',
+      ].join('\n')
+    : '';
+
+  const listFacadeConfig = options.withExport ? buildFacadeConfigArg() : '';
+  const treeFacadeLines = isTree
+    ? ['        fixedFilters: ' + rootFilter + ',', '        fetchAll: true'].join('\n')
+    : '';
+  let listFacadeOptions = listFacadeConfig;
+
+  if (isTree) {
+    const exportLine = options.withExport ? '        exportMenu: exportMenu' : '';
+    const lines = [treeFacadeLines, exportLine].filter(Boolean).join(',\n');
+
+    listFacadeOptions = `, {\n${lines}\n      }`;
+  }
+
   return {
     ...options,
     name: options.singular,
@@ -41,6 +87,16 @@ export function buildContext(options: NormalizedOptions): TemplateContext {
     lookupPlaceholder,
     searchPlaceholder,
     listRouterOutlet: options.formType === 'dialog' ? '<router-outlet />' : '',
+    listColumnsType,
+    listColumnsModel,
+    listColumnsDeclaration: isTree ? `${listColumnsType}[]` : `${listColumnsType}<${options.className}>[]`,
+    listComponent,
+    listSelectorTag: isTree ? 'app-tree-crud-list' : 'app-crud-list',
+    listComponentPath,
+    listExtraImports: treeImports ? `\n${treeImports}` : '',
+    treeConfigLines: treeConfigLines ? `\n${treeConfigLines}` : '',
+    treeConfigBinding: isTree ? '[treeConfig]="treeConfig" ' : '',
+    listFacadeOptions,
     permViewAny: `${options.permission}.viewAny`,
     permView: `${options.permission}.view`,
     permCreate: `${options.permission}.create`,
@@ -66,6 +122,5 @@ export function buildContext(options: NormalizedOptions): TemplateContext {
     serviceMethods: service.methods,
     listExportImports: options.withExport ? `\n${buildExportImportLines(toAppDeep)}` : '',
     listExportMenuBlock: options.withExport ? `\n${buildExportMenuBlock()}\n` : '',
-    listFacadeConfig: options.withExport ? buildFacadeConfigArg() : '',
   };
 }

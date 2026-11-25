@@ -63,6 +63,21 @@ describe('module schematic', () => {
     expect(menu).not.toContain("label: 'Sales'");
   });
 
+  it('usa o último segmento em módulos aninhados', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic('module', { name: 'financial/accounts' }, tree);
+
+    expect(result.exists('/src/app/features/financial/accounts/accounts.routes.ts')).toBe(true);
+
+    const routes = result.readContent('/src/app/features/financial/accounts/accounts.routes.ts');
+    expect(routes).toContain('export const ACCOUNTS_ROUTES: Routes');
+    expect(routes).not.toContain('FINANCIAL_ACCOUNTS_ROUTES');
+
+    const appRoutes = result.readContent('/src/app/app.routes.ts');
+    expect(appRoutes).toContain("path: 'financial/accounts'");
+    expect(appRoutes).toContain("import('./features/financial/accounts/accounts.routes').then(r => r.ACCOUNTS_ROUTES)");
+  });
+
   it('gera rotas de recurso em um array vazio sem vírgula sobrando', async () => {
     const tree = createTree();
     const withModule = await runner.runSchematic('module', { name: 'sales' }, tree);

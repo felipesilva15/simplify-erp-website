@@ -302,6 +302,38 @@ export interface ListCode {
   listImports: string;
 }
 
+/** Minúsculas, exceto siglas (palavras com todas as letras maiúsculas). */
+function lowerCaseLabel(label: string): string {
+  return label
+    .split(/(\s+)/)
+    .map((part) => (/^[A-Za-z]{2,}$/.test(part) && part === part.toUpperCase() ? part : part.toLowerCase()))
+    .join('');
+}
+
+/** Junta os termos com vírgulas e `ou` antes do último (ID, nome ou valor). */
+export function joinSearchTerms(terms: string[]): string {
+  if (terms.length === 0) {
+    return '';
+  }
+
+  if (terms.length === 1) {
+    return terms[0];
+  }
+
+  if (terms.length === 2) {
+    return `${terms[0]} ou ${terms[1]}`;
+  }
+
+  return `${terms.slice(0, -1).join(', ')} ou ${terms[terms.length - 1]}`;
+}
+
+/** Placeholder padrão derivado dos campos de texto: `Buscar por ID, nome ou valor...`. */
+export function buildSearchPlaceholder(fields: FieldDefinition[]): string {
+  const terms = ['ID', ...fields.filter(isStringField).map((field) => lowerCaseLabel(field.label))];
+
+  return `Buscar por ${joinSearchTerms(terms)}...`;
+}
+
 /** Gera as linhas de colunas/filtros, imports e o placeholder de busca da listagem. */
 export function generateListCode(fields: FieldDefinition[], context: LookupRenderContext): ListCode {
   const cols: string[] = [];
@@ -341,8 +373,7 @@ export function generateListCode(fields: FieldDefinition[], context: LookupRende
     filters.push(`    { name: '${field.name}', label: '${header}', type: ColumnType.${columnType(field)} },`);
   }
 
-  const terms = ['ID', ...fields.filter(isStringField).map((field) => field.label)];
-  const searchPlaceholder = `Buscar por ${terms.join(', ')}...`;
+  const searchPlaceholder = buildSearchPlaceholder(fields);
 
   return {
     colsLines: cols.join('\n'),

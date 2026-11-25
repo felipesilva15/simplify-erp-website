@@ -1,5 +1,8 @@
 export type FormType = 'dialog' | 'page';
 
+/** Tipo de visualização da listagem gerada. */
+export type TableType = 'table' | 'tree';
+
 export type FieldType =
   | 'string'
   | 'text'
@@ -54,6 +57,12 @@ export interface BaseSchema {
   'detect-lookups'?: boolean;
   /** Formato do formulário. */
   'form-type'?: FormType;
+  /** Tipo da listagem (`table` convencional ou `tree` hierárquica). */
+  'table-type'?: TableType;
+  /** Campo pai da árvore quando `--table-type=tree` (padrão inferido dos campos). */
+  'tree-parent-field'?: string;
+  /** Campo de rótulo do nó quando `--table-type=tree` (padrão inferido dos campos). */
+  'tree-label-field'?: string;
   /** Gera as opções de exportação na listagem e no service. */
   'with-export'?: boolean;
   /** Implementa `LogableService` (método `activityLogs`) no service. */
@@ -113,6 +122,11 @@ export interface NormalizedOptions {
   menuIcon: string;
   permission: string;
   formType: FormType;
+  tableType: TableType;
+  /** Campo que aponta para o pai na listagem em árvore. */
+  treeParentField: string;
+  /** Campo exibido como rótulo de cada nó na listagem em árvore. */
+  treeLabelField: string;
   fields: FieldDefinition[];
   withExport: boolean;
   withLog: boolean;
@@ -184,6 +198,24 @@ export interface TemplateContext extends NormalizedOptions {
   lookupPlaceholder: string;
   searchPlaceholder: string;
   listRouterOutlet: string;
+  /** `TreeTableColumn` (tree) ou `TableColumn` (tabela). */
+  listColumnsType: string;
+  /** Nome do arquivo do model de coluna em `core/models/`. */
+  listColumnsModel: string;
+  /** Tipo das colunas já com o parâmetro de modelo (ou sem, para tree). */
+  listColumnsDeclaration: string;
+  /** Componente de listagem usado no template HTML. */
+  listComponent: string;
+  /** Seletor do componente de listagem no template HTML. */
+  listSelectorTag: string;
+  /** Caminho do componente de listagem em `shared/components/`. */
+  listComponentPath: string;
+  /** Imports adicionais exigidos pela listagem em árvore. */
+  listExtraImports: string;
+  /** Bloco `treeConfig` (tree) ou vazio (tabela). */
+  treeConfigLines: string;
+  /** Binding `[treeConfig]="treeConfig"` (tree) ou vazio (tabela). */
+  treeConfigBinding: string;
   permViewAny: string;
   permView: string;
   permCreate: string;
@@ -209,5 +241,6 @@ export interface TemplateContext extends NormalizedOptions {
   serviceMethods: string;
   listExportImports: string;
   listExportMenuBlock: string;
-  listFacadeConfig: string;
+  /** Terceiro argumento da `CrudListFacade`, mesclando tree + exportação. */
+  listFacadeOptions: string;
 }

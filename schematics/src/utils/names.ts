@@ -46,6 +46,22 @@ export function pluralize(value: string): string {
   return `${word}s`;
 }
 
+/** Palavras de ligação que não devem ser pluralizadas em rótulos pt-BR. */
+const LABEL_STOP_WORDS = new Set([
+  'de', 'da', 'do', 'das', 'dos', 'e', 'ou', 'com',
+  'em', 'por', 'para', 'no', 'na', 'nos', 'nas',
+]);
+
+/** `Forma de pagamento` → `Formas de pagamentos` (respeita preposições). */
+export function pluralizeLabel(value: string): string {
+  return value
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => (LABEL_STOP_WORDS.has(word.toLowerCase()) ? word : pluralize(word)))
+    .join(' ');
+}
+
 /** Singulariza para derivar o nome da classe/model. Conservador e sobrescrevível. */
 export function singularize(value: string): string {
   const word = value.trim();

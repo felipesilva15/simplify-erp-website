@@ -32,16 +32,22 @@
       "description": "Placeholder de busca (vazio = derivado dos campos de texto).",
       "x-prompt": "Placeholder (vazio = derivado dos campos de texto)"
     },
-    "lookup-placeholder": {
+    "lookupPlaceholder": {
       "type": "string",
-      "default": "",
       "description": "Placeholder do componente de lookup (vazio = o mesmo da busca).",
       "x-prompt": "Placeholder do lookup (vazio = o mesmo da busca)"
     },
+    "lookup-placeholder": {
+      "type": "string",
+      "description": "Alias of --lookupPlaceholder for programmatic calls."
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "Não gera arquivos de teste."
+    },
     "skip-tests": {
       "type": "boolean",
-      "default": false,
-      "description": "Não gera arquivos de teste."
+      "description": "Alias of --skipTests for programmatic calls."
     },
     "force": {
       "type": "boolean",
@@ -50,5 +56,8 @@
       "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
-  "required": ["module", "name"]
+  "required": [
+    "module",
+    "name"
+  ]
 }

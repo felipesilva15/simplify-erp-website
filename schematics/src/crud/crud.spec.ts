@@ -102,6 +102,24 @@ describe('crud schematic', () => {
     expect(list).toContain("signal<string>('Listar tipos de parceiro')");
   });
 
+  it('deriva o rótulo plural do rótulo singular informado', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      { module: 'third-party', name: 'partner-type', label: 'Tipo de parceiro' },
+      tree,
+    );
+
+    const menu = result.readContent('/src/app/core/config/menu.ts');
+    expect(menu).toContain("label: 'Tipos de parceiros'");
+    expect(menu).not.toContain("label: 'Partner types'");
+
+    const list = result.readContent(
+      '/src/app/features/third-party/partner-types/pages/partner-type-list/partner-type-list.page.ts',
+    );
+    expect(list).toContain("signal<string>('Listar tipos de parceiros')");
+  });
+
   it('é idempotente: rodar duas vezes não duplica menu nem rotas', async () => {
     const tree = createTree();
     const first = await runner.runSchematic(
@@ -409,5 +427,126 @@ describe('crud schematic', () => {
     const list = result.readContent(`${dir}/pages/partner-list/partner-list.page.ts`);
     expect(list).toContain("{ field: 'state_id', header: 'Estado', sortable: true, type: ColumnType.Decimal },");
     expect(list).not.toContain('ColumnType.Lookup');
+  });
+
+  it('deriva placeholder com minúsculas, siglas e junção por "ou"', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      {
+        module: 'third-party',
+        name: 'partner-type',
+        fields: 'name:string:Nome,ibge_code:string:Código IBGE,document:string:CPF',
+      },
+      tree,
+    );
+
+    const listHtml = result.readContent(
+      '/src/app/features/third-party/partner-types/pages/partner-type-list/partner-type-list.page.html',
+    );
+    expect(listHtml).toContain('Buscar por ID, nome, código IBGE ou CPF...');
+    expect(listHtml).not.toContain('Buscar por ID, Nome, Código IBGE, CPF...');
+  });
+
+  it('gera listagem em árvore com --table-type=tree', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      {
+        module: 'catalog',
+        name: 'product-category',
+        fields: 'name:string:Nome,parent_category_id:number:Categoria pai::product-category',
+        'table-type': 'tree',
+      },
+      tree,
+    );
+
+    const dir = resourceDir('catalog', 'product-categories');
+    const listHtml = result.readContent(`${dir}/pages/product-category-list/product-category-list.page.html`);
+    expect(listHtml).toContain('<app-tree-crud-list');
+    expect(listHtml).toContain('[treeConfig]="treeConfig"');
+    expect(listHtml).not.toContain('<app-crud-list');
+
+    const list = result.readContent(`${dir}/pages/product-category-list/product-category-list.page.ts`);
+    expect(list).toContain("import { TreeCrudListComponent } from '../../../../../shared/components/tree-crud-list/tree-crud-list.component';");
+    expect(list).toContain("import { TreeTableColumn } from '../../../../../core/models/tree-table-column';");
+    expect(list).toContain("import { TreeListConfig } from '../../../../../core/models/tree-list-config';");
+    expect(list).toContain('cols: TreeTableColumn[] = [');
+    expect(list).toContain("parentKey: 'parent_category_id'");
+    expect(list).toContain("labelKey: 'name'");
+    expect(list).toContain('fetchAll: true');
+  });
+
+  it('gera tabela convencional por padrão', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      { module: 'third-party', name: 'partner-type' },
+      tree,
+    );
+
+    const dir = resourceDir('third-party', 'partner-types');
+    const listHtml = result.readContent(`${dir}/pages/partner-type-list/partner-type-list.page.html`);
+    expect(listHtml).toContain('<app-crud-list');
+    expect(listHtml).not.toContain('treeConfig');
+  });
+
+  it('respeita opções em camelCase enviadas pelo Angular CLI', async () => {
+    const tree = createTree();
+    const result = await runner.runSchematic(
+      'crud',
+      {
+        module: 'third-party',
+        name: 'partner-type',
+        moduleLabel: 'Terceiro',
+        labelPlural: 'Tipos de parceiro personalizados',
+        menuIcon: 'pi pi-tag',
+        tableType: 'tree',
+        treeParentField: 'custom_parent_id',
+        skipMenu: true,
+        skipRoutes: true,
+      },
+      tree,
+    );
+
+    const menu = result.readContent('/src/app/core/config/menu.ts');
+    expect(menu).not.toContain("link: '/third-party/partner-types'");
+
+    const moduleRoutes = result.readContent('/src/app/features/third-party/third-party.routes.ts');
+    expect(moduleRoutes).not.toContain("path: 'partner-types'");
+
+    const list = result.readContent(
+      '/src/app/features/third-party/partner-types/pages/partner-type-list/partner-type-list.page.ts',
+    );
+    expect(list).toContain("parentKey: 'custom_parent_id'");
+
+    const listHtml = result.readContent(
+      '/src/app/features/third-party/partner-types/pages/partner-type-list/partner-type-list.page.html',
+    );
+    expect(listHtml).toContain('<app-tree-crud-list');
+  });
+
+  it('registra o recurso no arquivo de rotas de módulos aninhados', async () => {
+    const tree = createTree();
+    tree.create(
+      '/src/app/features/security/auth/auth.routes.ts',
+      "import { Routes } from '@angular/router';\n\nexport const AUTH_ROUTES: Routes = [\n];\n",
+    );
+
+    const result = await runner.runSchematic(
+      'crud',
+      { module: 'security/auth', name: 'login-attempt' },
+      tree,
+    );
+
+    const moduleRoutes = result.readContent('/src/app/features/security/auth/auth.routes.ts');
+    expect(moduleRoutes).toContain("path: 'login-attempts'");
+    expect(moduleRoutes).toContain('r.LOGIN_ATTEMPTS_ROUTES');
+    expect(result.exists('/src/app/features/security/auth/security/auth.routes.ts')).toBe(false);
+
+    const list = result.readContent(
+      '/src/app/features/security/auth/login-attempts/pages/login-attempt-list/login-attempt-list.page.ts',
+    );
+    expect(list).toContain("{ label: 'Segurança' }");
   });
 });

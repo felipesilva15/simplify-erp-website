@@ -27,7 +27,7 @@ export function addModule(options: NormalizedModuleOptions): Rule {
             module: options.module,
             moduleRoutesConst: options.moduleRoutesConst,
           }),
-    options.skipMenu ? noop() : addMenuGroup(options.sourceRoot, options.moduleLabel, options.menuIcon),
+    options.skipMenu ? noop() : addMenuGroup(options.sourceRoot, options.module, options.moduleLabel, options.menuIcon),
   ]);
 }
 

@@ -46,6 +46,55 @@ function buildEmptyGroupBlock(moduleLabel: string, menuIcon: string): string {
   ].join('\n');
 }
 
+/** Índice do `label:` do grupo que contém o item de menu no índice informado. */
+function findEnclosingGroupIndex(content: string, linkIndex: number): number {
+  const regex = /label:\s*'([^']*)'/g;
+  let match: RegExpExecArray | null;
+  let groupIndex = -1;
+
+  while ((match = regex.exec(content)) !== null && match.index < linkIndex) {
+    const itemsIndex = content.indexOf('items:', match.index);
+
+    if (itemsIndex !== -1 && itemsIndex < linkIndex) {
+      groupIndex = match.index;
+    }
+  }
+
+  return groupIndex;
+}
+
+/**
+ * Localiza o grupo do módulo. Prefere um item de menu já vinculado ao módulo
+ * (link `/<modulo>/...`), o que evita criar grupos duplicados quando o rótulo
+ * informado difere do rótulo existente (ex.: `construction` → `Obra`).
+ */
+function findModuleGroupIndex(content: string, module: string, moduleLabel: string): number {
+  const segments = module.split('/');
+  const prefixes = [`/${module}/`];
+
+  if (segments.length > 1) {
+    prefixes.push(`/${segments.slice(0, -1).join('/')}/`);
+  }
+
+  for (const prefix of prefixes) {
+    const regex = /link:\s*'([^']*)'/g;
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(content)) !== null) {
+      if (!match[1].startsWith(prefix)) {
+        continue;
+      }
+
+      const groupIndex = findEnclosingGroupIndex(content, match.index);
+      if (groupIndex !== -1) {
+        return groupIndex;
+      }
+    }
+  }
+
+  return findGroupLabelIndex(content, moduleLabel);
+}
+
 /** Índice do `label:` de um grupo (com `items`) que corresponda ao rótulo. */
 function findGroupLabelIndex(content: string, moduleLabel: string): number {
   const regex = /label:\s*'([^']*)'/g;
@@ -91,7 +140,7 @@ export function addMenuEntry(options: NormalizedOptions): Rule {
       return tree;
     }
 
-    const groupIndex = findGroupLabelIndex(content, options.moduleLabel);
+    const groupIndex = findModuleGroupIndex(content, options.module, options.moduleLabel);
     let updated: string;
 
     if (groupIndex !== -1) {
@@ -119,7 +168,7 @@ export function addMenuEntry(options: NormalizedOptions): Rule {
  * Garante que exista um grupo de menu para o módulo (vazio), de forma
  * idempotente. Usado pelo schematic `module`.
  */
-export function addMenuGroup(sourceRoot: string, moduleLabel: string, menuIcon: string): Rule {
+export function addMenuGroup(sourceRoot: string, module: string, moduleLabel: string, menuIcon: string): Rule {
   return (tree: Tree, context: SchematicContext): Tree => {
     const path = `${sourceRoot}/app/core/config/menu.ts`;
     const content = readText(tree, path);
@@ -129,8 +178,8 @@ export function addMenuGroup(sourceRoot: string, moduleLabel: string, menuIcon: 
       return tree;
     }
 
-    if (findGroupLabelIndex(content, moduleLabel) !== -1) {
-      context.logger.info(`Grupo de menu "${moduleLabel}" já existe; nada a fazer.`);
+    if (findModuleGroupIndex(content, module, moduleLabel) !== -1) {
+      context.logger.info(`Grupo de menu do módulo "${module}" já existe; nada a fazer.`);
       return tree;
     }
 

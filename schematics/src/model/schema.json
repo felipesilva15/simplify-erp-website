@@ -26,11 +26,14 @@
       "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
       "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
     },
-    "detect-lookups": {
+    "detectLookups": {
       "type": "boolean",
-      "default": true,
       "description": "Trata campos terminados em _id como lookup automaticamente.",
       "x-prompt": "Tratar campos *_id como lookup automaticamente?"
+    },
+    "detect-lookups": {
+      "type": "boolean",
+      "description": "Alias of --detectLookups for programmatic calls."
     },
     "force": {
       "type": "boolean",
@@ -39,5 +42,8 @@
       "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
-  "required": ["module", "name"]
+  "required": [
+    "module",
+    "name"
+  ]
 }

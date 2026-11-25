@@ -32,23 +32,32 @@
       "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro).",
       "x-prompt": "Rótulo singular (vazio = derivado)"
     },
-    "label-plural": {
+    "labelPlural": {
       "type": "string",
-      "default": "",
       "description": "Rótulo plural em pt-BR (ex.: Tipos de parceiro).",
       "x-prompt": "Rótulo plural (vazio = derivado)"
     },
-    "module-label": {
+    "label-plural": {
       "type": "string",
-      "default": "",
+      "description": "Alias of --labelPlural for programmatic calls."
+    },
+    "moduleLabel": {
+      "type": "string",
       "description": "Rótulo do módulo usado no breadcrumb (ex.: Terceiro).",
       "x-prompt": "Rótulo do módulo (vazio = derivado)"
     },
-    "permission-key": {
+    "module-label": {
       "type": "string",
-      "default": "",
+      "description": "Alias of --moduleLabel for programmatic calls."
+    },
+    "permissionKey": {
+      "type": "string",
       "description": "Chave base de permissão (ex.: partnerTypes).",
       "x-prompt": "Chave base de permissão (vazio = derivado)"
+    },
+    "permission-key": {
+      "type": "string",
+      "description": "Alias of --permissionKey for programmatic calls."
     },
     "placeholder": {
       "type": "string",
@@ -56,41 +65,107 @@
       "description": "Texto do placeholder de busca (vazio = derivado dos campos de texto).",
       "x-prompt": "Placeholder de busca (vazio = derivado dos campos de texto)"
     },
-    "detect-lookups": {
+    "detectLookups": {
       "type": "boolean",
-      "default": true,
       "description": "Trata campos terminados em _id como lookup automaticamente.",
       "x-prompt": "Tratar campos *_id como lookup automaticamente?"
     },
-    "form-type": {
+    "detect-lookups": {
+      "type": "boolean",
+      "description": "Alias of --detectLookups for programmatic calls."
+    },
+    "formType": {
       "type": "string",
-      "enum": ["dialog", "page"],
-      "default": "dialog",
+      "enum": [
+        "dialog",
+        "page"
+      ],
       "description": "Formato do formulário associado (define o uso de <router-outlet>).",
       "x-prompt": {
         "message": "Formato do formulário associado:",
         "type": "list",
         "items": [
-          { "value": "dialog", "label": "Dialog (modal)" },
-          { "value": "page", "label": "Página" }
+          {
+            "value": "dialog",
+            "label": "Dialog (modal)"
+          },
+          {
+            "value": "page",
+            "label": "Página"
+          }
         ]
       }
     },
-    "with-export": {
+    "form-type": {
+      "type": "string",
+      "description": "Alias of --formType for programmatic calls."
+    },
+    "tableType": {
+      "type": "string",
+      "enum": [
+        "table",
+        "tree"
+      ],
+      "description": "Tipo da listagem: 'table' (tabela convencional) ou 'tree' (árvore hierárquica).",
+      "x-prompt": {
+        "message": "Tipo da listagem:",
+        "type": "list",
+        "items": [
+          {
+            "value": "table",
+            "label": "Tabela convencional"
+          },
+          {
+            "value": "tree",
+            "label": "Tree view (árvore)"
+          }
+        ]
+      }
+    },
+    "table-type": {
+      "type": "string",
+      "description": "Alias of --tableType for programmatic calls."
+    },
+    "treeParentField": {
+      "type": "string",
+      "description": "Campo pai usado por --table-type=tree (padrão: campo *_id com prefixo 'parent', senão 'parent_id')."
+    },
+    "tree-parent-field": {
+      "type": "string",
+      "description": "Alias of --treeParentField for programmatic calls."
+    },
+    "treeLabelField": {
+      "type": "string",
+      "description": "Campo usado como rótulo do nó em --table-type=tree (padrão: 'name' ou o primeiro campo de texto)."
+    },
+    "tree-label-field": {
+      "type": "string",
+      "description": "Alias of --treeLabelField for programmatic calls."
+    },
+    "withExport": {
       "type": "boolean",
-      "default": false,
       "description": "Inclui as opções de exportação na listagem.",
       "x-prompt": "Incluir opções de exportação?"
     },
+    "with-export": {
+      "type": "boolean",
+      "description": "Alias of --withExport for programmatic calls."
+    },
+    "skipLookup": {
+      "type": "boolean",
+      "description": "Trata campos *_id como number (sem componente de lookup)."
+    },
     "skip-lookup": {
       "type": "boolean",
-      "default": false,
-      "description": "Trata campos *_id como number (sem componente de lookup)."
+      "description": "Alias of --skipLookup for programmatic calls."
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "Não gera arquivos de teste."
     },
     "skip-tests": {
       "type": "boolean",
-      "default": false,
-      "description": "Não gera arquivos de teste."
+      "description": "Alias of --skipTests for programmatic calls."
     },
     "force": {
       "type": "boolean",
@@ -99,5 +174,8 @@
       "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
-  "required": ["module", "name"]
+  "required": [
+    "module",
+    "name"
+  ]
 }

@@ -44,4 +44,43 @@ describe('menu schematic', () => {
     const menu = second.readContent(MENU);
     expect(menu.split("link: '/third-party/partner-types'").length - 1).toBe(1);
   });
+
+  it('adiciona o item no grupo existente mesmo quando o rótulo do módulo difere', async () => {
+    const tree = createTree();
+    const current = tree.readContent(MENU);
+    const group = `  {
+    label: 'Obra',
+    icon: 'pi pi-hammer',
+    active: false,
+    items: [
+      {
+        label: 'Tipos de projeto',
+        icon: 'pi pi-star',
+        active: false,
+        link: '/construction/project-types',
+        permission: 'projectTypes.viewAny'
+      }
+    ]
+  },
+`;
+
+    tree.overwrite(MENU, current.replace('  {\n    separator: true\n  }', `${group}  {\n    separator: true\n  }`));
+    tree.create(
+      '/src/app/features/construction/construction.routes.ts',
+      "import { Routes } from '@angular/router';\n\nexport const CONSTRUCTION_ROUTES: Routes = [];\n",
+    );
+
+    const result = await runner.runSchematic('menu', { module: 'construction', name: 'construction-phase' }, tree);
+    const menu = result.readContent(MENU);
+
+    expect(menu).toContain("link: '/construction/construction-phases'");
+    expect(menu.split("label: 'Obra'").length - 1).toBe(1);
+    expect(menu.split("label: 'Construction'").length - 1).toBe(0);
+
+    const groupStart = menu.indexOf("label: 'Obra'");
+    const itemStart = menu.indexOf("link: '/construction/construction-phases'");
+
+    expect(itemStart).toBeGreaterThan(groupStart);
+    expect(menu.indexOf("separator: true", groupStart)).toBeGreaterThan(itemStart);
+  });
 });

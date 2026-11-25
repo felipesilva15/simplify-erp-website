@@ -5,6 +5,10 @@ export const MODULE_LABELS: Readonly<Record<string, string>> = {
   security: 'Segurança',
   hr: 'RH',
   catalog: 'Catálogo',
+  construction: 'Obra',
   configuration: 'Configurações',
   configurations: 'Configurações',
+  auth: 'Autenticação',
+  error: 'Erro',
+  finance: 'Financeiro'
 };

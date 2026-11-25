@@ -2,11 +2,11 @@ import { Component, DestroyRef, inject, OnInit, signal, WritableSignal } from '@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { MenuItem } from 'primeng/api';
-import { ColumnType } from '<%= toAppDeep %>core/enums/column-type';<%= listExportImports %>
+import { ColumnType } from '<%= toAppDeep %>core/enums/column-type';<%= listExportImports %><%= listExtraImports %>
 import { FilterFieldDefinition } from '<%= toAppDeep %>core/models/filter-field-definition';
-import { TableColumn } from '<%= toAppDeep %>core/models/table-column';
+import { <%= listColumnsType %> } from '<%= toAppDeep %>core/models/<%= listColumnsModel %>';
 import { TableMenuItem } from '<%= toAppDeep %>core/models/table-menu-item';
-import { CrudListComponent } from '<%= toAppDeep %>shared/components/crud-list/crud-list.component';
+import { <%= listComponent %> } from '<%= toAppDeep %>shared/components/<%= listComponentPath %>';
 import { AppTemplate } from '<%= toAppDeep %>shared/directives/app-template';
 import { CrudListFacade } from '<%= toAppDeep %>shared/facades/crud-list.facade';
 import { DialogRefreshService } from '<%= toAppDeep %>shared/services/dialog-refresh.service';
@@ -18,7 +18,7 @@ import { <%= serviceClass %> } from '../../services/<%= name %>-service';<%= lis
   selector: '<%= listSelector %>',
   imports: [
     ListPageUi,
-    CrudListComponent,
+    <%= listComponent %>,
     RouterOutlet,
     AppTemplate
   ],
@@ -30,7 +30,7 @@ import { <%= serviceClass %> } from '../../services/<%= name %>-service';<%= lis
         update: '<%= permUpdate %>',
         view: '<%= permView %>',
         delete: '<%= permDelete %>'
-      }<%= listFacadeConfig %>),
+      }<%= listFacadeOptions %>),
       deps: [
         <%= serviceClass %>
       ]
@@ -52,10 +52,10 @@ export class <%= listClass %> implements OnInit {
     { label: '<%= labelPlural %>' },
     { label: 'Listar', routerLink: '/<%= module %>/<%= resource %>' }
   ];
-  cols: TableColumn<<%= className %>>[] = [
+  cols: <%= listColumnsDeclaration %> = [
     { field: 'id', header: 'ID', sortable: true, type: ColumnType.Integer },
 <%= colsLines %>
-  ];
+  ];<%= treeConfigLines %>
   filterDefinition: FilterFieldDefinition[] = [
     { name: 'id', label: 'ID', type: ColumnType.Integer },
 <%= filterLines %>

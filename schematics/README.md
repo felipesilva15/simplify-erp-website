@@ -84,6 +84,23 @@ O `module` cria `src/app/features/<module>/<module>.routes.ts` com um array de
 rotas vazio, registra o módulo no `app.routes.ts` e adiciona um grupo de menu
 vazio. É idempotente (não duplica registros).
 
+Para módulos aninhados (ex.: `security/auth`), o arquivo e a constante de rotas
+usam apenas o último segmento (`auth.routes.ts` / `AUTH_ROUTES`), enquanto o
+caminho e o link do menu preservam o módulo completo.
+
+### Listagem em árvore
+
+```bash
+npx ng generate ./schematics/collection.json:crud \
+  --module=catalog --name=product-category \
+  --fields="name:string:Nome,parent_category_id:number:Categoria pai::product-category" \
+  --table-type=tree
+```
+
+O CRUD em árvore usa `app-tree-crud-list`, `TreeTableColumn` e um `treeConfig`
+com `rootFilter`, `fixedFilters` e `fetchAll`, seguindo o padrão já usado por
+`product-categories`.
+
 ---
 
 ## 4. Opções
@@ -96,12 +113,12 @@ vazio. É idempotente (não duplica registros).
 | `--name` | string | — | **Obrigatório.** Recurso no **singular** em kebab-case (ex.: `partner-type`). |
 | `--fields` | string | `name:string` | Campos separados por vírgula (ver seção 5). |
 | `--plural` | string | derivado | Plural do recurso. Sobrescreve a pluralização automática. |
-| `--label` | string | derivado | Rótulo singular em pt-BR (ex.: `Tipo de parceiro`). |
-| `--label-plural` | string | derivado | Rótulo plural em pt-BR (ex.: `Tipos de parceiro`). |
+| `--label` | string | derivado | Rótulo singular em pt-BR (ex.: `Tipo de parceiro`). Também deriva o plural quando `--label-plural` não é informado. |
+| `--label-plural` | string | de `--label` | Rótulo plural em pt-BR (ex.: `Tipos de parceiro`). |
 | `--module-label` | string | mapa/derivado | Rótulo do grupo no menu e breadcrumb (ex.: `Terceiro`). |
 | `--menu-icon` | string | `pi pi-star` | Ícone PrimeIcons do item de menu. |
 | `--permission-key` | string | derivado | Chave base de permissão (ex.: `partnerTypes`). |
-| `--placeholder` | string | derivado | Placeholder de busca da listagem (padrão: `Buscar por ID, <campos de texto>...`). |
+| `--placeholder` | string | derivado | Placeholder de busca da listagem (padrão: `Buscar por ID, nome ou valor...`). |
 | `--lookup-placeholder` | string | = `--placeholder` | Placeholder do componente de lookup. |
 | `--detect-lookups` | boolean | `true` | Trata campos terminados em `_id` como lookup automaticamente. |
 | `--force` | boolean | `false` | Sobrescreve arquivos existentes. |
@@ -112,6 +129,15 @@ vazio. É idempotente (não duplica registros).
 | Opção | Tipo | Padrão | Descrição |
 | --- | --- | --- | --- |
 | `--form-type` | `dialog` \| `page` | `dialog` | Formato do formulário. |
+| `--table-type` | `table` \| `tree` | `table` | Tipo da listagem: tabela convencional ou árvore (`app-tree-crud-list`). |
+| `--tree-parent-field` | string | inferido | Campo pai em `--table-type=tree` (padrão: campo `parent*` com `_id`, senão `parent_id`). |
+| `--tree-label-field` | string | inferido | Campo de rótulo do nó em `--table-type=tree` (padrão: `name` ou primeiro campo de texto). |
+
+`--table-type`, `--tree-parent-field` e `--tree-label-field` também são aceitos
+pelo schematic `list`.
+
+| Opção | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
 | `--with-export` | boolean | `false` | Inclui as opções de exportação na listagem **e** implementa `ExportableService` no service. |
 | `--with-log` | boolean | `false` | Implementa `LogableService` (método `activityLogs`) no service. |
 | `--skip-menu` | boolean | `false` | Não adiciona a entrada no menu. |
@@ -135,11 +161,17 @@ vazio. É idempotente (não duplica registros).
 | --- | --- | --- | --- |
 | `--fields` | string | — | **Obrigatório.** Campos `enum` no formato descrito na seção 5. |
 
-As opções `--skip-*` **não** possuem `x-prompt`: elas só devem ser usadas
-explicitamente na linha de comando. Todas as demais opções possuem `x-prompt` e
-são perguntadas **somente quando o valor não é passado** (com um terminal
-interativo e sem `--defaults`/`--no-interactive`), usando o valor padrão como
-resposta sugerida.
+Todas as opções não informadas possuem `x-prompt` e são perguntadas **somente
+quando o valor não é passado**. Exceções: `--skip-*` e as opções de árvore
+inferidas (`--tree-parent-field`/`--tree-label-field`).
+
+Como as formas canônicas dos schemas não declaram `default` (o padrão é aplicado
+em `normalizeOptions`), o terminal não mostra um valor sugerido na pergunta;
+basta deixar a resposta vazia para usar o padrão documentado.
+
+O Angular CLI converte opções com hífen para `camelCase` (`--table-type` →
+`tableType`). Os schemas aceitam as duas formas; com o CLI, use a forma com
+hífen normalmente.
 
 ---
 

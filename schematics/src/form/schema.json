@@ -32,35 +32,56 @@
       "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro).",
       "x-prompt": "Rótulo singular (vazio = derivado)"
     },
-    "detect-lookups": {
+    "detectLookups": {
       "type": "boolean",
-      "default": true,
       "description": "Trata campos terminados em _id como lookup automaticamente.",
       "x-prompt": "Tratar campos *_id como lookup automaticamente?"
     },
-    "skip-lookup": {
+    "detect-lookups": {
       "type": "boolean",
-      "default": false,
+      "description": "Alias of --detectLookups for programmatic calls."
+    },
+    "skipLookup": {
+      "type": "boolean",
       "description": "Trata campos *_id como number (sem componente de lookup)."
     },
-    "form-type": {
+    "skip-lookup": {
+      "type": "boolean",
+      "description": "Alias of --skipLookup for programmatic calls."
+    },
+    "formType": {
       "type": "string",
-      "enum": ["dialog", "page"],
-      "default": "dialog",
+      "enum": [
+        "dialog",
+        "page"
+      ],
       "description": "Formato do formulário.",
       "x-prompt": {
         "message": "Formato do formulário:",
         "type": "list",
         "items": [
-          { "value": "dialog", "label": "Dialog (modal)" },
-          { "value": "page", "label": "Página" }
+          {
+            "value": "dialog",
+            "label": "Dialog (modal)"
+          },
+          {
+            "value": "page",
+            "label": "Página"
+          }
         ]
       }
     },
+    "form-type": {
+      "type": "string",
+      "description": "Alias of --formType for programmatic calls."
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "Não gera arquivos de teste."
+    },
     "skip-tests": {
       "type": "boolean",
-      "default": false,
-      "description": "Não gera arquivos de teste."
+      "description": "Alias of --skipTests for programmatic calls."
     },
     "force": {
       "type": "boolean",
@@ -69,5 +90,8 @@
       "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
-  "required": ["module", "name"]
+  "required": [
+    "module",
+    "name"
+  ]
 }

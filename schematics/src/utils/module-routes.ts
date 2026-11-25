@@ -3,6 +3,11 @@ import { appendArrayItem, escapeRegExp } from './text';
 import { readText, writeText } from './tree';
 import { NormalizedOptions } from './types';
 
+/** Nome do arquivo de rotas do módulo (último segmento de módulos aninhados). */
+function moduleRoutesFileName(module: string): string {
+  return module.split('/').pop() ?? module;
+}
+
 /** Dados mínimos para registrar um módulo no `app.routes.ts`. */
 export interface ModuleRegistration {
   sourceRoot: string;
@@ -77,10 +82,11 @@ export function registerModuleInAppRoutes(
   }
 
   const bracketIndex = content.indexOf('[', childrenIndex);
+  const routesFile = moduleRoutesFileName(registration.module);
   const entry = [
     '            {',
     `                path: '${registration.module}',`,
-    `                loadChildren: () => import('./features/${registration.module}/${registration.module}.routes').then(r => r.${registration.moduleRoutesConst})`,
+    `                loadChildren: () => import('./features/${registration.module}/${routesFile}.routes').then(r => r.${registration.moduleRoutesConst})`,
     '            }',
   ].join('\n');
 
@@ -95,7 +101,8 @@ export function registerModuleInAppRoutes(
  */
 export function registerResourceRoutes(options: NormalizedOptions): Rule {
   return (tree: Tree, context: SchematicContext): Tree => {
-    const path = `${options.sourceRoot}/app/features/${options.module}/${options.module}.routes.ts`;
+    const routesFile = moduleRoutesFileName(options.module);
+    const path = `${options.sourceRoot}/app/features/${options.module}/${routesFile}.routes.ts`;
     const content = readText(tree, path);
 
     if (content === null) {

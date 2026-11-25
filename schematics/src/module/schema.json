@@ -9,27 +9,39 @@
       "description": "Módulo/feature em kebab-case (ex.: catalog).",
       "x-prompt": "Módulo/feature em kebab-case (ex.: catalog)"
     },
-    "module-label": {
+    "moduleLabel": {
       "type": "string",
-      "default": "",
       "description": "Rótulo do grupo de menu do módulo (ex.: Catálogo).",
       "x-prompt": "Rótulo do grupo de menu (ex.: Catálogo)"
     },
-    "menu-icon": {
+    "module-label": {
       "type": "string",
-      "default": "pi pi-folder",
+      "description": "Alias of --moduleLabel for programmatic calls."
+    },
+    "menuIcon": {
+      "type": "string",
       "description": "Ícone PrimeIcons do grupo de menu (ex.: pi pi-folder).",
       "x-prompt": "Ícone PrimeIcons do grupo de menu (ex.: pi pi-folder)"
     },
+    "menu-icon": {
+      "type": "string",
+      "description": "Alias of --menuIcon for programmatic calls."
+    },
+    "skipMenu": {
+      "type": "boolean",
+      "description": "Não adiciona o grupo de menu do módulo."
+    },
     "skip-menu": {
       "type": "boolean",
-      "default": false,
-      "description": "Não adiciona o grupo de menu do módulo."
+      "description": "Alias of --skipMenu for programmatic calls."
+    },
+    "skipRoutes": {
+      "type": "boolean",
+      "description": "Não registra o módulo no app.routes.ts."
     },
     "skip-routes": {
       "type": "boolean",
-      "default": false,
-      "description": "Não registra o módulo no app.routes.ts."
+      "description": "Alias of --skipRoutes for programmatic calls."
     },
     "force": {
       "type": "boolean",
@@ -38,5 +50,7 @@
       "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
-  "required": ["name"]
+  "required": [
+    "name"
+  ]
 }

@@ -20,29 +20,41 @@
       "description": "Plural do recurso em kebab-case (sobrescreve a derivação automática).",
       "x-prompt": "Plural do recurso (kebab-case; vazio = automático)"
     },
-    "label-plural": {
+    "labelPlural": {
       "type": "string",
-      "default": "",
       "description": "Rótulo plural em pt-BR exibido no menu (ex.: Tipos de parceiro).",
       "x-prompt": "Rótulo plural exibido no menu (vazio = derivado)"
     },
-    "module-label": {
+    "label-plural": {
       "type": "string",
-      "default": "",
+      "description": "Alias of --labelPlural for programmatic calls."
+    },
+    "moduleLabel": {
+      "type": "string",
       "description": "Rótulo do grupo de menu do módulo (ex.: Terceiro).",
       "x-prompt": "Rótulo do grupo de menu (vazio = derivado)"
     },
-    "menu-icon": {
+    "module-label": {
       "type": "string",
-      "default": "pi pi-star",
+      "description": "Alias of --moduleLabel for programmatic calls."
+    },
+    "menuIcon": {
+      "type": "string",
       "description": "Ícone PrimeIcons do item de menu (ex.: pi pi-star).",
       "x-prompt": "Ícone PrimeIcons (ex.: pi pi-star)"
     },
-    "permission-key": {
+    "menu-icon": {
       "type": "string",
-      "default": "",
+      "description": "Alias of --menuIcon for programmatic calls."
+    },
+    "permissionKey": {
+      "type": "string",
       "description": "Chave base de permissão (ex.: partnerTypes).",
       "x-prompt": "Chave base de permissão (vazio = derivado)"
+    },
+    "permission-key": {
+      "type": "string",
+      "description": "Alias of --permissionKey for programmatic calls."
     },
     "force": {
       "type": "boolean",
@@ -51,5 +63,8 @@
       "x-prompt": "Forçar (sem efeito no menu)?"
     }
   },
-  "required": ["module", "name"]
+  "required": [
+    "module",
+    "name"
+  ]
 }

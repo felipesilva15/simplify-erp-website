@@ -26,25 +26,40 @@
       "description": "Rótulo singular em pt-BR (ex.: Tipo de parceiro).",
       "x-prompt": "Rótulo singular (vazio = derivado)"
     },
-    "permission-key": {
+    "permissionKey": {
       "type": "string",
-      "default": "",
       "description": "Chave base de permissão (ex.: partnerTypes).",
       "x-prompt": "Chave base de permissão (vazio = derivado)"
     },
-    "form-type": {
+    "permission-key": {
       "type": "string",
-      "enum": ["dialog", "page"],
-      "default": "dialog",
+      "description": "Alias of --permissionKey for programmatic calls."
+    },
+    "formType": {
+      "type": "string",
+      "enum": [
+        "dialog",
+        "page"
+      ],
       "description": "Formato do formulário associado às rotas.",
       "x-prompt": {
         "message": "Formato do formulário associado:",
         "type": "list",
         "items": [
-          { "value": "dialog", "label": "Dialog (modal)" },
-          { "value": "page", "label": "Página" }
+          {
+            "value": "dialog",
+            "label": "Dialog (modal)"
+          },
+          {
+            "value": "page",
+            "label": "Página"
+          }
         ]
       }
+    },
+    "form-type": {
+      "type": "string",
+      "description": "Alias of --formType for programmatic calls."
     },
     "force": {
       "type": "boolean",
@@ -53,5 +68,8 @@
       "x-prompt": "Sobrescrever arquivos existentes?"
     }
   },
-  "required": ["module", "name"]
+  "required": [
+    "module",
+    "name"
+  ]
 }

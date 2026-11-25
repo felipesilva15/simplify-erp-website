@@ -27,5 +27,8 @@
       "x-prompt": "Forçar (sem efeito; operação idempotente)?"
     }
   },
-  "required": ["module", "name"]
+  "required": [
+    "module",
+    "name"
+  ]
 }
