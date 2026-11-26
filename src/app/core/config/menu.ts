@@ -130,6 +130,20 @@ export const MENU: AppMenuItem[] = [
     ]
   },
   {
+    label: 'Financeiro',
+    icon: 'pi pi-dollar',
+    active: false,
+    items: [
+      {
+        label: 'Métodos de pagamento',
+        icon: 'pi pi-credit-card',
+        active: false,
+        link: '/finance/payment-methods',
+        permission: 'paymentMethods.viewAny'
+      }
+    ]
+  },
+  {
     separator: true
   },
   {
@@ -162,5 +176,5 @@ export const MENU: AppMenuItem[] = [
   },
   {
     separator: true
-  }
+  },
 ];

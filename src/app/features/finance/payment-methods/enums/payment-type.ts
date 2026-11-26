@@ -1,0 +1,53 @@
+export enum PaymentType {
+    Cash = '1',
+    Check = '2',
+    CreditCard = '3',
+    DebitCard = '4',
+    StoreCard = '5',
+    FoodVoucher = '10',
+    MealVoucher = '11',
+    GiftVoucher = '12',
+    FuelVoucher = '13',
+    TradeBill = '14',
+    BankSlip = '15',
+    BankDeposit = '16',
+    PixDynamic = '17',
+    BankTransfer = '18',
+    LoayaltyCashback = '19',
+    PixStatic = '20',
+    StoreCredit = '21',
+    ElectronicNotInformed = '22',
+    NoPayment = '90',
+    DefferedPayment = '91',
+    Other = '99',
+}
+
+export const PaymentTypeLabels: Record<PaymentType, string> = {
+    [PaymentType.Cash]: 'Dinheiro',
+    [PaymentType.Check]: 'Cheque',
+    [PaymentType.CreditCard]: 'Cartão de crédito',
+    [PaymentType.DebitCard]: 'Cartão de débito',
+    [PaymentType.StoreCard]: 'Cartão da loja',
+    [PaymentType.FoodVoucher]: 'Vale alimentação',
+    [PaymentType.MealVoucher]: 'Vale refeição',
+    [PaymentType.GiftVoucher]: 'Vale presente',
+    [PaymentType.FuelVoucher]: 'Vale combustível',
+    [PaymentType.TradeBill]: 'Duplicata mercantil',
+    [PaymentType.BankSlip]: 'Boleto bancário',
+    [PaymentType.BankDeposit]: 'Depósito bancário',
+    [PaymentType.PixDynamic]: 'Pagamento Instantâneo (Pix) - Dinâmico',
+    [PaymentType.BankTransfer]: 'Transferência bancária, Carteira digital',
+    [PaymentType.LoayaltyCashback]: 'Programa de fidelidade, Cashback, Crédito virtual',
+    [PaymentType.PixStatic]: 'Pagamento Instantâneo (Pix) - Estático',
+    [PaymentType.StoreCredit]: 'Crédito de loja',
+    [PaymentType.ElectronicNotInformed]: 'Pagamento eletrônico não informado - Falha de hardware do sistema emissor',
+    [PaymentType.NoPayment]: 'Sem pagamento',
+    [PaymentType.DefferedPayment]: 'Pagamento posterior',
+    [PaymentType.Other]: 'Outros',
+};
+
+export const PaymentTypeOptions: { code: PaymentType, name: string }[] = (Object.keys(PaymentType) as (keyof typeof PaymentType)[])
+.map(key => ({
+    code: PaymentType[key] as PaymentType,
+    name: PaymentTypeLabels[PaymentType[key] as PaymentType],
+}));
