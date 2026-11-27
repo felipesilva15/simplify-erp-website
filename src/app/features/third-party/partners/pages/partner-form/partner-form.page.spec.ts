@@ -10,7 +10,6 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { LookupItem } from '../../../../../core/models/lookup-item';
 import { DynamicDialogService } from '../../../../../shared/services/dynamic-dialog-service';
-import { ADDRESSES_LIST_CONFIG } from '../../../../geography/addresses/config/addresses-child-list.config';
 import { AddressType } from '../../../../geography/addresses/enums/address-type';
 import { Address } from '../../../../geography/addresses/models/address';
 
@@ -163,7 +162,7 @@ describe('PartnerFormPage', () => {
       });
       component.form.get('partner_type_code')?.setValue({ key: 'CODE-1', label: 'Distribuidor', meta: {} } as LookupItem);
 
-      const item = ADDRESSES_LIST_CONFIG.hydrateItem!({
+      const item: Address = {
         id: 0,
         type: 'BILLING' as AddressType,
         is_primary: false,
@@ -174,7 +173,7 @@ describe('PartnerFormPage', () => {
         city_id: 5503089,
         city_name: 'São Paulo',
         street: 'Rua das Flores',
-      } as Address);
+      };
 
       component.addressesFacade.add();
       component.addressesFacade.commit(item);

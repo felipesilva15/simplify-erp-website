@@ -3,27 +3,10 @@ import { ChildEntityListConfig } from '../../../../core/models/child-entity-list
 import { ChildEntityViewMode } from '../../../../core/enums/child-entity-view-mode';
 import { ColumnType } from '../../../../core/enums/column-type';
 import { DialogSize } from '../../../../core/enums/dialog-size';
-import { LookupItem } from '../../../../core/models/lookup-item';
 import { ChildEntityListFacade } from '../../../../shared/facades/child-entity-list.facade';
 import { AddressFormComponent } from '../components/address-form/address-form.component';
 import { AddressType, AddressTypeLabels } from '../enums/address-type';
 import { Address } from '../models/address';
-
-function toLookupItem(id: number | LookupItem | null, label?: string, isoCode?: string): LookupItem | null {
-    if (id == null) {
-        return null;
-    }
-
-    if (typeof id !== 'number') {
-        return id;
-    }
-
-    return {
-        key: id,
-        label: label ?? String(id),
-        meta: isoCode ? { iso_code: isoCode } : undefined,
-    };
-}
 
 export const ADDRESSES_LIST_CONFIG: ChildEntityListConfig<Address> = {
     arrayKey: 'addresses',
@@ -50,12 +33,6 @@ export const ADDRESSES_LIST_CONFIG: ChildEntityListConfig<Address> = {
     dialogSize: DialogSize.Small,
     removeConfirmMessage: (address: Address) =>
         `Deseja realmente remover o endereço "${address.street ?? ''}${address.number ? `, ${address.number}` : ''}"?`,
-    hydrateItem: (item: Address) => ({
-        ...item,
-        country_id: toLookupItem(item.country_id, item.country_iso_code, item.country_iso_code),
-        state_id: toLookupItem(item.state_id, item.state_name),
-        city_id: toLookupItem(item.city_id, item.city_name),
-    }),
 };
 
 export const ADDRESSES_LIST_FACADE = new InjectionToken<ChildEntityListFacade<Address>>(

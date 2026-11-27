@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Validators } from '@angular/forms';
+import { of } from 'rxjs';
 
 import { AddressFormComponent } from './address-form.component';
 import { Address } from '../../models/address';
@@ -49,9 +50,18 @@ describe('AddressFormComponent', () => {
           provide: CHILD_FORM_ERRORS,
           useValue: signal<ChildRowErrors>({ fields: {}, messages: [] }),
         },
-        { provide: CountryService, useValue: {} },
-        { provide: StateService, useValue: {} },
-        { provide: CityService, useValue: {} },
+        {
+          provide: CountryService,
+          useValue: { search: vi.fn(() => of({ success: true, data: [] })) },
+        },
+        {
+          provide: StateService,
+          useValue: { search: vi.fn(() => of({ success: true, data: [] })) },
+        },
+        {
+          provide: CityService,
+          useValue: { search: vi.fn(() => of({ success: true, data: [] })) },
+        },
       ],
     });
 
@@ -96,6 +106,23 @@ describe('AddressFormComponent', () => {
     expect(component.form.get('is_primary')?.value).toBe(true);
     expect(component.form.pristine).toBe(true);
     expect(component.form.untouched).toBe(true);
+  });
+
+  it('should keep primitive lookup keys so the lookups can hydrate their labels', () => {
+    const component = setup({
+      id: 7,
+      type: AddressType.Billing,
+      is_primary: false,
+      country_id: 1,
+      country_iso_code: 'BR',
+      state_id: 35,
+      city_id: 5503089,
+    });
+
+    expect(component.form.get('country_id')?.value).toBe(1);
+    expect(component.form.get('state_id')?.value).toBe(35);
+    expect(component.form.get('city_id')?.value).toBe(5503089);
+    expect(component.isInternational()).toBe(false);
   });
 
   it('should require state, city and street in the national layout', () => {

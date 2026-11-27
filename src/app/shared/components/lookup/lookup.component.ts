@@ -211,13 +211,19 @@ export class LookupComponent implements OnInit, OnDestroy {
       pageSize: 1
     }
 
-    this.facade.search(filter).subscribe({
-      next: (res: LookupResult) => {
+    this.facade
+      .search(filter)
+      .pipe(
+        catchError(() => of<LookupResult>({ items: [], total: 0, page: 1, perPage: 0 })),
+        finalize(() => {
+          this.loading.set(false);
+          this.cdr.markForCheck();
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((res) => {
         this.internalControl.setValue(res.total ? res.items[0] : null, { emitEvent: false });
-        this.loading.set(false);
-        this.cdr.markForCheck();
-      }
-    });
+      });
   }
  
   /** Distingue um LookupItem já montado de um objeto bruto da API */
