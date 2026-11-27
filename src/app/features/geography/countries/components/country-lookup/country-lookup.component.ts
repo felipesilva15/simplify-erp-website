@@ -1,6 +1,7 @@
 import { Component, forwardRef, inject, input, InputSignal, output } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, NG_VALUE_ACCESSOR, FormControl } from '@angular/forms';
 import { LookupItem } from '../../../../../core/models/lookup-item';
+import { RequestFiltersType } from '../../../../../core/types/request-filters-type';
 import { LookupComponent } from '../../../../../shared/components/lookup/lookup.component';
 import { LookupFacade } from '../../../../../shared/facades/lookup.facade';
 import { CountryService } from '../../services/country-service';
@@ -25,6 +26,7 @@ export class CountryLookupComponent {
   facade: LookupFacade = new LookupFacade(this.countryService);
 
   multiple: InputSignal<boolean> = input<boolean>(false);
+  filters: InputSignal<RequestFiltersType> = input<RequestFiltersType>({});
   selected = output<LookupItem | LookupItem[]>();
 
   writeValue(value: any): void {

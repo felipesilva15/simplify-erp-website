@@ -4,6 +4,7 @@ import { RoleService } from '../../services/role-service';
 import { LookupComponent } from "../../../../../shared/components/lookup/lookup.component";
 import { FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { LookupItem } from '../../../../../core/models/lookup-item';
+import { RequestFiltersType } from '../../../../../core/types/request-filters-type';
 
 @Component({
   selector: 'app-role-lookup',
@@ -25,6 +26,7 @@ export class RoleLookupComponent {
   facade: LookupFacade = new LookupFacade(this.roleService);
 
   multiple: InputSignal<boolean> = input<boolean>(false);
+  filters: InputSignal<RequestFiltersType> = input<RequestFiltersType>({});
   selected = output<LookupItem | LookupItem[]>();
 
   writeValue(value: any): void {

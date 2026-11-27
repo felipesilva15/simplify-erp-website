@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Validators } from '@angular/forms';
 import { of } from 'rxjs';
 
@@ -13,6 +14,8 @@ import { LookupItem } from '../../../../../core/models/lookup-item';
 import { CountryService } from '../../../countries/services/country-service';
 import { StateService } from '../../../states/services/state-service';
 import { CityService } from '../../../cities/services/city-service';
+import { CityLookupComponent } from '../../../cities/components/city-lookup/city-lookup.component';
+import { FilterOperator } from '../../../../../core/enums/filter-operator';
 
 describe('AddressFormComponent', () => {
   const brazilLookup: LookupItem = { key: 1, label: 'Brasil', meta: { iso_code: 'BR' } };
@@ -205,6 +208,58 @@ describe('AddressFormComponent', () => {
 
     expect(component.form.get('state_id')?.value).toBeNull();
     expect(component.form.get('city_id')?.value).toBeNull();
+  });
+
+  it('should hydrate the city with the selected state filter when editing', () => {
+    createFixture({
+      id: 9,
+      type: AddressType.Billing,
+      is_primary: true,
+      country_id: 1,
+      country_iso_code: 'BR',
+      state_id: 35,
+      city_id: 5503089,
+    });
+    const citySearch = vi.mocked(TestBed.inject(CityService).search);
+
+    expect(citySearch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        q: '',
+        keys: [5503089],
+        filters: { state_id: { [FilterOperator.Equal]: 35 } },
+      })
+    );
+  });
+
+  it('should restrict the city lookup to the selected state and clear the city on change', () => {
+    const fixture = createFixture(existingAddress);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const cityLookup = fixture.debugElement.query(By.directive(CityLookupComponent))
+      ?.componentInstance as CityLookupComponent;
+    const stateFilter = { state_id: { [FilterOperator.Equal]: 35 } };
+
+    expect(component.cityFilters()).toEqual(stateFilter);
+    expect(cityLookup.filters()).toEqual(stateFilter);
+
+    component.form.patchValue({ state_id: { key: 33, label: 'Rio de Janeiro' } });
+    fixture.detectChanges();
+
+    expect(component.cityFilters()).toEqual({ state_id: { [FilterOperator.Equal]: 33 } });
+    expect(cityLookup.filters()).toEqual({ state_id: { [FilterOperator.Equal]: 33 } });
+    expect(component.form.get('city_id')?.value).toBeNull();
+    expect(component.form.get('city_name')?.value).toBe('');
+  });
+
+  it('should drop the city filter when the country changes', () => {
+    const component = setup(existingAddress);
+
+    expect(component.cityFilters()).toEqual({ state_id: { [FilterOperator.Equal]: 35 } });
+
+    component.form.patchValue({ country_id: usaLookup });
+
+    expect(component.cityFilters()).toEqual({});
   });
 
   it('should drop national-only fields when crossing to the international layout', () => {

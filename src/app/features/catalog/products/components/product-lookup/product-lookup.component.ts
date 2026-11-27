@@ -1,6 +1,7 @@
 import { Component, forwardRef, inject, input, InputSignal, output } from '@angular/core';
 import { FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { LookupItem } from '../../../../../core/models/lookup-item';
+import { RequestFiltersType } from '../../../../../core/types/request-filters-type';
 import { LookupComponent } from '../../../../../shared/components/lookup/lookup.component';
 import { LookupFacade } from '../../../../../shared/facades/lookup.facade';
 import { ProductService } from '../../services/product-service';
@@ -26,6 +27,7 @@ export class ProductLookupComponent {
   facade: LookupFacade = new LookupFacade(this.service);
 
   multiple: InputSignal<boolean> = input<boolean>(false);
+  filters: InputSignal<RequestFiltersType> = input<RequestFiltersType>({});
   selected = output<LookupItem | LookupItem[]>();
 
   private onTouched: () => void = () => undefined;

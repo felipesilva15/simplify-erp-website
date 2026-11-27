@@ -8,7 +8,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   signal,
-  WritableSignal, OnInit, OnDestroy,
+  WritableSignal, OnInit, OnChanges, OnDestroy, SimpleChanges,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
@@ -23,6 +23,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LookupItem } from './../../../core/models/lookup-item';
 import { LookupFacade } from './../../facades/lookup.facade';
 import { LookupResult } from '../../../core/models/lookup-result';
+import { RequestFiltersType } from '../../../core/types/request-filters-type';
 
 @Component({
   selector: 'app-lookup',
@@ -44,7 +45,7 @@ import { LookupResult } from '../../../core/models/lookup-result';
   templateUrl: './lookup.component.html',
   styleUrl: './lookup.component.scss',
 })
-export class LookupComponent implements OnInit, OnDestroy {
+export class LookupComponent implements OnInit, OnChanges, OnDestroy {
   @Input({ required: true }) facade!: LookupFacade;
   @Input() multiple = false;
   @Input() placeholder = 'Buscar...';
@@ -53,6 +54,8 @@ export class LookupComponent implements OnInit, OnDestroy {
   @Input() minChars = 1;
   @Input() pageSize = 10;
   @Input() invalid = false;
+  /** Filtros fixos aplicados a todas as buscas, no formato usado pelas listagens. */
+  @Input() filters: RequestFiltersType = {};
 
   @Output() selected = new EventEmitter<LookupItem | LookupItem[]>();
 
@@ -81,6 +84,14 @@ export class LookupComponent implements OnInit, OnDestroy {
       });
   }
  
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['filters'] && !changes['filters'].firstChange) {
+      // Sugestões do filtro anterior não podem continuar visíveis após a troca.
+      this.suggestions.set([]);
+      this.total.set(null);
+    }
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -88,9 +99,9 @@ export class LookupComponent implements OnInit, OnDestroy {
 
   onSearch(event: AutoCompleteCompleteEvent): void {
     this.loading.set(true);
- 
+
     this.facade
-      .search({ q: event.query, pageSize: this.pageSize })
+      .search(this.buildFilter(event.query, { pageSize: this.pageSize }))
       .pipe(
         catchError(() => of({ items: [], total: 0 })),
         finalize(() => {
@@ -172,12 +183,11 @@ export class LookupComponent implements OnInit, OnDestroy {
         return;
       }
 
-      const filter: LookupFilter = {
-        q: '',
-        keys: keys,
+      const filter: LookupFilter = this.buildFilter('', {
+        keys,
         page: 1,
         pageSize: keys.length
-      } 
+      });
 
       this.facade.search(filter).subscribe({
         next: (res: LookupResult) => {
@@ -204,12 +214,11 @@ export class LookupComponent implements OnInit, OnDestroy {
     // Modo single — é key primitiva: busca e hidrata
     this.loading.set(true);
 
-    const filter: LookupFilter = {
-      q: '',
+    const filter: LookupFilter = this.buildFilter('', {
       keys: [value as string | number],
       page: 1,
       pageSize: 1
-    }
+    });
 
     this.facade
       .search(filter)
@@ -226,6 +235,20 @@ export class LookupComponent implements OnInit, OnDestroy {
       });
   }
  
+  /** Reaproveita a estrutura de filtros das listagens em todas as buscas do lookup. */
+  private buildFilter(
+    q: string,
+    options: Pick<LookupFilter, 'keys' | 'page' | 'pageSize'> = {}
+  ): LookupFilter {
+    const filter: LookupFilter = { q, ...options };
+
+    if (this.filters && Object.keys(this.filters).length > 0) {
+      filter.filters = this.filters;
+    }
+
+    return filter;
+  }
+
   /** Distingue um LookupItem já montado de um objeto bruto da API */
   private isLookupItem(value: unknown): boolean {
     return (

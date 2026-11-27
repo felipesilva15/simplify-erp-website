@@ -5,6 +5,7 @@ import { LookupComponent } from './lookup.component';
 import { LookupFacade } from './../../facades/lookup.facade';
 import { LookupItem } from './../../../core/models/lookup-item';
 import { LookupResult } from '../../../core/models/lookup-result';
+import { FilterOperator } from '../../../core/enums/filter-operator';
 
 function createMockFacade(): LookupFacade {
   return {
@@ -104,6 +105,45 @@ describe('LookupComponent', () => {
       component.internalControl.setValue(null);
 
       expect(onChangeFn).toHaveBeenCalledWith(null);
+    });
+  });
+
+  // ─── ngOnChanges ────────────────────────────────────────────────────────────
+
+  describe('ngOnChanges', () => {
+    it('should clear stale suggestions when fixed filters change', () => {
+      (facade.search as ReturnType<typeof vi.fn>).mockReturnValue(
+        of({ items: [makeItem(1, 'A')], total: 10, page: 1, perPage: 10 } as LookupResult)
+      );
+      component.onSearch({ query: 'a' } as any);
+
+      component.ngOnChanges({
+        filters: {
+          firstChange: false,
+          previousValue: {},
+          currentValue: { state_id: { [FilterOperator.Equal]: 35 } },
+        },
+      } as any);
+
+      expect(component.suggestions()).toEqual([]);
+      expect(component.total()).toBeNull();
+    });
+
+    it('should keep suggestions on the initial filters assignment', () => {
+      const items = [makeItem(1, 'A')];
+      component.suggestions.set(items);
+      component.total.set(10);
+
+      component.ngOnChanges({
+        filters: {
+          firstChange: true,
+          previousValue: undefined,
+          currentValue: { state_id: { [FilterOperator.Equal]: 35 } },
+        },
+      } as any);
+
+      expect(component.suggestions()).toEqual(items);
+      expect(component.total()).toBe(10);
     });
   });
 
@@ -211,6 +251,18 @@ describe('LookupComponent', () => {
       component.onSearch({ query: 'abc' } as any);
 
       expect(facade.search).toHaveBeenCalledWith({ q: 'abc', pageSize: 25 });
+    });
+
+    it('should send fixed filters using the list filters structure', () => {
+      component.filters = { state_id: { [FilterOperator.Equal]: 35 } };
+
+      component.onSearch({ query: 'sao' } as any);
+
+      expect(facade.search).toHaveBeenCalledWith({
+        q: 'sao',
+        pageSize: 10,
+        filters: { state_id: { [FilterOperator.Equal]: 35 } },
+      });
     });
 
     it('should call cdr.markForCheck on error', () => {
@@ -566,6 +618,23 @@ describe('LookupComponent', () => {
         });
         expect(component.internalControl.value).toEqual(hydratedItem);
       });
+
+      it('should include fixed filters when hydrating a primitive key', () => {
+        component.filters = { state_id: { [FilterOperator.Equal]: 35 } };
+        (facade.search as ReturnType<typeof vi.fn>).mockReturnValue(
+          of({ items: [], total: 0, page: 1, perPage: 1 } as LookupResult)
+        );
+
+        component.writeValue(42);
+
+        expect(facade.search).toHaveBeenCalledWith({
+          q: '',
+          keys: [42],
+          page: 1,
+          pageSize: 1,
+          filters: { state_id: { [FilterOperator.Equal]: 35 } },
+        });
+      });
     });
 
     describe('multiple mode', () => {
@@ -644,6 +713,23 @@ describe('LookupComponent', () => {
         expect(spy).toHaveBeenCalledTimes(1);
       });
 
+      it('should include fixed filters when hydrating primitive keys', () => {
+        component.filters = { state_id: { [FilterOperator.Equal]: 35 } };
+        (facade.search as ReturnType<typeof vi.fn>).mockReturnValue(
+          of({ items: [], total: 0, page: 1, perPage: 2 } as LookupResult)
+        );
+
+        component.writeValue([{ id: 1 } as any, { id: 2 } as any]);
+
+        expect(facade.search).toHaveBeenCalledWith({
+          q: '',
+          keys: [1, 2],
+          page: 1,
+          pageSize: 2,
+          filters: { state_id: { [FilterOperator.Equal]: 35 } },
+        });
+      });
+
       it('should filter out null ids when hydrating', () => {
         (facade.search as ReturnType<typeof vi.fn>).mockReturnValue(
           of({ items: [], total: 0, page: 1, perPage: 0 } as LookupResult)
@@ -660,18 +746,10 @@ describe('LookupComponent', () => {
       });
 
       it('should return empty keys when all ids are null', () => {
-        (facade.search as ReturnType<typeof vi.fn>).mockReturnValue(
-          of({ items: [], total: 0, page: 1, perPage: 0 } as LookupResult)
-        );
-
         component.writeValue([{ id: null } as any, { id: undefined } as any]);
 
-        expect(facade.search).toHaveBeenCalledWith({
-          q: '',
-          keys: [],
-          page: 1,
-          pageSize: 0,
-        });
+        expect(component.internalControl.value).toEqual([]);
+        expect(facade.search).not.toHaveBeenCalled();
       });
     });
   });

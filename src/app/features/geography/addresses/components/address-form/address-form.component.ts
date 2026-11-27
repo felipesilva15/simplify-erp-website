@@ -9,6 +9,8 @@ import { ChildEntityForm } from '../../../../../core/contracts/child-entity-form
 import { ChildRowErrors } from '../../../../../core/models/child-row-errors';
 import { CHILD_FORM_ERRORS, CHILD_FORM_ITEM, CHILD_ITEM_EDITOR } from '../../../../../core/models/child-form-tokens';
 import { LookupItem } from '../../../../../core/models/lookup-item';
+import { RequestFiltersType } from '../../../../../core/types/request-filters-type';
+import { FilterOperator } from '../../../../../core/enums/filter-operator';
 import { FormControlErrorsComponent } from '../../../../../shared/components/form-control-errors/form-control-errors.component';
 import { CountryLookupComponent } from '../../../countries/components/country-lookup/country-lookup.component';
 import { StateLookupComponent } from '../../../states/components/state-lookup/state-lookup.component';
@@ -48,6 +50,7 @@ export class AddressFormComponent implements ChildEntityForm<Address> {
   readonly validatorRequired = Validators.required;
 
   isInternational: WritableSignal<boolean> = signal<boolean>(false);
+  readonly cityFilters: WritableSignal<RequestFiltersType> = signal<RequestFiltersType>({});
 
   readonly form: FormGroup = this.fb.group({
     type: [AddressType.Residential as AddressType, Validators.required],
@@ -84,6 +87,7 @@ export class AddressFormComponent implements ChildEntityForm<Address> {
 
   constructor() {
     this.hydrateForm(this.item());
+    this.cityFilters.set(this.cityFiltersFor(this.form.get('state_id')?.value ?? null));
     this.applyLayout(this.detectInternational(this.form.get('country_id')?.value ?? null));
 
     this.form.get('country_id')!.valueChanges.subscribe((country: LookupItem | null) => {
@@ -94,6 +98,7 @@ export class AddressFormComponent implements ChildEntityForm<Address> {
       this.form.get('city_id')!.setValue(null, { emitEvent: false });
       this.form.get('state_name')!.setValue('', { emitEvent: false });
       this.form.get('city_name')!.setValue('', { emitEvent: false });
+      this.cityFilters.set({});
 
       if (wasInternational !== isInternational) {
         if (isInternational) {
@@ -109,6 +114,14 @@ export class AddressFormComponent implements ChildEntityForm<Address> {
       }
 
       this.applyLayout(isInternational);
+    });
+
+    this.form.get('state_id')?.valueChanges.subscribe((state: LookupItem | string | number | null) => {
+      this.cityFilters.set(this.cityFiltersFor(state));
+
+      // A cidade escolhida pode não pertencer ao novo estado.
+      this.form.get('city_id')?.setValue(null, { emitEvent: false });
+      this.form.get('city_name')?.setValue('', { emitEvent: false });
     });
   }
 
@@ -134,6 +147,13 @@ export class AddressFormComponent implements ChildEntityForm<Address> {
 
   cancel(): void {
     this.editor.close();
+  }
+
+  private cityFiltersFor(state: LookupItem | string | number | null): RequestFiltersType {
+    // O formulário mantém chaves primitivas ao editar e LookupItem após a seleção.
+    const stateId = typeof state === 'object' ? state?.key : state;
+
+    return stateId == null ? {} : { state_id: { [FilterOperator.Equal]: stateId } };
   }
 
   private detectInternational(country: LookupItem | null): boolean {

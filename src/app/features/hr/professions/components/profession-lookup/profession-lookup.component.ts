@@ -3,6 +3,7 @@ import { LookupComponent } from '../../../../../shared/components/lookup/lookup.
 import { FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { LookupFacade } from '../../../../../shared/facades/lookup.facade';
 import { LookupItem } from '../../../../../core/models/lookup-item';
+import { RequestFiltersType } from '../../../../../core/types/request-filters-type';
 import { ProfessionService } from '../../services/profession-service';
 
 @Component({
@@ -25,6 +26,7 @@ export class ProfessionLookupComponent {
   facade: LookupFacade = new LookupFacade(this.professionService);
 
   multiple: InputSignal<boolean> = input<boolean>(false);
+  filters: InputSignal<RequestFiltersType> = input<RequestFiltersType>({});
   selected = output<LookupItem | LookupItem[]>();
 
   writeValue(value: any): void {

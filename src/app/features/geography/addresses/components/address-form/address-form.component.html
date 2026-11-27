@@ -47,7 +47,7 @@
       </div>
       <div class="col-12 md:col-4">
         <label htmlFor="city_id">Cidade<span class="text-red-500 font-bold">*</span></label>
-        <app-city-lookup id="city_id" formControlName="city_id"></app-city-lookup>
+        <app-city-lookup id="city_id" formControlName="city_id" [filters]="cityFilters()"></app-city-lookup>
         <app-form-control-errors [control]="form.get('city_id')"></app-form-control-errors>
       </div>
       <div class="col-12 md:col-4">

@@ -125,7 +125,7 @@ Sem cookie válido, `loadUser` resolve com `user = null`; as rotas guardadas por
 | Criar | `POST {base}` |
 | Atualizar | `PUT {base}/{id}` |
 | Excluir | `DELETE {base}/{id}` |
-| Lookup | `GET {base}/lookup` (params `q`, `keys`, `page`, `pageSize`) |
+| Lookup | `GET {base}/lookup` (params `q`, `keys`, `page`, `pageSize` e `filters` aninhado) |
 | Histórico | `GET {base}/{id}/activity-logs` |
 | Exportação | `GET {base}/export` → `Blob` |
 | Definir permissões | `PATCH {base}/{id}/permissions` com `{ ids: number[] }` (roles/partners) |
@@ -135,7 +135,7 @@ Sem cookie válido, `loadUser` resolve com `user = null`; as rotas guardadas por
 
 > **Formato de filtros**: `RequestFiltersType = Record<field, Partial<Record<FilterOperator,'eq'|'ne'|'gt'|'gte'|'lt'|'lte'|'like', any>>>`. Ex.: `filters[name][like]=jo%C3%A3o`. Ordenação: `sorts` prefixado com `-` para descendente (`-id`).
 > **Datas**: enviadas como `YYYY-MM-DD` (`DateUtilsService.formatIsoDate`); na carga, `parseIsoDates` converte strings nesse formato para `Date`.
-> **Lookup**: valores de formulário ficam como `LookupItem`; ao submeter, `unwrapLookups` converte campo único para `key` e arrays para o `meta` de cada item.
+> **Lookup**: valores de formulário ficam como `LookupItem`; ao submeter, `unwrapLookups` converte campo único para `key` e arrays para o `meta` de cada item. O input `filters` dos lookups usa o mesmo `RequestFiltersType` das listagens (ex.: `filters: { state_id: { eq: 35 } }` → `filters[state_id][eq]=35`) e é aplicado na busca por digitação e na hidratação por chaves.
 
 ## 7. Camadas de listagem e formulário (shared)
 
@@ -174,7 +174,7 @@ Sem cookie válido, `loadUser` resolve com `user = null`; as rotas guardadas por
 
 ### 7.4 Lookup
 
-`LookupComponent` (shared/components/lookup) implementa `ControlValueAccessor`: autocomplete com debounce (300ms), paginação e hidratação por chaves (`keys`). `LookupFacade` normaliza `ApiResponse<LookupItem[]>` em `LookupResult`. Exemplos de uso real: `RoleLookupComponent` (perfis no usuário e filtro de usuários) e `PartnerTypeLookupComponent` (tipo de parceiro no formulário/filtro de parceiros).
+`LookupComponent` (shared/components/lookup) implementa `ControlValueAccessor`: autocomplete com debounce (300ms), paginação e hidratação por chaves (`keys`). O input opcional `filters` aceita filtros fixos no formato `RequestFiltersType` e os envia junto de toda busca; ao trocar os filtros, sugestões antigas são descartadas. `LookupFacade` normaliza `ApiResponse<LookupItem[]>` em `LookupResult`. Exemplos de uso real: `RoleLookupComponent` (perfis no usuário e filtro de usuários), `PartnerTypeLookupComponent` (tipo de parceiro no formulário/filtro de parceiros) e `CityLookupComponent` no formulário de endereço (filtrada por `state_id`).
 
 ### 7.5 Listas de itens filhos (1:N) — `ChildEntityListFacade<T>` + `ChildEntityListComponent`
 
