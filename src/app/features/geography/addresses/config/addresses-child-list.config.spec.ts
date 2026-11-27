@@ -1,8 +1,13 @@
+import { DialogSize } from '../../../../core/enums/dialog-size';
 import { AddressType } from '../enums/address-type';
 import { Address } from '../models/address';
 import { ADDRESSES_LIST_CONFIG } from './addresses-child-list.config';
 
 describe('ADDRESSES_LIST_CONFIG', () => {
+  it('should open the address form in a medium dialog', () => {
+    expect(ADDRESSES_LIST_CONFIG.dialogSize).toBe(DialogSize.Medium);
+  });
+
   it('should leave lookup keys primitive so the lookups can resolve their labels', () => {
     const address: Address = {
       id: 1,

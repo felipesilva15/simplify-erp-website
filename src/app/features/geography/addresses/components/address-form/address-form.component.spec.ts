@@ -37,7 +37,7 @@ describe('AddressFormComponent', () => {
   let commit: ChildItemEditor<Address>['commit'];
   let close: ChildItemEditor<Address>['close'];
 
-  function setup(item: Address | null): AddressFormComponent {
+  function createFixture(item: Address | null) {
     commit = vi.fn();
     close = vi.fn();
 
@@ -68,7 +68,16 @@ describe('AddressFormComponent', () => {
     const fixture = TestBed.createComponent(AddressFormComponent);
     fixture.detectChanges();
 
-    return fixture.componentInstance;
+    return fixture;
+  }
+
+  function setup(item: Address | null): AddressFormComponent {
+    return createFixture(item).componentInstance;
+  }
+
+  function visibleLabels(fixture: ReturnType<typeof createFixture>): string[] {
+    const labels: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('form label');
+    return Array.from(labels).map((label) => (label.textContent ?? '').replace('*', '').trim());
   }
 
   afterEach(() => TestBed.resetTestingModule());
@@ -95,6 +104,21 @@ describe('AddressFormComponent', () => {
       address_line_2: '',
       notes: '',
     });
+  });
+
+  it('should place type, country and postal code first in the national layout', () => {
+    const fixture = createFixture(null);
+
+    expect(visibleLabels(fixture).slice(0, 3)).toEqual(['Tipo', 'País', 'CEP']);
+  });
+
+  it('should keep type and country first when the international layout hides the postal code', () => {
+    const fixture = createFixture(null);
+
+    fixture.componentInstance.form.patchValue({ country_id: usaLookup });
+    fixture.detectChanges();
+
+    expect(visibleLabels(fixture).slice(0, 3)).toEqual(['Tipo', 'País', 'Estado/Província']);
   });
 
   it('should patch the item being edited and stay pristine', () => {

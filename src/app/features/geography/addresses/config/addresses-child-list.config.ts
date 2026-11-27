@@ -30,7 +30,7 @@ export const ADDRESSES_LIST_CONFIG: ChildEntityListConfig<Address> = {
         city_id: null,
     }),
     formComponent: AddressFormComponent,
-    dialogSize: DialogSize.Small,
+    dialogSize: DialogSize.Medium,
     removeConfirmMessage: (address: Address) =>
         `Deseja realmente remover o endereço "${address.street ?? ''}${address.number ? `, ${address.number}` : ''}"?`,
 };
