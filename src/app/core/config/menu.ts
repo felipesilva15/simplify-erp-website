@@ -135,6 +135,13 @@ export const MENU: AppMenuItem[] = [
     active: false,
     items: [
       {
+        label: 'Categorias',
+        icon: 'pi pi-chart-pie',
+        active: false,
+        link: '/finance/finance-categories',
+        permission: 'financeCategories.viewAny'
+      },
+      {
         label: 'Métodos de pagamento',
         icon: 'pi pi-credit-card',
         active: false,
