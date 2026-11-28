@@ -83,8 +83,8 @@ export class PaymentMethodFormDialog implements OnInit {
 
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(255)]],
-    condition: ['', [Validators.required, Validators.maxLength(255)]],
+    name: ['', [Validators.required, Validators.maxLength(100)]],
+    condition: ['', [Validators.required, Validators.maxLength(80)]],
     payment_type: [PaymentType.Cash, [Validators.required]],
     applicable_type: [FinanceApplicability.Credit, [Validators.required]],
     tax_type: new FormControl<TaxType | null>(null, []),
