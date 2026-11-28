@@ -1,0 +1,11 @@
+<app-lookup
+    [formControl]="innerControl"
+    [facade]="facade"
+    placeholder="Buscar por ID ou nome..."
+    [multiple]="multiple()"
+    [filters]="filters()"
+    [debounce]="400"
+    [minChars]="0"
+    [pageSize]="20"
+    (selected)="selected.emit($event)"
+/>

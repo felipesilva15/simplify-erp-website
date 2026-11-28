@@ -151,6 +151,20 @@ export const MENU: AppMenuItem[] = [
     ]
   },
   {
+    label: 'Estoque',
+    icon: 'pi pi-box',
+    active: false,
+    items: [
+      {
+        label: 'Armazéns',
+        icon: 'pi pi-warehouse',
+        active: false,
+        link: '/inventory/warehouses',
+        permission: 'warehouses.viewAny'
+      }
+    ]
+  },
+  {
     separator: true
   },
   {
@@ -183,5 +197,5 @@ export const MENU: AppMenuItem[] = [
   },
   {
     separator: true
-  },
+  }
 ];
