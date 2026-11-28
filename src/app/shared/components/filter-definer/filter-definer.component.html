@@ -20,10 +20,10 @@
                     @if (selectedField) {
                         @switch (selectedField.type) {
                             @case (ColumnType.Integer) {
-                                <p-inputnumber inputId="value" name="value" formControlName="value" required [showButtons]="true" />
+                                <p-inputnumber inputId="value" name="value" formControlName="value" [showButtons]="true" />
                             }
                             @case (ColumnType.Text) {
-                                <input type="text" pInputText required id="value" [mask]="selectedField.mask" [dropSpecialCharacters]="true" [validation]="false" formControlName="value"/>
+                                <input type="text" pInputText id="value" [mask]="selectedField.mask" [dropSpecialCharacters]="true" [validation]="false" formControlName="value"/>
                             }
                             @case (ColumnType.Date) {
                                 <p-datepicker inputId="value"  name="value" formControlName="value" [showIcon]="true" [iconDisplay]="'input'" [showClear]="true" />
@@ -32,7 +32,7 @@
                                 <p-datepicker inputId="value"  name="value" formControlName="value" [showIcon]="true" [iconDisplay]="'input'" [showTime]="true" hourFormat="24" [showClear]="true" />
                             }
                             @case (ColumnType.Text) {
-                                <input type="text" pInputText required id="value" formControlName="value"/>
+                                <input type="text" pInputText id="value" formControlName="value"/>
                             }
                             @case (ColumnType.Boolean) {
                                 <p-toggleswitch name="value" formControlName="value" />
@@ -44,15 +44,15 @@
                                 @if (selectedField.component) {
                                     <app-filter-component-host formControlName="value" [component]="selectedField.component" />
                                 } @else {
-                                    <input type="text" pInputText required id="value" formControlName="value"/>
+                                    <input type="text" pInputText id="value" formControlName="value"/>
                                 }
                             }
                             @default {
-                                <input type="text" pInputText required id="value" formControlName="value"/>
+                                <input type="text" pInputText id="value" formControlName="value"/>
                             }
                         }
                     } @else {
-                        <input type="text" pInputText required id="value" formControlName="value"/>
+                        <input type="text" pInputText id="value" formControlName="value"/>
                     }
                 </div>
                 <div class="col-12 md:col-1">

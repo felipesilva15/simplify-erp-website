@@ -1,3 +1,4 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { Component, computed, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -66,6 +67,7 @@ interface FormType {
 @Component({
   selector: 'app-partner-form',
   imports: [
+    FormLabelComponent,
     MessageModule,
     FormsModule,
     ReactiveFormsModule,
@@ -134,8 +136,6 @@ export class PartnerFormPage implements OnInit {
   genderOptions: { code: Gender, name: string }[] = GenderOptions;
   maritalStatusOptions: { code: MaritalStatus, name: string }[] = MaritalStatusOptions;
   pixTypeOptions: { code: PixType, name: string }[] = PixTypeOptions;
-  validatorRequired = Validators.required;
-
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],

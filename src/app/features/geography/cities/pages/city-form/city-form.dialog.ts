@@ -1,5 +1,6 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -30,6 +31,7 @@ interface FormType {
 @Component({
   selector: 'app-city-form',
   imports: [
+    FormLabelComponent,
     MessageModule,
     FormsModule,
     ReactiveFormsModule,
@@ -71,8 +73,8 @@ export class CityFormDialog implements OnInit {
 
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
-    name: ['', []],
-    ibge_code: ['', []],
+    name: ['', [Validators.required]],
+    ibge_code: ['', [Validators.required]],
     state_id: new FormControl<LookupItem | null>(null, []),
   });
   

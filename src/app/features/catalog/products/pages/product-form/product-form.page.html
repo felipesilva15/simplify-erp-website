@@ -9,53 +9,53 @@
                 <app-collapsible-section title="Dados gerais">
                     <p-fluid class="grid">
                         <div class="col-12 md:col-8">
-                            <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
-                            <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+                            <app-form-label label="Nome" [form]="form" control="name"></app-form-label>
+                            <input id="name" formControlName="name" pInputText [invalid]="isInvalid('name')" />
                             <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="item_type_code">Tipo de item<span class="text-red-500 font-bold">*</span></label>
+                            <app-form-label label="Tipo de item" [form]="form" control="item_type_code"></app-form-label>
                             <p-select id="item_type_code" inputId="item_type_code" formControlName="item_type_code" appendTo="body" [options]="itemTypeCodeOptions" optionLabel="name" optionValue="code" placeholder="Selecione tipo de item" [invalid]="isInvalid('item_type_code')"></p-select>
                             <app-form-control-errors [control]="form.get('item_type_code')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="sku">SKU<span class="text-red-500 font-bold">*</span></label>
-                            <input id="sku" formControlName="sku" pInputText required [invalid]="isInvalid('sku')" />
+                            <app-form-label label="SKU" [form]="form" control="sku"></app-form-label>
+                            <input id="sku" formControlName="sku" pInputText [invalid]="isInvalid('sku')" />
                             <app-form-control-errors [control]="form.get('sku')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="gtin">GTIN</label>
+                            <app-form-label label="GTIN" [form]="form" control="gtin"></app-form-label>
                             <input id="gtin" formControlName="gtin" pInputText [invalid]="isInvalid('gtin')" />
                             <app-form-control-errors [control]="form.get('gtin')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="measurement_unit_id">Unidade de medida<span class="text-red-500 font-bold">*</span></label>
+                            <app-form-label label="Unidade de medida" [form]="form" control="measurement_unit_id"></app-form-label>
                             <app-measurement-unit-lookup formControlName="measurement_unit_id"></app-measurement-unit-lookup>
                             <app-form-control-errors [control]="form.get('measurement_unit_id')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="product_category_id">Categoria</label>
+                            <app-form-label label="Categoria" [form]="form" control="product_category_id"></app-form-label>
                             <app-product-category-lookup formControlName="product_category_id"></app-product-category-lookup>
                             <app-form-control-errors [control]="form.get('product_category_id')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="product_brand_id">Marca</label>
+                            <app-form-label label="Marca" [form]="form" control="product_brand_id"></app-form-label>
                             <app-product-brand-lookup formControlName="product_brand_id"></app-product-brand-lookup>
                             <app-form-control-errors [control]="form.get('product_brand_id')"></app-form-control-errors>
                         </div>
                         <div class="col-12">
-                            <label htmlFor="description">Descrição</label>
+                            <app-form-label label="Descrição" [form]="form" control="description"></app-form-label>
                             <textarea id="description" formControlName="description" pTextarea rows="3" [invalid]="isInvalid('description')"></textarea>
                             <app-form-control-errors [control]="form.get('description')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="price">Preço<span class="text-red-500 font-bold">*</span></label>
-                            <p-inputnumber inputId="price" formControlName="price" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="2" required [invalid]="isInvalid('price')" />
+                            <app-form-label label="Preço" [form]="form" control="price"></app-form-label>
+                            <p-inputnumber inputId="price" formControlName="price" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="2" [invalid]="isInvalid('price')" />
                             <app-form-control-errors [control]="form.get('price')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="cost">Custo<span class="text-red-500 font-bold">*</span></label>
-                            <p-inputnumber inputId="cost" formControlName="cost" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="2" required [invalid]="isInvalid('cost')" />
+                            <app-form-label label="Custo" [form]="form" control="cost"></app-form-label>
+                            <p-inputnumber inputId="cost" formControlName="cost" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="2" [invalid]="isInvalid('cost')" />
                             <app-form-control-errors [control]="form.get('cost')"></app-form-control-errors>
                         </div>
                     </p-fluid>
@@ -63,37 +63,37 @@
                 <app-collapsible-section title="Armazenamento e estoque">
                     <p-fluid class="grid">
                         <div class="col-12 md:col-6">
-                            <label htmlFor="gross_weight">Peso bruto</label>
+                            <app-form-label label="Peso bruto" [form]="form" control="gross_weight"></app-form-label>
                             <p-inputnumber inputId="gross_weight" formControlName="gross_weight" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="3" [invalid]="isInvalid('gross_weight')" />
                             <app-form-control-errors [control]="form.get('gross_weight')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="net_weight">Peso líquido</label>
+                            <app-form-label label="Peso líquido" [form]="form" control="net_weight"></app-form-label>
                             <p-inputnumber inputId="net_weight" formControlName="net_weight" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="3" [invalid]="isInvalid('net_weight')" />
                             <app-form-control-errors [control]="form.get('net_weight')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="width">Altura</label>
+                            <app-form-label label="Altura" [form]="form" control="width"></app-form-label>
                             <p-inputnumber inputId="width" formControlName="width" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('width')" />
                             <app-form-control-errors [control]="form.get('width')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="height">Largura</label>
+                            <app-form-label label="Largura" [form]="form" control="height"></app-form-label>
                             <p-inputnumber inputId="height" formControlName="height" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('height')" />
                             <app-form-control-errors [control]="form.get('height')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="length">Comprimento</label>
+                            <app-form-label label="Comprimento" [form]="form" control="length"></app-form-label>
                             <p-inputnumber inputId="length" formControlName="length" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('length')" />
                             <app-form-control-errors [control]="form.get('length')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="minimum_stock">Estoque mínimo</label>
+                            <app-form-label label="Estoque mínimo" [form]="form" control="minimum_stock"></app-form-label>
                             <p-inputnumber inputId="minimum_stock" formControlName="minimum_stock" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('minimum_stock')" />
                             <app-form-control-errors [control]="form.get('minimum_stock')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="maximum_stock">Estoque máximo</label>
+                            <app-form-label label="Estoque máximo" [form]="form" control="maximum_stock"></app-form-label>
                             <p-inputnumber inputId="maximum_stock" formControlName="maximum_stock" mode="decimal" [showButtons]="true" [minFractionDigits]="2" [maxFractionDigits]="4" [invalid]="isInvalid('maximum_stock')" />
                             <app-form-control-errors [control]="form.get('maximum_stock')"></app-form-control-errors>
                         </div>
@@ -102,7 +102,7 @@
                 <app-collapsible-section title="Informações complementares">
                     <p-fluid class="grid">
                         <div class="col-12">
-                            <label htmlFor="notes">Observações</label>
+                            <app-form-label label="Observações" [form]="form" control="notes"></app-form-label>
                             <textarea id="notes" formControlName="notes" pTextarea rows="3" [invalid]="isInvalid('notes')"></textarea>
                             <app-form-control-errors [control]="form.get('notes')"></app-form-control-errors>
                         </div>

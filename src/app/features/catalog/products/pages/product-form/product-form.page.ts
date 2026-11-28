@@ -1,3 +1,4 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -53,6 +54,7 @@ interface FormType {
 @Component({
   selector: 'app-product-form',
   imports: [
+    FormLabelComponent,
     MessageModule,
     FormsModule,
     ReactiveFormsModule,

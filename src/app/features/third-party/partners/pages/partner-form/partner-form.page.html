@@ -10,27 +10,27 @@
                 <app-collapsible-section title="Dados gerais">
                     <p-fluid class="grid">
                         <div class="col-12 md:col-6">
-                            <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
-                            <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+                            <app-form-label label="Nome" [form]="form" control="name"></app-form-label>
+                            <input id="name" formControlName="name" pInputText [invalid]="isInvalid('name')" />
                             <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="trade_name">Nome comercial<span class="text-red-500 font-bold">*</span></label>
-                            <input id="trade_name" formControlName="trade_name" pInputText required [invalid]="isInvalid('trade_name')" />
+                            <app-form-label label="Nome comercial" [form]="form" control="trade_name"></app-form-label>
+                            <input id="trade_name" formControlName="trade_name" pInputText [invalid]="isInvalid('trade_name')" />
                             <app-form-control-errors [control]="form.get('trade_name')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="partner_type_code">Tipo de parceiro<span class="text-red-500 font-bold">*</span></label>
+                            <app-form-label label="Tipo de parceiro" [form]="form" control="partner_type_code"></app-form-label>
                             <app-partner-type-lookup formControlName="partner_type_code"></app-partner-type-lookup>
                             <app-form-control-errors [control]="form.get('partner_type_code')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="person_type">Tipo de pessoa<span class="text-red-500 font-bold">*</span></label>
+                            <app-form-label label="Tipo de pessoa" [form]="form" control="person_type"></app-form-label>
                             <p-select id="person_type" inputId="person_type" formControlName="person_type" appendTo="body" [options]="personTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione o tipo de pessoa" (onChange)="configureFormValidators()" [invalid]="isInvalid('person_type')"></p-select>
                             <app-form-control-errors [control]="form.get('person_type')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="taxpayer_type">Contribuinte<span class="text-red-500 font-bold">*</span></label>
+                            <app-form-label label="Contribuinte" [form]="form" control="taxpayer_type"></app-form-label>
                             <p-select id="taxpayer_type" inputId="taxpayer_type" formControlName="taxpayer_type" appendTo="body" [options]="taxpayerTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione a situação" (onChange)="configureFormValidators()" [invalid]="isInvalid('taxpayer_type')"></p-select>
                             <app-form-control-errors [control]="form.get('taxpayer_type')"></app-form-control-errors>
                         </div>
@@ -40,34 +40,32 @@
                 <app-collapsible-section title="Documentos">
                     <p-fluid class="grid">
                         <div class="col-12 md:col-4">
-                            <label htmlFor="document_number">Documento<span class="text-red-500 font-bold">*</span></label>
-                            <input id="document_number" mask="DOCUMENT" [dropSpecialCharacters]="true" formControlName="document_number" pInputText required [invalid]="isInvalid('document_number')" />
+                            <app-form-label label="Documento" [form]="form" control="document_number"></app-form-label>
+                            <input id="document_number" mask="DOCUMENT" [dropSpecialCharacters]="true" formControlName="document_number" pInputText [invalid]="isInvalid('document_number')" />
                             <app-form-control-errors [control]="form.get('document_number')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="identity_number">RG</label>
+                            <app-form-label label="RG" [form]="form" control="identity_number"></app-form-label>
                             <input id="identity_number" formControlName="identity_number" pInputText [invalid]="isInvalid('identity_number')" />
                             <app-form-control-errors [control]="form.get('identity_number')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="identity_issuer">Órgão emissor</label>
+                            <app-form-label label="Órgão emissor" [form]="form" control="identity_issuer"></app-form-label>
                             <input id="identity_issuer" formControlName="identity_issuer" pInputText [invalid]="isInvalid('identity_issuer')" />
                             <app-form-control-errors [control]="form.get('identity_issuer')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="state_registration">
-                                Inscrição estadual@if (form.get('state_registration')?.hasValidator(validatorRequired)) {<span class="text-red-500 font-bold">*</span>}
-                            </label>
+                            <app-form-label label="Inscrição estadual" [form]="form" control="state_registration"></app-form-label>
                             <input id="state_registration" formControlName="state_registration" pInputText [invalid]="isInvalid('state_registration')" />
                             <app-form-control-errors [control]="form.get('state_registration')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="municipal_registration">Inscrição municipal</label>
+                            <app-form-label label="Inscrição municipal" [form]="form" control="municipal_registration"></app-form-label>
                             <input id="municipal_registration" formControlName="municipal_registration" pInputText [invalid]="isInvalid('municipal_registration')" />
                             <app-form-control-errors [control]="form.get('municipal_registration')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-4">
-                            <label htmlFor="suframa_registration">Inscrição Suframa</label>
+                            <app-form-label label="Inscrição Suframa" [form]="form" control="suframa_registration"></app-form-label>
                             <input id="suframa_registration" formControlName="suframa_registration" pInputText [invalid]="isInvalid('suframa_registration')" />
                             <app-form-control-errors [control]="form.get('suframa_registration')"></app-form-control-errors>
                         </div>
@@ -77,54 +75,52 @@
                 <app-collapsible-section title="Dados complementares">
                     <p-fluid class="grid">
                         <div class="col-12 md:col-3">
-                            <label htmlFor="partner_since">Parceiro desde</label>
+                            <app-form-label label="Parceiro desde" [form]="form" control="partner_since"></app-form-label>
                             <p-datepicker id="partner_since" inputId="partner_since" pInputMask="99/99/9999" formControlName="partner_since" appendTo="body" dateFormat="dd/mm/yy" [iconDisplay]="'input'" [showIcon]="true"     [invalid]="isInvalid('partner_since')"></p-datepicker>
                             <app-form-control-errors [control]="form.get('partner_since')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-3">
-                            <label htmlFor="birth_date">Data de nascimento</label>
+                            <app-form-label label="Data de nascimento" [form]="form" control="birth_date"></app-form-label>
                             <p-datepicker id="birth_date" inputId="birth_date" pInputMask="99/99/9999" formControlName="birth_date" appendTo="body" dateFormat="dd/mm/yy" [iconDisplay]="'input'" [showIcon]="true"  [invalid]="isInvalid('birth_date')"></p-datepicker>
                             <app-form-control-errors [control]="form.get('birth_date')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="profession_id">Profissão</label>
+                            <app-form-label label="Profissão" [form]="form" control="profession_id"></app-form-label>
                             <app-profession-lookup formControlName="profession_id"></app-profession-lookup>
                             <app-form-control-errors [control]="form.get('profession_id')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="gender">
-                                Gênero@if (form.get('gender')?.hasValidator(validatorRequired)) {<span class="text-red-500 font-bold">*</span>}
-                            </label>
+                            <app-form-label label="Gênero" [form]="form" control="gender"></app-form-label>
                             <p-select id="gender" inputId="gender" formControlName="gender" appendTo="body" [options]="genderOptions" optionLabel="name" optionValue="code" [showClear]="true" placeholder="Selecione o gênero" [invalid]="isInvalid('gender')"></p-select>
                             <app-form-control-errors [control]="form.get('gender')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="marital_status">Estado civil</label>
+                            <app-form-label label="Estado civil" [form]="form" control="marital_status"></app-form-label>
                             <p-select id="marital_status" inputId="marital_status" formControlName="marital_status" appendTo="body" [options]="maritalStatusOptions" optionLabel="name" optionValue="code" placeholder="Selecione o estado civil" [invalid]="isInvalid('marital_status')"></p-select>
                             <app-form-control-errors [control]="form.get('marital_status')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6 lg:col-3">
-                            <label htmlFor="father_name">Nome do pai</label>
+                            <app-form-label label="Nome do pai" [form]="form" control="father_name"></app-form-label>
                             <input id="father_name" formControlName="father_name" pInputText [invalid]="isInvalid('father_name')" />
                             <app-form-control-errors [control]="form.get('father_name')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6 lg:col-3">
-                            <label htmlFor="father_document">Documento do pai</label>
+                            <app-form-label label="Documento do pai" [form]="form" control="father_document"></app-form-label>
                             <input id="father_document" formControlName="father_document" pInputText [invalid]="isInvalid('father_document')" />
                             <app-form-control-errors [control]="form.get('father_document')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6 lg:col-3">
-                            <label htmlFor="mother_name">Nome da mãe</label>
+                            <app-form-label label="Nome da mãe" [form]="form" control="mother_name"></app-form-label>
                             <input id="mother_name" formControlName="mother_name" pInputText [invalid]="isInvalid('mother_name')" />
                             <app-form-control-errors [control]="form.get('mother_name')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6 lg:col-3">
-                            <label htmlFor="mother_document">Documento da mãe</label>
+                            <app-form-label label="Documento da mãe" [form]="form" control="mother_document"></app-form-label>
                             <input id="mother_document" formControlName="mother_document" pInputText [invalid]="isInvalid('mother_document')" />
                             <app-form-control-errors [control]="form.get('mother_document')"></app-form-control-errors>
                         </div>
                         <div class="col-12">
-                            <label htmlFor="notes">Observações</label>
+                            <app-form-label label="Observações" [form]="form" control="notes"></app-form-label>
                             <textarea id="notes" pTextarea formControlName="notes" rows="4" [invalid]="isInvalid('notes')"></textarea>
                             <app-form-control-errors [control]="form.get('notes')"></app-form-control-errors>
                         </div>
@@ -134,12 +130,12 @@
                 <app-collapsible-section title="Dados bancários">
                     <p-fluid class="grid">
                         <div class="col-12 md:col-4">
-                            <label htmlFor="pix_type">Tipo da chave PIX</label>
+                            <app-form-label label="Tipo da chave PIX" [form]="form" control="pix_type"></app-form-label>
                             <p-select id="pix_type" inputId="pix_type" formControlName="pix_type" appendTo="body" [showClear]="true" [options]="pixTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione o tipo da chave" [invalid]="isInvalid('pix_type')"></p-select>
                             <app-form-control-errors [control]="form.get('pix_type')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-8">
-                            <label htmlFor="pix_key">Chave PIX</label>
+                            <app-form-label label="Chave PIX" [form]="form" control="pix_key"></app-form-label>
                             <input id="pix_key" formControlName="pix_key" pInputText [invalid]="isInvalid('pix_key')" />
                             <app-form-control-errors [control]="form.get('pix_key')"></app-form-control-errors>
                         </div>

@@ -1,5 +1,6 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -27,6 +28,7 @@ interface FormType {
 @Component({
   selector: 'app-profession-form',
   imports: [
+    FormLabelComponent,
     MessageModule,
     FormsModule,
     ReactiveFormsModule,
@@ -67,8 +69,8 @@ export class ProfessionFormDialog implements OnInit {
 
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
-    name: ['', []],
-    cbo: ['', []]
+    name: ['', [Validators.required]],
+    cbo: ['', [Validators.required]]
   });
   
   id: WritableSignal<number> = signal<number>(0);

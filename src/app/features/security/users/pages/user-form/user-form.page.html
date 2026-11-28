@@ -11,34 +11,34 @@
                         <span class="font-bold">Dados gerais</span>
                     </div>
                     <div class="col-12 md:col-6">
-                        <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
-                        <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+                        <app-form-label label="Nome" [form]="form" control="name"></app-form-label>
+                        <input id="name" formControlName="name" pInputText [invalid]="isInvalid('name')" />
                         <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
                     </div>
                     <div class="col-12 md:col-6">
-                        <label htmlFor="username">Usuário<span class="text-red-500 font-bold">*</span></label>
-                        <input id="username" formControlName="username" pInputText required [invalid]="isInvalid('username')" />
+                        <app-form-label label="Usuário" [form]="form" control="username"></app-form-label>
+                        <input id="username" formControlName="username" pInputText [invalid]="isInvalid('username')" />
                         <app-form-control-errors [control]="form.get('username')"></app-form-control-errors>
                     </div>
                     <div class="col-12 md:col-6">
-                        <label htmlFor="email">E-mail<span class="text-red-500 font-bold">*</span></label>
-                        <input id="email" formControlName="email" pInputText required [invalid]="isInvalid('email')" />
+                        <app-form-label label="E-mail" [form]="form" control="email"></app-form-label>
+                        <input id="email" formControlName="email" pInputText [invalid]="isInvalid('email')" />
                         <app-form-control-errors [control]="form.get('email')"></app-form-control-errors>
                     </div>
                     <div class="col-12 md:col-6">
-                        <label htmlFor="phone_number">Telefone<span class="text-red-500 font-bold">*</span></label>
-                        <input id="phone_number" mask="PHONE_BR" [dropSpecialCharacters]="true" formControlName="phone_number" pInputText required [invalid]="isInvalid('phone_number')" />
+                        <app-form-label label="Telefone" [form]="form" control="phone_number"></app-form-label>
+                        <input id="phone_number" mask="PHONE_BR" [dropSpecialCharacters]="true" formControlName="phone_number" pInputText [invalid]="isInvalid('phone_number')" />
                         <app-form-control-errors [control]="form.get('phone_number')"></app-form-control-errors>
                     </div>
                     @if (facade.isCreate()) {
                         <div class="col-12 md:col-6">
-                            <label htmlFor="password">Senha<span class="text-red-500 font-bold">*</span></label>
-                            <p-password formControlName="password" required [toggleMask]="true" [feedback]="false" autocomplete="off" [invalid]="isInvalid('password')" />
+                            <app-form-label label="Senha" [form]="form" control="password"></app-form-label>
+                            <p-password inputId="password" formControlName="password" [toggleMask]="true" [feedback]="false" autocomplete="off" [invalid]="isInvalid('password')" />
                             <app-form-control-errors [control]="form.get('password')"></app-form-control-errors>
                         </div>
                         <div class="col-12 md:col-6">
-                            <label htmlFor="password_confirmation">Confirmação da senha<span class="text-red-500 font-bold">*</span></label>
-                            <p-password formControlName="password_confirmation" required [toggleMask]="true" [feedback]="false" autocomplete="off" [invalid]="isInvalid('password_confirmation')" />
+                            <app-form-label label="Confirmação da senha" [form]="form" control="password_confirmation"></app-form-label>
+                            <p-password inputId="password_confirmation" formControlName="password_confirmation" [toggleMask]="true" [feedback]="false" autocomplete="off" [invalid]="isInvalid('password_confirmation')" />
                             <app-form-control-errors [control]="form.get('password_confirmation')"></app-form-control-errors>
                         </div>
                     }
@@ -48,13 +48,13 @@
                         <span class="font-bold">Permissões & hierarquia</span>
                     </div>
                     <div class="col-12">
-                        <label htmlFor="roles">Perfis</label>
+                        <app-form-label label="Perfis" [form]="form" control="roles"></app-form-label>
                         <app-role-lookup formControlName="roles" [multiple]="true"></app-role-lookup>
                     </div>
                     <div class="col-12">
                         <div class="flex align-items-center gap-1">
                             <p-toggleswitch name="is_admin" formControlName="is_admin" [invalid]="isInvalid('is_admin')" />
-                            <label htmlFor="is_admin">Administrador</label>
+                            <app-form-label label="Administrador" [form]="form" control="is_admin"></app-form-label>
                         </div>
                         <p-message severity="secondary" size="small" variant="simple">Usuários administradores possuem permissão de realizar qualquer ação no sistema.</p-message>
                     </div>

@@ -4,13 +4,13 @@
       <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
         <p-fluid class="grid">
           <div class="col-12">
-            <label htmlFor="name">Nome</label>
-            <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+            <app-form-label label="Nome" [form]="form" control="name"></app-form-label>
+            <input id="name" formControlName="name" pInputText [invalid]="isInvalid('name')" />
             <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
           </div>
           <div class="col-12">
-            <label htmlFor="iso_code">Código ISO</label>
-            <input id="iso_code" formControlName="iso_code" pInputText required [invalid]="isInvalid('iso_code')" />
+            <app-form-label label="Código ISO" [form]="form" control="iso_code"></app-form-label>
+            <input id="iso_code" formControlName="iso_code" pInputText [invalid]="isInvalid('iso_code')" />
             <app-form-control-errors [control]="form.get('iso_code')"></app-form-control-errors>
           </div>
         </p-fluid>

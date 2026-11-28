@@ -1,3 +1,4 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { FormDialogUi } from "../../../../../shared/ui/form-dialog/form-dialog.ui";
 import { ButtonModule } from "primeng/button";
@@ -27,6 +28,7 @@ interface FormType {
 @Component({
   selector: 'app-partner-type-form',
   imports: [
+    FormLabelComponent,
     MessageModule,
     FormsModule,
     ReactiveFormsModule,

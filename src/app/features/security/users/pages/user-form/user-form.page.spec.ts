@@ -511,15 +511,15 @@ describe('UserFormPage', () => {
     it('should show password fields in CREATE mode', () => {
       setupComponent(null, '/security/users/new', FormMode.Create);
       const native = fixture.nativeElement as HTMLElement;
-      expect(native.querySelector('label[htmlFor="password"]')).toBeTruthy();
-      expect(native.querySelector('label[htmlFor="password_confirmation"]')).toBeTruthy();
+      expect(native.querySelector('label[for="password"]')).toBeTruthy();
+      expect(native.querySelector('label[for="password_confirmation"]')).toBeTruthy();
     });
 
     it('should hide password fields in EDIT mode', () => {
       setupComponent('1', '/security/users/1/edit', FormMode.Edit);
       const native = fixture.nativeElement as HTMLElement;
-      expect(native.querySelector('label[htmlFor="password"]')).toBeFalsy();
-      expect(native.querySelector('label[htmlFor="password_confirmation"]')).toBeFalsy();
+      expect(native.querySelector('label[for="password"]')).toBeFalsy();
+      expect(native.querySelector('label[for="password_confirmation"]')).toBeFalsy();
     });
   });
 });

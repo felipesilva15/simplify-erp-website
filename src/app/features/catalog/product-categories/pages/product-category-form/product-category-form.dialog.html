@@ -4,17 +4,17 @@
       <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
         <p-fluid class="grid">
           <div class="col-12">
-            <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
-            <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+            <app-form-label label="Nome" [form]="form" control="name"></app-form-label>
+            <input id="name" formControlName="name" pInputText [invalid]="isInvalid('name')" />
             <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
           </div>
           <div class="col-12">
-            <label htmlFor="parent_category_id">Categoria pai</label>
+            <app-form-label label="Categoria pai" [form]="form" control="parent_category_id"></app-form-label>
             <app-product-category-lookup formControlName="parent_category_id"></app-product-category-lookup>
             <app-form-control-errors [control]="form.get('parent_category_id')"></app-form-control-errors>
           </div>
           <div class="col-12">
-            <label htmlFor="applicability">Aplicabilidade<span class="text-red-500 font-bold">*</span></label>
+            <app-form-label label="Aplicabilidade" [form]="form" control="applicability"></app-form-label>
             <p-select id="applicability" inputId="applicability" formControlName="applicability" appendTo="body" [options]="productApplicabilityOptions" optionLabel="name" optionValue="code" placeholder="Selecione a aplicabilidade" [invalid]="isInvalid('applicability')"></p-select>
             <app-form-control-errors [control]="form.get('applicability')"></app-form-control-errors>
           </div>

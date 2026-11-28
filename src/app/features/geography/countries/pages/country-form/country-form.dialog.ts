@@ -1,5 +1,6 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -27,6 +28,7 @@ interface FormType {
 @Component({
   selector: 'app-country-form',
   imports: [
+    FormLabelComponent,
     MessageModule,
     FormsModule,
     ReactiveFormsModule,
@@ -67,8 +69,8 @@ export class CountryFormDialog  implements OnInit {
 
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
-    name: ['', []],
-    iso_code: ['', []]
+    name: ['', [Validators.required]],
+    iso_code: ['', [Validators.required]]
   });
   
   id: WritableSignal<number> = signal<number>(0);

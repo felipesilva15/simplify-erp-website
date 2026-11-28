@@ -1,3 +1,4 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { ChangeDetectionStrategy, Component, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { FluidModule } from 'primeng/fluid';
@@ -25,6 +26,7 @@ const BRAZIL_ISO_CODE = 'BR';
 @Component({
   selector: 'app-address-form',
   imports: [
+    FormLabelComponent,
     ReactiveFormsModule,
     FluidModule,
     InputTextModule,
@@ -47,7 +49,6 @@ export class AddressFormComponent implements ChildEntityForm<Address> {
   readonly editor = inject(CHILD_ITEM_EDITOR);
 
   readonly addressTypeOptions = AddressTypeOptions;
-  readonly validatorRequired = Validators.required;
 
   isInternational: WritableSignal<boolean> = signal<boolean>(false);
   readonly cityFilters: WritableSignal<RequestFiltersType> = signal<RequestFiltersType>({});

@@ -1,3 +1,4 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -15,6 +16,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 @Component({
   selector: 'app-contact-form',
   imports: [
+    FormLabelComponent,
     ReactiveFormsModule,
     InputTextModule,
     ToggleSwitchModule,

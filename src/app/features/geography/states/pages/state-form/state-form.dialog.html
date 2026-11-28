@@ -4,18 +4,18 @@
       <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
         <p-fluid class="grid">
           <div class="col-12">
-            <label htmlFor="name">Nome</label>
-            <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+            <app-form-label label="Nome" [form]="form" control="name"></app-form-label>
+            <input id="name" formControlName="name" pInputText [invalid]="isInvalid('name')" />
             <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
           </div>
           <div class="col-6">
-            <label htmlFor="uf">UF</label>
-            <input id="uf" formControlName="uf" pInputText required [invalid]="isInvalid('uf')" />
+            <app-form-label label="UF" [form]="form" control="uf"></app-form-label>
+            <input id="uf" formControlName="uf" pInputText [invalid]="isInvalid('uf')" />
             <app-form-control-errors [control]="form.get('uf')"></app-form-control-errors>
           </div>
           <div class="col-6">
-            <label htmlFor="ibge_code">Código IBGE</label>
-            <input id="ibge_code" formControlName="ibge_code" pInputText required [invalid]="isInvalid('ibge_code')" />
+            <app-form-label label="Código IBGE" [form]="form" control="ibge_code"></app-form-label>
+            <input id="ibge_code" formControlName="ibge_code" pInputText [invalid]="isInvalid('ibge_code')" />
             <app-form-control-errors [control]="form.get('ibge_code')"></app-form-control-errors>
           </div>
         </p-fluid>

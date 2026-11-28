@@ -83,6 +83,10 @@ describe('AddressFormComponent', () => {
     return Array.from(labels).map((label) => (label.textContent ?? '').replace('*', '').trim());
   }
 
+  function requiredMarks(fixture: ReturnType<typeof createFixture>): number {
+    return fixture.nativeElement.querySelectorAll('form label span[aria-hidden="true"]').length;
+  }
+
   afterEach(() => TestBed.resetTestingModule());
 
   it('should start blank with the national layout when creating', () => {
@@ -122,6 +126,17 @@ describe('AddressFormComponent', () => {
     fixture.detectChanges();
 
     expect(visibleLabels(fixture).slice(0, 3)).toEqual(['Tipo', 'País', 'Estado/Província']);
+  });
+
+  it('should update required asterisks when the country changes the validator layout', () => {
+    const fixture = createFixture(null);
+
+    expect(requiredMarks(fixture)).toBe(5);
+
+    fixture.componentInstance.form.patchValue({ country_id: usaLookup });
+    fixture.detectChanges();
+
+    expect(requiredMarks(fixture)).toBe(3);
   });
 
   it('should patch the item being edited and stay pristine', () => {

@@ -4,52 +4,52 @@
       <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
         <p-fluid class="grid">
           <div class="col-12 md:col-8">
-            <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
-            <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+            <app-form-label label="Nome" [form]="form" control="name"></app-form-label>
+            <input id="name" formControlName="name" pInputText [invalid]="isInvalid('name')" />
             <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
           </div>
           <div class="col-12 md:col-4">
-            <label htmlFor="condition">Condição<span class="text-red-500 font-bold">*</span></label>
-            <input id="condition" formControlName="condition" pInputText required [invalid]="isInvalid('condition')" />
+            <app-form-label label="Condição" [form]="form" control="condition"></app-form-label>
+            <input id="condition" formControlName="condition" pInputText [invalid]="isInvalid('condition')" />
             <app-form-control-errors [control]="form.get('condition')"></app-form-control-errors>
           </div>
           <div class="col-12 md:col-6">
-            <label htmlFor="payment_type">Tipo de pagamento<span class="text-red-500 font-bold">*</span></label>
+            <app-form-label label="Tipo de pagamento" [form]="form" control="payment_type"></app-form-label>
             <p-select id="payment_type" inputId="payment_type" formControlName="payment_type" appendTo="body" [options]="paymentTypeOptions" optionLabel="name" optionValue="code" placeholder="Selecione tipo de pagamento" [invalid]="isInvalid('payment_type')"></p-select>
             <app-form-control-errors [control]="form.get('payment_type')"></app-form-control-errors>
           </div>
           <div class="col-12 md:col-6">
-            <label htmlFor="applicable_type">Aplicável a<span class="text-red-500 font-bold">*</span></label>
+            <app-form-label label="Aplicável a" [form]="form" control="applicable_type"></app-form-label>
             <p-select id="applicable_type" inputId="applicable_type" formControlName="applicable_type" appendTo="body" [options]="financeApplicabilityOptions" optionLabel="name" optionValue="code" placeholder="Selecione aplicável a" [invalid]="isInvalid('applicable_type')"></p-select>
             <app-form-control-errors [control]="form.get('applicable_type')"></app-form-control-errors>
           </div>
           <div class="col-12 md:col-4">
-            <label htmlFor="tax_type">Tipo de taxa</label>
+            <app-form-label label="Tipo de taxa" [form]="form" control="tax_type"></app-form-label>
             <p-select id="tax_type" inputId="tax_type" formControlName="tax_type" appendTo="body" [options]="taxTypeOptions" optionLabel="name" optionValue="code" [showClear]="true" placeholder="Selecione tipo de taxa" [invalid]="isInvalid('tax_type')"></p-select>
             <app-form-control-errors [control]="form.get('tax_type')"></app-form-control-errors>
           </div>
           <div class="col-12 md:col-4">
-            <label htmlFor="tax_aliquot">Alíquota da taxa</label>
+            <app-form-label label="Alíquota da taxa" [form]="form" control="tax_aliquot"></app-form-label>
             <p-inputnumber inputId="tax_aliquot" formControlName="tax_aliquot" [showButtons]="true" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="4" suffix="%" [invalid]="isInvalid('tax_aliquot')" />
             <app-form-control-errors [control]="form.get('tax_aliquot')"></app-form-control-errors>
           </div>
           <div class="col-12 md:col-4">
-            <label htmlFor="tax_fixed_value">Valor fixo da taxa</label>
+            <app-form-label label="Valor fixo da taxa" [form]="form" control="tax_fixed_value"></app-form-label>
             <p-inputnumber inputId="tax_fixed_value" formControlName="tax_fixed_value" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [showButtons]="true" [invalid]="isInvalid('tax_fixed_value')" />
             <app-form-control-errors [control]="form.get('tax_fixed_value')"></app-form-control-errors>
           </div>
           <div class="col-12 md:col-4">
-            <label htmlFor="penalty_aliquot">Multa</label>
+            <app-form-label label="Multa" [form]="form" control="penalty_aliquot"></app-form-label>
             <p-inputnumber inputId="penalty_aliquot" formControlName="penalty_aliquot" [showButtons]="true" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="4" suffix="%" [invalid]="isInvalid('penalty_aliquot')" />
             <app-form-control-errors [control]="form.get('penalty_aliquot')"></app-form-control-errors>
           </div>
           <div class="col-12 md:col-4">
-            <label htmlFor="interest_aliquot">Juros (Mensal)</label>
+            <app-form-label label="Juros (Mensal)" [form]="form" control="interest_aliquot"></app-form-label>
             <p-inputnumber inputId="interest_aliquot" formControlName="interest_aliquot" [showButtons]="true" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="4" suffix="%" [invalid]="isInvalid('interest_aliquot')" />
             <app-form-control-errors [control]="form.get('interest_aliquot')"></app-form-control-errors>
           </div>
           <div class="col-12 md:col-4">
-            <label htmlFor="payment_deadline">Prazo de pagamento (Dias)</label>
+            <app-form-label label="Prazo de pagamento (Dias)" [form]="form" control="payment_deadline"></app-form-label>
             <p-inputnumber inputId="payment_deadline" formControlName="payment_deadline" [showButtons]="true" [invalid]="isInvalid('payment_deadline')" />
             <app-form-control-errors [control]="form.get('payment_deadline')"></app-form-control-errors>
           </div>

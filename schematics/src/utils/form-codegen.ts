@@ -97,25 +97,24 @@ function formGroupLine(field: FieldDefinition): string {
 
 function inputHtml(field: FieldDefinition): string {
   const invalid = `[invalid]="isInvalid('${field.name}')"`;
-  const required = field.optional ? '' : ' required';
 
   switch (field.type) {
     case 'textarea':
-      return `<textarea id="${field.name}" formControlName="${field.name}" pTextarea rows="3"${required} ${invalid}></textarea>`;
+      return `<textarea id="${field.name}" formControlName="${field.name}" pTextarea rows="3" ${invalid}></textarea>`;
     case 'number':
     case 'integer':
     case 'decimal':
     case 'currency':
     case 'percent':
-      return `<p-inputnumber inputId="${field.name}" formControlName="${field.name}" [showButtons]="true"${required} ${invalid} />`;
+      return `<p-inputnumber inputId="${field.name}" formControlName="${field.name}" [showButtons]="true" ${invalid} />`;
     case 'boolean':
       return `<p-toggleswitch name="${field.name}" formControlName="${field.name}" ${invalid} />`;
     case 'date':
-      return `<p-datepicker id="${field.name}" inputId="${field.name}" formControlName="${field.name}" appendTo="body" dateFormat="dd/mm/yy" [showIcon]="true" [iconDisplay]="'input'" [showClear]="true"${required} ${invalid}></p-datepicker>`;
+      return `<p-datepicker id="${field.name}" inputId="${field.name}" formControlName="${field.name}" appendTo="body" dateFormat="dd/mm/yy" [showIcon]="true" [iconDisplay]="'input'" [showClear]="true" ${invalid}></p-datepicker>`;
     case 'datetime':
-      return `<p-datepicker id="${field.name}" inputId="${field.name}" formControlName="${field.name}" appendTo="body" dateFormat="dd/mm/yy" [showTime]="true" hourFormat="24" [showIcon]="true" [iconDisplay]="'input'" [showClear]="true"${required} ${invalid}></p-datepicker>`;
+      return `<p-datepicker id="${field.name}" inputId="${field.name}" formControlName="${field.name}" appendTo="body" dateFormat="dd/mm/yy" [showTime]="true" hourFormat="24" [showIcon]="true" [iconDisplay]="'input'" [showClear]="true" ${invalid}></p-datepicker>`;
     default:
-      return `<input id="${field.name}" formControlName="${field.name}" pInputText${required} ${invalid} />`;
+      return `<input id="${field.name}" formControlName="${field.name}" pInputText ${invalid} />`;
   }
 }
 
@@ -138,22 +137,22 @@ function fieldBlock(field: FieldDefinition, columnClass: string, indent: number,
   const pad2 = ' '.repeat(indent + step);
   const pad3 = ' '.repeat(indent + step * 2);
   const errors = `${pad2}<app-form-control-errors [control]="form.get('${field.name}')"></app-form-control-errors>`;
+  const label = `<app-form-label label="${tsString(field.label)}" [form]="form" control="${field.name}"></app-form-label>`;
 
   if (field.type === 'boolean') {
     return `${pad}<div class="${columnClass}">
 ${pad2}<div class="flex align-items-center gap-1">
 ${pad3}<p-toggleswitch name="${field.name}" formControlName="${field.name}" [invalid]="isInvalid('${field.name}')" />
-${pad3}<label htmlFor="${field.name}">${tsString(field.label)}</label>
+${pad3}${label}
 ${pad2}</div>
 ${errors}
 ${pad}</div>`;
   }
 
-  const requiredMark = field.optional ? '' : '<span class="text-red-500 font-bold">*</span>';
   const control = isLookupField(field) ? lookupHtml(field, context) : isEnumField(field) ? enumHtml(field) : inputHtml(field);
 
   return `${pad}<div class="${columnClass}">
-${pad2}<label htmlFor="${field.name}">${tsString(field.label)}${requiredMark}</label>
+${pad2}${label}
 ${pad2}${control}
 ${errors}
 ${pad}</div>`;
@@ -227,6 +226,9 @@ export function generateFormCode(fields: FieldDefinition[], variant: FormType, c
     seenExtra.add(line);
     extraImports.push(line);
   };
+
+  addExtra(`import { FormLabelComponent } from '${context.toAppDeep}shared/components/form-label/form-label.component';`);
+  addModule('FormLabelComponent');
 
   if (fields.some((field) => isStringField(field) && field.type !== 'textarea')) {
     addPrime('InputTextModule', 'primeng/inputtext');

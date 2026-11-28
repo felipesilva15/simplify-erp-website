@@ -1,3 +1,4 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { GenericCrudFormFacade } from '../../../../../shared/facades/generic-crud-form.facade';
 import { Role } from '../../models/role';
@@ -28,6 +29,7 @@ interface FormType {
 @Component({
   selector: 'app-role-form',
   imports: [
+    FormLabelComponent,
     MessageModule,
     FormsModule,
     ReactiveFormsModule,

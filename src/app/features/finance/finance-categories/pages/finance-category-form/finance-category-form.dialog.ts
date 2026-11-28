@@ -1,3 +1,4 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -33,6 +34,7 @@ interface FormType {
 @Component({
   selector: 'app-finance-category-form',
   imports: [
+    FormLabelComponent,
     MessageModule,
     FormsModule,
     ReactiveFormsModule,
@@ -76,7 +78,7 @@ export class FinanceCategoryFormDialog implements OnInit {
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
-    code: ['', [Validators.maxLength(20)]],
+    code: ['', [Validators.required, Validators.maxLength(20)]],
     parent_id: new FormControl<LookupItem | null>(null, [Validators.required]),
     applicable_type: [FinanceApplicability.Credit, [Validators.required]],
   });

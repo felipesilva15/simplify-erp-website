@@ -1,3 +1,4 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -40,6 +41,7 @@ interface FormType {
 @Component({
   selector: 'app-user-form',
   imports: [
+    FormLabelComponent,
     MessageModule,
     FormsModule,
     ReactiveFormsModule,
@@ -88,7 +90,7 @@ export class UserFormPage implements OnInit {
     name: ['', [Validators.required, Validators.maxLength(255)]],
     username: ['', [Validators.required, Validators.maxLength(255)]],
     email: ['', [Validators.required, Validators.maxLength(80), Validators.email]],
-    phone_number: ['', [phoneValidator()]],
+    phone_number: ['', [Validators.required, phoneValidator()]],
     password: ['', [Validators.required, Validators.maxLength(255)]],
     password_confirmation: ['', [Validators.required, Validators.maxLength(255)]],
     roles: [[] as LookupItem[], []],

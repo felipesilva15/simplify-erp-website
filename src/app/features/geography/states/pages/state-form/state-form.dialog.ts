@@ -1,5 +1,6 @@
+import { FormLabelComponent } from '../../../../../shared/components/form-label/form-label.component';
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -28,6 +29,7 @@ interface FormType {
 @Component({
   selector: 'app-state-form',
   imports: [
+    FormLabelComponent,
     MessageModule,
     FormsModule,
     ReactiveFormsModule,
@@ -68,9 +70,9 @@ export class StateFormDialog implements OnInit {
 
   breadcrumbItems!: MenuItem[];
   form: FormGroup<FormType> = this.fb.nonNullable.group({
-    name: ['', []],
-    uf: ['', []],
-    ibge_code: ['', []]
+    name: ['', [Validators.required]],
+    uf: ['', [Validators.required]],
+    ibge_code: ['', [Validators.required]]
   });
   
   id: WritableSignal<number> = signal<number>(0);

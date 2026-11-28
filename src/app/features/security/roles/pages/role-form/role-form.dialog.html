@@ -4,12 +4,12 @@
       <form class="flex flex-column gap-5 animation-duration-300 fadein" [formGroup]="form" (ngSubmit)="onSubmit()">
         <p-fluid class="grid">
           <div class="col-12">
-            <label htmlFor="name">Nome<span class="text-red-500 font-bold">*</span></label>
-            <input id="name" formControlName="name" pInputText required [invalid]="isInvalid('name')" />
+            <app-form-label label="Nome" [form]="form" control="name"></app-form-label>
+            <input id="name" formControlName="name" pInputText [invalid]="isInvalid('name')" />
             <app-form-control-errors [control]="form.get('name')"></app-form-control-errors>
           </div>
           <div class="col-12">
-            <label htmlFor="description">Descrição</label>
+            <app-form-label label="Descrição" [form]="form" control="description"></app-form-label>
             <textarea rows="5" cols="30" id="description" pTextarea formControlName="description" [invalid]="isInvalid('description')"></textarea>
             <app-form-control-errors [control]="form.get('description')"></app-form-control-errors>
           </div>
